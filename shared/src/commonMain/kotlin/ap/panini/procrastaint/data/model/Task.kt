@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.model
+package ap.panini.procrastaint.data.model
 
 enum class Time {
     SECOND,
@@ -20,7 +20,7 @@ enum class DayOfWeek {
     SUNDAY
 }
 
-data class Tasks(
+data class Task(
     var startTime: Long,
     var endTime: Long,
     var title: String,
@@ -28,5 +28,5 @@ data class Tasks(
     var repeatedIntervalsTime: Time? = null,
     var repeatedIntervalsWeeks: List<DayOfWeek> = emptyList(),
     var completed: Boolean = false,
-    var subTasks: List<Tasks> = emptyList()
+    var subTasks: List<Task> = emptyList()
 )
