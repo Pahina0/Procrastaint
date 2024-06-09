@@ -4,10 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "ap.panini.procrastaint.android"
+    namespace = "ap.panini.procrastaint"
     compileSdk = 34
     defaultConfig {
-        applicationId = "ap.panini.procrastaint.android"
+        applicationId = "ap.panini.procrastaint"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -45,4 +45,6 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
     debugImplementation(libs.compose.ui.tooling)
+
+    implementation(libs.koin.android)
 }

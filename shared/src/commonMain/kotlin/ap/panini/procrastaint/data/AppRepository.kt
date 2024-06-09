@@ -1,10 +1,12 @@
 package ap.panini.procrastaint.data
 
+import ap.panini.procrastaint.data.database.ProcrastaintDatabase
+import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.model.Task
+import kotlinx.coroutines.flow.Flow
 
-interface AppRepository {
-    //TODO change any to an actual type
-    fun addTask(task: Task)
+class AppRepository(private val taskDao: TaskDao) {
+    suspend fun insertTask(task: Task) = taskDao.insertTask(task)
 
-    fun getAllTasks(): List<Task>
+    fun getAllTasks(): Flow<List<Task>> = taskDao.getAllTasks()
 }

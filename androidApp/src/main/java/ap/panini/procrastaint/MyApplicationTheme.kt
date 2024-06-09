@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.android
+package ap.panini.procrastaint
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.1"
+koin = "3.5.6"
 kotlin = "1.9.23"
 compose = "1.6.7"
 compose-compiler = "1.5.13"
@@ -8,8 +9,14 @@ androidx-activityCompose = "1.9.0"
 kotlinxDatetime = "0.6.0"
 androidx-room = "2.7.0-alpha03"
 ksp = "1.9.23-1.0.19"
+sqliteBundled = "2.5.0-alpha03"
+sqliteBundledAndroid = "2.5.0-alpha03"
 
 [libraries]
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
+insert-koin-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -23,6 +30,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
