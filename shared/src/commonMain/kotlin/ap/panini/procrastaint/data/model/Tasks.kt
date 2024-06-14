@@ -5,14 +5,16 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Task(
-    var startTime: Long,
+    var startTimes: Set<Long>,
     var endTime: Long,
+
     var title: String,
     var description: String = "",
-    var repeatedIntervalsTime: Time? = null,
-    var repeatedIntervalsWeeks: List<Int> = emptyList(), // still day of week
+
     var completed: Boolean = false,
-    var subTasks: List<Int> = emptyList()
+
+    val repeatTag: Time? = null,
+    val repeatOften: Int = 0
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

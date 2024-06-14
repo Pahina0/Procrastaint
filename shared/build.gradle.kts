@@ -34,7 +34,6 @@ kotlin {
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
-
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
