@@ -9,10 +9,16 @@ androidx-activityCompose = "1.9.0"
 kotlinxDatetime = "0.6.0"
 androidx-room = "2.7.0-alpha04"
 ksp = "1.9.23-1.0.19"
+materialIconsExtended = "1.6.8"
+navigationCompose = "2.7.7"
 sqliteBundled = "2.5.0-alpha04"
 sqliteBundledAndroid = "2.5.0-alpha04"
+voyagerTabNavigator = "1.1.0-beta02"
+voyagerVersion = "1.1.0-beta02"
 
 [libraries]
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
 insert-koin-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
@@ -29,6 +35,10 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
+voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyagerVersion" }
+voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyagerTabNavigator" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

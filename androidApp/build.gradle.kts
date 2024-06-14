@@ -47,4 +47,15 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.koin.android)
+
+    implementation(libs.voyager.navigator)
+    implementation(libs.voyager.screenmodel)
+    implementation(libs.voyager.koin)
+    implementation(libs.voyager.tab.navigator)
+
+    implementation(libs.androidx.navigation.compose)
+
+    implementation (libs.androidx.material.icons.extended)
+
+    implementation ("androidx.compose.material3:material3:1.2.1")
 }
