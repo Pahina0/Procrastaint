@@ -1,5 +1,7 @@
 [versions]
 agp = "8.5.0"
+detekt = "1.23.6"
+detektRules = "0.4.4"
 koin = "3.5.6"
 kotlin = "1.9.23"
 compose = "1.6.8"
@@ -20,6 +22,8 @@ voyagerVersion = "1.1.0-beta02"
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
+detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRules" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 insert-koin-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -47,3 +51,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

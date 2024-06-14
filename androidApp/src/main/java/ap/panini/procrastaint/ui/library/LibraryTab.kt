@@ -2,7 +2,6 @@ package ap.panini.procrastaint.ui.library
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

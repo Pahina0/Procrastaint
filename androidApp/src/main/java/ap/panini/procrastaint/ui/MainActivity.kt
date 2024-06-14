@@ -63,14 +63,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TabNavigator(tab = tabs.first(),
+                    TabNavigator(
+                        tab = tabs.first(),
 
                         tabDisposable = {
                             TabDisposable(
                                 navigator = it,
                                 tabs = tabs
                             )
-                        }) { navigator ->
+                        }
+                    ) { navigator ->
                         MainScreen(navigator = navigator)
                     }
                 }
@@ -87,7 +89,8 @@ class MainActivity : ComponentActivity() {
             onClick = { tabNavigator.current = tab },
             icon = {
                 Icon(painter = tab.options.icon!!, contentDescription = tab.options.title)
-            })
+            }
+        )
     }
 
     @Composable
@@ -107,7 +110,7 @@ class MainActivity : ComponentActivity() {
                 TopAppBar(title = { Text(text = navigator.current.options.title) })
             },
             floatingActionButton = {
-                NewTaskFAB() {
+                NewTaskFAB {
                     showTaskBottomSheet = true
                 }
             },
@@ -117,7 +120,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             Box(modifier = Modifier.padding(it)) {
                 CurrentTab()
             }
@@ -127,7 +130,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -146,8 +148,8 @@ class MainActivity : ComponentActivity() {
                 },
                 sheetState = state
             ) {
-
-                Text(text = """H" +
+                Text(
+                    text = """H" +
                         "" +
                         "" +
                         "" +
@@ -157,12 +159,9 @@ class MainActivity : ComponentActivity() {
                         "" +
                         "" +
                         "" +
-                        "a""")
+                        "a"""
+                )
             }
         }
     }
 }
-
-
-
-

@@ -25,7 +25,6 @@ class SettingsTab : Tab {
             }
         }
 
-
     @Composable
     override fun Content() {
         Text(text = "Settings")

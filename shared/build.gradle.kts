@@ -27,7 +27,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            // put your multiplatform dependencies here
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.insert.koin.koin.core)
             implementation(libs.koin.core)
@@ -56,9 +56,6 @@ android {
     dependencies {
     }
 }
-
-
-
 
 dependencies {
     implementation(libs.androidx.sqlite.bundled.android)
