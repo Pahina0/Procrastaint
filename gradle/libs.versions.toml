@@ -4,14 +4,14 @@ detekt = "1.23.6"
 detektRules = "0.4.4"
 koin = "3.5.6"
 kotlin = "1.9.23"
-compose = "1.6.8"
+compose = "1.7.0-beta03"
 compose-compiler = "1.5.13"
 compose-material3 = "1.2.1"
 androidx-activityCompose = "1.9.0"
 kotlinxDatetime = "0.6.0"
 androidx-room = "2.7.0-alpha04"
 ksp = "1.9.23-1.0.19"
-materialIconsExtended = "1.6.8"
+kwhen = "0.0.2"
 navigationCompose = "2.7.7"
 sqliteBundled = "2.5.0-alpha04"
 sqliteBundledAndroid = "2.5.0-alpha04"
@@ -19,7 +19,7 @@ voyagerTabNavigator = "1.1.0-beta02"
 voyagerVersion = "1.1.0-beta02"
 
 [libraries]
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
 detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRules" }
@@ -39,6 +39,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
+kwhen = { module = "io.github.pahinaa.kwhen:kwhen", version.ref = "kwhen" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyagerVersion" }

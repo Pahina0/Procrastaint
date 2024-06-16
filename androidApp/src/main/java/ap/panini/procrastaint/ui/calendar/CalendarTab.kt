@@ -1,7 +1,7 @@
 package ap.panini.procrastaint.ui.calendar
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -15,7 +15,7 @@ class CalendarTab : Tab {
         @Composable
         get() {
             val title = "Calendar"
-            val icon = rememberVectorPainter(Icons.Default.CalendarMonth)
+            val icon = rememberVectorPainter(Icons.Outlined.CalendarMonth)
 
             return remember {
                 TabOptions(

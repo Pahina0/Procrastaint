@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.upcoming
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Upcoming
+import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,7 +15,7 @@ class UpcomingTab : Tab {
         @Composable
         get() {
             val title = "Upcoming"
-            val icon = rememberVectorPainter(Icons.Default.Upcoming)
+            val icon = rememberVectorPainter(Icons.Outlined.Upcoming)
 
             return remember {
                 TabOptions(

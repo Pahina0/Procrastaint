@@ -1,7 +1,7 @@
 package ap.panini.procrastaint.ui.library
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,7 +14,7 @@ class LibraryTab : Tab {
         @Composable
         get() {
             val title = "Today"
-            val icon = rememberVectorPainter(Icons.Default.Checklist)
+            val icon = rememberVectorPainter(Icons.Outlined.Checklist)
 
             return remember {
                 TabOptions(

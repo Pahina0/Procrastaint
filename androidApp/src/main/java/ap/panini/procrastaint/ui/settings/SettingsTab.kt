@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.settings
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,7 +15,7 @@ class SettingsTab : Tab {
         @Composable
         get() {
             val title = "Settings"
-            val icon = rememberVectorPainter(Icons.Default.Settings)
+            val icon = rememberVectorPainter(Icons.Outlined.Settings)
 
             return remember {
                 TabOptions(

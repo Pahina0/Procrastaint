@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.dsl.module
 
-fun appModule() = module {
+val appModule = module {
     val database = getRoomDatabase(getDatabaseBuilder())
     single { database.getTaskDao() }
     single { AppRepository(get()) }
