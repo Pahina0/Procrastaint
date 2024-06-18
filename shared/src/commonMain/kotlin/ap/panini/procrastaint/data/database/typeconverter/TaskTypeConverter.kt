@@ -13,4 +13,3 @@ class TaskTypeConverter {
     fun stringToLong(value: String) =
         value.split("|").map { it.toLong() }.toSet()
 }
-

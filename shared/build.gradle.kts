@@ -27,15 +27,17 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            // put your multiplatform dependencies here
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.insert.koin.koin.core)
             implementation(libs.koin.core)
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
-            implementation(libs.kotlinx.datetime)
 
+            implementation(libs.kwhen)
+
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -58,9 +60,6 @@ android {
     dependencies {
     }
 }
-
-
-
 
 dependencies {
     implementation(libs.androidx.sqlite.bundled.android)
