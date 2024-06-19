@@ -1,24 +1,29 @@
-package ap.panini.procrastaint.data.model
+package ap.panini.procrastaint.util
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import ap.panini.kwhen.TimeUnit
+import ap.panini.procrastaint.data.model.Task
 
-@Entity
-data class Task(
+data class TaskGroup(
     var startTimes: Set<Long>,
     var endTime: Long?, // only needed if you repeat
 
     var title: String,
     var description: String = "",
 
-    var completed: Boolean = false,
-
-    val repeatTag: Time? = null,
-    val repeatOften: Int = 0
+    var repeatTag: Time? = null,
+    var repeatOften: Int = 0,
 ) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+
+    fun toTaskList(): List<Task> = startTimes.map {
+        Task(
+            startTimes = it,
+            endTime = endTime,
+            title = title,
+            description = description.run { ifBlank { null } },
+            repeatTag = repeatTag,
+            repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
+        )
+    }
 }
 
 enum class Time {

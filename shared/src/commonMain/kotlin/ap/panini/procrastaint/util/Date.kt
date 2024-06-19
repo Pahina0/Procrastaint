@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.util
 
-import ap.panini.procrastaint.data.model.Time
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

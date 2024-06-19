@@ -52,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import ap.panini.procrastaint.data.model.Time
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_END
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_START
 import ap.panini.procrastaint.ui.Action.ACTION_NONE
@@ -65,6 +64,7 @@ import ap.panini.procrastaint.util.Date.minute
 import ap.panini.procrastaint.util.Date.month
 import ap.panini.procrastaint.util.Date.year
 import ap.panini.procrastaint.util.Parsed
+import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -85,7 +85,8 @@ fun TaskBottomSheet(
     editManualStartTime: (Long) -> Unit,
     editEndTime: (Long?) -> Unit,
     setRepeatTag: (Time?) -> Unit,
-    setRepeatOften: (Int?) -> Unit
+    setRepeatOften: (Int?) -> Unit,
+    saveTask: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
@@ -119,7 +120,7 @@ fun TaskBottomSheet(
                     label = { Text(text = "Whats on your mind?") },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                     trailingIcon = {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = { saveTask() }) {
                             Icon(
                                 imageVector = Icons.Outlined.TaskAlt,
                                 contentDescription = "Save task"
@@ -391,7 +392,7 @@ private fun TimeChips(
                 onClick = { removeManualStart(time) },
                 label = { Text(text = time.formatMilliseconds()) },
                 colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
             )
         }
@@ -412,7 +413,7 @@ private fun TimeChips(
                     )
                 },
                 colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
             )
         } else {

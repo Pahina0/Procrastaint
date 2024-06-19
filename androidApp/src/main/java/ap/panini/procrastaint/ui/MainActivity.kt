@@ -20,12 +20,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.calendar.CalendarTab
 import ap.panini.procrastaint.ui.library.LibraryTab
@@ -104,10 +107,15 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainScreen(navigator: TabNavigator) {
         var showTaskBottomSheet by remember { mutableStateOf(false) }
+        val scrollBehavior =
+            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text(text = navigator.current.options.title) })
+                TopAppBar(
+                    title = { Text(text = navigator.current.options.title) },
+                    scrollBehavior = scrollBehavior
+                )
             },
             floatingActionButton = {
                 NewTaskFAB {
@@ -119,7 +127,7 @@ class MainActivity : ComponentActivity() {
                     tabs.forEach { TabNavigationItem(tab = it) }
                 }
             },
-
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             Box(modifier = Modifier.padding(it)) {
                 CurrentTab()
@@ -137,7 +145,8 @@ class MainActivity : ComponentActivity() {
                 screenModel::editManualStartTime,
                 screenModel::editEndTime,
                 screenModel::setRepeatTag,
-                screenModel::setRepeatInterval
+                screenModel::setRepeatInterval,
+                screenModel::save
             )
         }
     }
