@@ -76,7 +76,6 @@ private enum class Action {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskBottomSheet(
-    visible: Boolean,
     state: MainActivityScreenModel.State,
     updateTitle: (String) -> Unit,
     updateDescription: (String) -> Unit,
@@ -94,80 +93,78 @@ fun TaskBottomSheet(
 
     var selectedAction by remember { mutableStateOf(ACTION_NONE) }
 
-    if (visible) {
-        ModalBottomSheet(
-            modifier = Modifier.fillMaxWidth(),
-            onDismissRequest = {
-                scope.launch {
-                    bottomSheetState.hide()
-                }.invokeOnCompletion {
-                    onDismissRequest()
-                }
-            },
-            sheetState = bottomSheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // input task
-                OutlinedTextField(
-                    value = state.task,
-                    onValueChange = { updateTitle(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Whats on your mind?") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    trailingIcon = {
-                        IconButton(onClick = { saveTask() }) {
-                            Icon(
-                                imageVector = Icons.Outlined.TaskAlt,
-                                contentDescription = "Save task"
-                            )
-                        }
-                    }
-                )
-
-                ActionList(
-                    setAction = { selectedAction = it },
-                    viewNextParsed = viewNextParsed,
-                    viewing = state.viewing,
-                    currentViewingSize = state.autoParsed.size
-                )
-
-                ActionDisplay(
-                    selectedAction,
-                    state.endTime,
-                    currentAutoParsed?.endTime,
-                    editEndTime,
-                    editManualStartTime,
-                    setAction = { selectedAction = it }
-                )
-
-                TimeChips(
-                    currentAutoParsed,
-                    state.manualStartTimes,
-                    state.endTime,
-                    editManualStartTime,
-                    { editEndTime(null) }
-                )
-
-                RepeatTime(
-                    repeatOften = state.repeatInterval ?: currentAutoParsed?.repeatOften,
-                    repeatTag = state.repeatTag ?: currentAutoParsed?.repeatTag ?: Time.DAY,
-                    setRepeatOften = setRepeatOften,
-                    setRepeatTag = setRepeatTag
-                )
-
-                OutlinedTextField(
-                    value = state.description,
-                    onValueChange = { updateDescription(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Description") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                )
+    ModalBottomSheet(
+        modifier = Modifier.fillMaxWidth(),
+        onDismissRequest = {
+            scope.launch {
+                bottomSheetState.hide()
+            }.invokeOnCompletion {
+                onDismissRequest()
             }
+        },
+        sheetState = bottomSheetState
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // input task
+            OutlinedTextField(
+                value = state.task,
+                onValueChange = { updateTitle(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = "Whats on your mind?") },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                trailingIcon = {
+                    IconButton(onClick = { saveTask() }) {
+                        Icon(
+                            imageVector = Icons.Outlined.TaskAlt,
+                            contentDescription = "Save task"
+                        )
+                    }
+                }
+            )
+
+            ActionList(
+                setAction = { selectedAction = it },
+                viewNextParsed = viewNextParsed,
+                viewing = state.viewing,
+                currentViewingSize = state.autoParsed.size
+            )
+
+            ActionDisplay(
+                selectedAction,
+                state.endTime,
+                currentAutoParsed?.endTime,
+                editEndTime,
+                editManualStartTime,
+                setAction = { selectedAction = it }
+            )
+
+            TimeChips(
+                currentAutoParsed,
+                state.manualStartTimes,
+                state.endTime,
+                editManualStartTime,
+                { editEndTime(null) }
+            )
+
+            RepeatTime(
+                repeatOften = state.repeatInterval ?: currentAutoParsed?.repeatOften,
+                repeatTag = state.repeatTag ?: currentAutoParsed?.repeatTag ?: Time.DAY,
+                setRepeatOften = setRepeatOften,
+                setRepeatTag = setRepeatTag
+            )
+
+            OutlinedTextField(
+                value = state.description,
+                onValueChange = { updateDescription(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = "Description") },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            )
         }
     }
 }

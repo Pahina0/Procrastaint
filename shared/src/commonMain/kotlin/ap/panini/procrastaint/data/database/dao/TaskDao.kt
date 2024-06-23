@@ -13,10 +13,13 @@ interface TaskDao {
     @Insert
     suspend fun insertTasks(tasks: List<Task>)
 
-    @Query("SELECT * FROM Task ORDER BY startTimes")
+    @Query("SELECT * FROM Task")
     fun getAllTasks(): Flow<List<Task>>
 
-    @Query("SELECT * FROM Task WHERE completed IS FALSE ORDER BY startTimes")
+    @Query("SELECT * FROM TASK WHERE completed IS NOT NULL")
+    fun getTaskHistory(): Flow<List<Task>>
+
+    @Query("SELECT * FROM TASK WHERE completed IS NULL")
     fun getIncompleteTasks(): Flow<List<Task>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

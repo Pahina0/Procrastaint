@@ -1,7 +1,7 @@
 package ap.panini.procrastaint.ui
 
 import androidx.compose.runtime.Immutable
-import ap.panini.procrastaint.data.AppRepository
+import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Parser
 import ap.panini.procrastaint.util.TaskGroup

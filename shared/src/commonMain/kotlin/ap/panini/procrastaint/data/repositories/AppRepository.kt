@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.data
+package ap.panini.procrastaint.data.repositories
 
 import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.model.Task
@@ -10,6 +10,7 @@ class AppRepository(private val taskDao: TaskDao) {
 
     fun getAllTasks(): Flow<List<Task>> = taskDao.getAllTasks()
 
+    fun getTaskHistory(): Flow<List<Task>> = taskDao.getTaskHistory()
     fun getIncompleteTasks(): Flow<List<Task>> = taskDao.getIncompleteTasks()
 
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)

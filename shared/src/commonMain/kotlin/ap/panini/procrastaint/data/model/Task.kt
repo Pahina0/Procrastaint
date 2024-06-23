@@ -16,7 +16,7 @@ data class Task(
     var repeatTag: Time? = null,
     var repeatOften: Int? = null,
 
-    var completed: Boolean = false,
+    var completed: Long? = null,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
