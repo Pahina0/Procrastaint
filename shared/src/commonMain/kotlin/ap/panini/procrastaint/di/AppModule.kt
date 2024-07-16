@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.data.database.ProcrastaintDatabase
+import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -36,6 +36,6 @@ fun createDataStore(producePath: () -> String): DataStore<Preferences> =
         produceFile = { producePath().toPath() }
     )
 
-internal const val dataStoreFileName = "procrastaint.preferences_pb"
+internal const val DataStoreFileName = "procrastaint.preferences_pb"
 
 expect fun createDataStore(): DataStore<Preferences>

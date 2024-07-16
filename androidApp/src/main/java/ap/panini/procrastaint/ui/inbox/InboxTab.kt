@@ -32,7 +32,9 @@ class InboxTab : Tab {
     override fun Content() {
         val screenModel = koinScreenModel<TaskListScreenModel>()
         val upcomingState by screenModel.state.collectAsStateWithLifecycle()
-        val options by screenModel.optionsFlow.collectAsStateWithLifecycle(runBlocking { screenModel.optionsFlow.first() })
+        val options by screenModel.optionsFlow.collectAsStateWithLifecycle(
+            runBlocking { screenModel.optionsFlow.first() }
+        )
 
         UpcomingScreen(
             upcomingState = upcomingState,

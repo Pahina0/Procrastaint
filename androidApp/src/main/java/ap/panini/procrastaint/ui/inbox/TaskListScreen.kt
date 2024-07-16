@@ -86,8 +86,6 @@ fun UpcomingScreen(
                 changeFilterOptions = changeFilterOptions
             )
         }
-
-
     }
 }
 
@@ -136,7 +134,7 @@ fun TaskItem(task: Task, modifier: Modifier = Modifier, check: (Task) -> Unit) {
                 completed = task.completed
             },
 
-            )
+        )
     }
 }
 
@@ -162,6 +160,13 @@ fun DisplayOptionsSheet(
                 preference = PreferenceRepository.SHOW_INCOMPLETE,
                 changeFilterOptions = changeFilterOptions
             )
+
+            FilterOption(
+                checked = options.showOld,
+                title = "Old",
+                preference = PreferenceRepository.SHOW_OLD,
+                changeFilterOptions = changeFilterOptions
+            )
         }
     }
 }
@@ -171,9 +176,13 @@ fun FilterOption(
     checked: Boolean,
     title: String,
     preference: String,
-    changeFilterOptions: (String, Boolean) -> Unit
+    changeFilterOptions: (String, Boolean) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
         Checkbox(
             checked = checked,
             onCheckedChange = {
@@ -181,7 +190,8 @@ fun FilterOption(
                     preference,
                     it
                 )
-            })
+            }
+        )
 
         Text(text = title)
     }

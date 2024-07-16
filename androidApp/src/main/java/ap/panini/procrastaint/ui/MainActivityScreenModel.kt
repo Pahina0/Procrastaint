@@ -30,7 +30,7 @@ class MainActivityScreenModel(
 
     fun save() {
         screenModelScope.launch {
-            db.insertTask(
+            val success = db.insertTask(
                 state.value.run {
                     val curParsed = autoParsed.getOrNull(viewing)
                     TaskGroup(
@@ -50,7 +50,9 @@ class MainActivityScreenModel(
                 }
             )
 
-            mutableState.update { State() }
+            if (success) {
+                mutableState.update { State() }
+            }
         }
     }
 

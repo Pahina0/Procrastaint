@@ -6,7 +6,15 @@ import ap.panini.procrastaint.util.TaskGroup
 import kotlinx.coroutines.flow.Flow
 
 class AppRepository(private val taskDao: TaskDao) {
-    suspend fun insertTask(task: TaskGroup) = taskDao.insertTasks(task.toTaskList())
+    suspend fun insertTask(task: TaskGroup): Boolean {
+        val tasks = task.toTaskList()
+
+        if (tasks != null) {
+            taskDao.insertTasks(tasks)
+        }
+
+        return tasks != null
+    }
 
     fun getAllTasks(): Flow<List<Task>> = taskDao.getAllTasks()
 

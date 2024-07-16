@@ -10,7 +10,7 @@ data class Task(
     var title: String,
     var description: String?,
 
-    var startTimes: Long? = null,
+    var startTime: Long? = null,
     var endTime: Long? = null, // only needed if you repeat
 
     var repeatTag: Time? = null,
@@ -22,7 +22,7 @@ data class Task(
     var id: Int = 0
 
     fun getTimeRangeString() =
-        startTimes?.formatMilliseconds() + (
+        startTime?.formatMilliseconds() + (
             endTime?.let { " to ${it.formatMilliseconds()}" }
                 ?: ""
             )

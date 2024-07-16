@@ -12,6 +12,8 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 object Date {
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -32,22 +34,14 @@ object Date {
         0
     ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
-    fun Long.year() =
-        Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).year
-
-    fun Long.month() =
-        Instant.fromEpochMilliseconds(this)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).monthNumber
-
-    fun Long.dayOfMonth() =
-        Instant.fromEpochMilliseconds(this)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfMonth
-
-    fun Long.hour() =
-        Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).hour
-
-    fun Long.minute() =
-        Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
+    fun getTodayStart(): Long =
+        Clock.System
+            .now()
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .toInstant(TimeZone.currentSystemDefault())
+            .minus(now().hour.hours)
+            .minus(now().minute.minutes)
+            .toEpochMilliseconds()
 
     /**
      * @param known The known values from the time to display
@@ -137,3 +131,20 @@ object Date {
         }
     }
 }
+
+fun Long.year() =
+    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).year
+
+fun Long.month() =
+    Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).monthNumber
+
+fun Long.dayOfMonth() =
+    Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfMonth
+
+fun Long.hour() =
+    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).hour
+
+fun Long.minute() =
+    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute

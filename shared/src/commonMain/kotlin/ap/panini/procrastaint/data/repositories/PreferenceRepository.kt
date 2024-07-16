@@ -13,10 +13,12 @@ class PreferenceRepository(
     companion object {
         const val SHOW_COMPLETE = "show_complete"
         const val SHOW_INCOMPLETE = "show_incomplete"
+        const val SHOW_OLD = "show_old"
 
         val boolPreferences = mapOf(
             SHOW_COMPLETE to false,
-            SHOW_INCOMPLETE to true
+            SHOW_INCOMPLETE to true,
+            SHOW_OLD to false
         )
     }
 
@@ -27,6 +29,4 @@ class PreferenceRepository(
     suspend fun putBoolean(key: String, value: Boolean) {
         dataStore.edit { it[booleanPreferencesKey(key)] = value }
     }
-
-
 }

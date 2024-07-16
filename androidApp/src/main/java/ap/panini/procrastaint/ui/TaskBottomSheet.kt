@@ -57,14 +57,14 @@ import ap.panini.procrastaint.ui.Action.ACTION_ADD_START
 import ap.panini.procrastaint.ui.Action.ACTION_NONE
 import ap.panini.procrastaint.ui.components.TimePickerDialog
 import ap.panini.procrastaint.util.Date
-import ap.panini.procrastaint.util.Date.dayOfMonth
 import ap.panini.procrastaint.util.Date.formatMilliseconds
-import ap.panini.procrastaint.util.Date.hour
-import ap.panini.procrastaint.util.Date.minute
-import ap.panini.procrastaint.util.Date.month
-import ap.panini.procrastaint.util.Date.year
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.dayOfMonth
+import ap.panini.procrastaint.util.hour
+import ap.panini.procrastaint.util.minute
+import ap.panini.procrastaint.util.month
+import ap.panini.procrastaint.util.year
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -389,7 +389,7 @@ private fun TimeChips(
                 onClick = { removeManualStart(time) },
                 label = { Text(text = time.formatMilliseconds()) },
                 colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer
                 )
             )
         }

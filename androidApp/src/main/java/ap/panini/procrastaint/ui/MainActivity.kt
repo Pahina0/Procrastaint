@@ -26,10 +26,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.calendar.CalendarTab
+import ap.panini.procrastaint.ui.inbox.InboxTab
 import ap.panini.procrastaint.ui.library.LibraryTab
 import ap.panini.procrastaint.ui.settings.SettingsTab
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
-import ap.panini.procrastaint.ui.inbox.InboxTab
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab

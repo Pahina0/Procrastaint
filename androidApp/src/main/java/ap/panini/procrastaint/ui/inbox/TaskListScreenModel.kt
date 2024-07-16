@@ -23,14 +23,15 @@ class TaskListScreenModel(
     val optionsFlow: Flow<Options> =
         combine(
             pref.getBoolean(PreferenceRepository.SHOW_COMPLETE),
-            pref.getBoolean(PreferenceRepository.SHOW_INCOMPLETE)
-        ) { complete, incomplete ->
+            pref.getBoolean(PreferenceRepository.SHOW_INCOMPLETE),
+            pref.getBoolean(PreferenceRepository.SHOW_OLD)
+        ) { complete, incomplete, old ->
             Options(
                 showComplete = complete,
-                showIncomplete = incomplete
+                showIncomplete = incomplete,
+                showOld = old
             )
         }.flowOn(Dispatchers.IO)
-
 
     init {
         getAllTasks()
@@ -63,27 +64,34 @@ class TaskListScreenModel(
         screenModelScope.launch { db.updateTask(task) }
     }
 
-
     private fun List<Task>.applyFilters(options: Options): List<Task> {
         val filterComplete: (Task) -> Boolean = {
-            if (options.showComplete) {
-                true
-            } else {
-                it.completed == null
-            }
+            it.completed == null
         }
 
         val filterIncomplete: (Task) -> Boolean = {
-            if (options.showIncomplete) {
-                true
-            } else {
-                it.completed != null
-            }
+            it.completed != null
+        }
+
+        val now = Date.getTodayStart()
+
+        val filterOld: (Task) -> Boolean = {
+            it.startTime?.let filtering@{ startTime ->
+                // no end time
+                return@filtering if (it.endTime == null) {
+                    startTime > now
+                } else {
+                    it.endTime?.let { endTime ->
+                        endTime > now
+                    } ?: false
+                }
+            } ?: false
         }
 
         val allFilters: (Task) -> Boolean = {
-            filterComplete(it) &&
-                    filterIncomplete(it)
+            (options.showComplete || filterComplete(it)) &&
+                (options.showIncomplete || filterIncomplete(it)) &&
+                (options.showOld || filterOld(it))
         }
 
         return filter(allFilters)
@@ -95,13 +103,12 @@ class TaskListScreenModel(
         }
     }
 
-
     @Immutable
     data class Options(
         val showComplete: Boolean,
-        val showIncomplete: Boolean
+        val showIncomplete: Boolean,
+        val showOld: Boolean
     )
-
 
     @Immutable
     data class State(

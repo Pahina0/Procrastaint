@@ -14,26 +14,33 @@ data class TaskGroup(
     var repeatOften: Int = 0,
 ) {
 
-    fun toTaskList(): List<Task> = startTimes.map {
-        Task(
-            startTimes = it,
-            endTime = endTime,
-            title = title,
-            description = description.run { ifBlank { null } },
-            repeatTag = repeatTag,
-            repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
-        )
+    /**
+     * @return null if invalid task, else the tasks separated
+     */
+    fun toTaskList(): List<Task>? {
+        if (endTime != null) {
+            if (startTimes.isEmpty() ||
+                (startTimes.firstOrNull() ?: 0) > (endTime ?: Long.MAX_VALUE)
+            ) {
+                return null
+            }
+        }
+
+        return startTimes.map {
+            Task(
+                startTime = it,
+                endTime = endTime,
+                title = title,
+                description = description.run { ifBlank { null } },
+                repeatTag = repeatTag,
+                repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
+            )
+        }
     }
 }
 
 enum class Time {
-    SECOND,
-    MINUTE,
-    HOUR,
-    DAY,
-    WEEK,
-    MONTH,
-    YEAR;
+    SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR;
 
     companion object {
         fun TimeUnit.toTime() = when (this) {
