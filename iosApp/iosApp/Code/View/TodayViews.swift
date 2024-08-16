@@ -11,15 +11,22 @@ import SwiftUI
 struct HourlyTask: Identifiable {
     let id = UUID()
     let hour: Int
-    let tasks: [String] // List of tasks for that hour
+    var tasks: [Task] // List of tasks for that hour
+}
+
+struct Task: Identifiable,Hashable {
+    let id = UUID()
+    let title: String
+    let description: String
 }
 
 
 struct TodayViews: View {
+    //for UI testing only
     @State private var tasksForTheDay: [HourlyTask] = [
-            HourlyTask(hour: 9, tasks: ["Task 1", "Task 2"]),
-            HourlyTask(hour: 14, tasks: ["Task 3"]),
-            HourlyTask(hour: 17, tasks: ["Task 4", "Task 5", "Task 6"]),
+        HourlyTask(hour: 9, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
+            HourlyTask(hour: 14, tasks: [Task(title:"Task3",description: "")]),
+            HourlyTask(hour: 17, tasks: [Task(title:"Task6",description: ""),Task(title:"Task5",description: ""), Task(title:"Task4",description: "")]),
         ]
 
     var body: some View {
@@ -28,8 +35,18 @@ struct TodayViews: View {
             
             VStack {
                 // Title with today's date and weekday
-                Text(todayDateString())
-                    .font(.title)
+                HStack{
+                    Text("Today")
+                        .font(.title)
+                        .padding(.leading)
+                    Spacer()
+                }
+                HStack{
+                    Text(todayDateString())
+                        .font(.title2)
+                        .padding([.leading])
+                    Spacer()
+                }
                     
                 
                 // List of hours with tasks
@@ -40,16 +57,11 @@ struct TodayViews: View {
                         
                         Divider()
                         
-                        if let tasks = tasksForTheDay.first(where: { $0.hour == hour })?.tasks {
+                        if let index = tasksForTheDay.firstIndex(where: { $0.hour == hour }) {
                             VStack{
-                                ForEach(tasks, id: \.self) { task in
-                                    Text(task)
-                                        .padding(.vertical, 5)
-                                        .padding(.horizontal)
-                                        .background(Color.blue.opacity(0.2))
-                                        .cornerRadius(5)
-                                        .padding(.bottom, 5)
-                                    
+                                ForEach(tasksForTheDay[index].tasks, id: \.self) { task in
+                                    TaskRowView(tasks: $tasksForTheDay[index].tasks,task: task)
+                            
                                 }
                             }
                             
@@ -61,6 +73,7 @@ struct TodayViews: View {
                     }
                     .padding(.vertical, 5)
                 }
+                .listStyle(PlainListStyle())
             }
             AddButtonView()
 
@@ -84,6 +97,51 @@ struct TodayViews: View {
 
 }
 
+struct TaskRowView: View {
+    @Binding var tasks: [Task]
+    var task: Task
+    
+    @State private var isChecked = false
+    
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(task.title)
+                    .font(.headline)
+                Text(task.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundColor(isChecked ? .green : .gray)
+                .onTapGesture {
+                    withAnimation {
+                        isChecked.toggle()
+                        if isChecked {
+                            // Remove the task after the animation
+                            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                                tasks.remove(at: index)
+                            }
+                        }
+                    }
+                }
+        }
+        .padding(.vertical, 8)
+        .background(randomColor().opacity(0.7))
+    }
+    
+    //for UI testing Only
+    private func randomColor() -> Color{
+        let red = CGFloat(drand48())
+        let green = CGFloat(drand48())
+        let blue = CGFloat(drand48())
+        return Color(red: red, green: green, blue: blue)
+    }
+}
 
 
 
