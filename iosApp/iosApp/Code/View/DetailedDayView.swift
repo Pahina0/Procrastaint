@@ -44,16 +44,12 @@ struct DetailedDayView: View {
                             .frame(width: 50, alignment: .leading)
                         
                         Divider()
-                        
                         if let index = tasksForTheDay.firstIndex(where: { $0.hour == hour }) {
                             VStack{
                                 ForEach(tasksForTheDay[index].tasks, id: \.self) { task in
                                     TaskRowView(tasks: $tasksForTheDay[index].tasks,task: task)
-                            
                                 }
                             }
-                            
-                            
                         } else {
                             Text("No tasks")
                                 .foregroundColor(.gray)
