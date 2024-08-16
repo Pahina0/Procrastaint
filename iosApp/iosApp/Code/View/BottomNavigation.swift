@@ -12,7 +12,7 @@ struct BottomNavigation: View {
     var body: some View {
         ZStack{
             TabView{
-                ContentView()
+                CalendarView()
                     .tabItem { Label("Schedule", systemImage: "calendar") }
                 TodayViews()
                     .tabItem { Label("Today", systemImage: "list.bullet.clipboard") }
