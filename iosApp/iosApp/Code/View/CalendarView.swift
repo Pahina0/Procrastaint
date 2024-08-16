@@ -56,33 +56,44 @@ struct MonthView: View {
             Text(monthYearString)
                 .font(.title)
                 .padding()
-
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(),spacing: .zero), count: 7), spacing: 10) {
-                ForEach(generateMonthDays(), id: \.self) { day in
-                    VStack{
-                        if(!day.isEmpty){
-                            Color.gray.opacity(0.3).frame(height: 2.0)
-                        }
-                        if(Int(day) == Calendar.current.component(.day, from: Date()) && monthOffset == 0){
-                                Text(day)
-                                    .frame(width: 23, height: 23)
-                                    .padding()
-                                    .background(Circle().fill(Color.blue.opacity(0.9)))
-                                    .foregroundStyle(Color.white)
-                                    .cornerRadius(10)
+            NavigationView{
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(),spacing: .zero), count: 7), spacing: 10) {
+                    ForEach(generateMonthDays(), id: \.self) { day in
+                        VStack{
+                            if(!day.isEmpty){
+                                Color.gray.opacity(0.3).frame(height: 2.0)
+                            }
+                            if(Int(day) == Calendar.current.component(.day, from: Date()) && monthOffset == 0){
+                                NavigationLink{
+                                    DetailedDayView(month: monthString, day: day)
+                                }label:{
+                                    Text(day)
+                                        .frame(width: 23, height: 23)
+                                        .padding()
+                                        .background(Circle().fill(Color.blue.opacity(0.9)))
+                                        .foregroundStyle(Color.white)
+                                        .cornerRadius(10)
+                                }
                                 
-                        }else{
-                            Text(day)
-                                .frame(width: 23, height: 23)
-                                .padding()
+                            }else{
+                                NavigationLink{
+                                    DetailedDayView(month: monthString, day: day)
+                                }label:{
+                                    Text(day)
+                                        .frame(width: 23, height: 23)
+                                        .foregroundStyle(Color.black)
+                                        .padding()
+                                    
+                                }
                                 
+                            }
+                            
+                            
                         }
                         
-
                     }
                     
                 }
-                
             }
         }
     }
@@ -91,6 +102,13 @@ struct MonthView: View {
         let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: date)
+    }
+    
+    private var monthString: String {
+        let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
         return formatter.string(from: date)
     }
 
