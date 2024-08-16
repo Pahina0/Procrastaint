@@ -35,10 +35,11 @@ struct CalendarView: View {
                     }
                 }
                 .onAppear{
-                    reader.scrollTo(6)
+                    
+                    reader.scrollTo(6,anchor: .top)
                 }
                 .onTapGesture(count:2){
-                    reader.scrollTo(6)
+                    reader.scrollTo(6,anchor: .top)
                 }
                 
             }
