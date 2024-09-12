@@ -24,7 +24,7 @@ struct Task: Identifiable,Hashable {
 struct TodayViews: View {
     //for UI testing only
     @State private var tasksForTheDay: [HourlyTask] = [
-        HourlyTask(hour: 9, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
+        HourlyTask(hour: 7, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
             HourlyTask(hour: 14, tasks: [Task(title:"Task3",description: "")]),
             HourlyTask(hour: 17, tasks: [Task(title:"Task6",description: ""),Task(title:"Task5",description: ""), Task(title:"Task4",description: "")]),
         ]
@@ -109,15 +109,18 @@ struct TaskRowView: View {
             VStack(alignment: .leading) {
                 Text(task.title)
                     .font(.headline)
+                    .foregroundStyle(Color.white)
                 Text(task.description)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.black.opacity(0.5))
             }
+            .padding(.leading)
             Spacer()
             Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundColor(isChecked ? .green : .gray)
+                .padding(.trailing)
                 .onTapGesture {
                     withAnimation {
                         isChecked.toggle()
@@ -131,7 +134,9 @@ struct TaskRowView: View {
                 }
         }
         .padding(.vertical, 8)
-        .background(randomColor().opacity(0.7))
+        .background(
+            RoundedRectangle(cornerRadius: 15, style: .continuous).fill(Color.blue)
+        )
     }
     
     //for UI testing Only

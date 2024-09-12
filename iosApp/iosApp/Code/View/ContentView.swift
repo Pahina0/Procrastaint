@@ -21,7 +21,6 @@ struct ContentView: View {
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(10)
                         
-                        
                         // Placeholder for tasks (customize as needed)
                         
                     }

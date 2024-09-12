@@ -15,7 +15,6 @@
 		19063BF62C6F2FB3009DBDA9 /* DayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF52C6F2FB3009DBDA9 /* DayModel.swift */; };
 		19063BF82C6F2FE1009DBDA9 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */; };
 		19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */; };
-		19063BFC2C6FDCED009DBDA9 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BFB2C6FDCED009DBDA9 /* SwiftUIView.swift */; };
 		194CEC2E2C22085100E1A37F /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2D2C22085100E1A37F /* SettingViews.swift */; };
 		194CEC302C22091200E1A37F /* TodayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2F2C22091200E1A37F /* TodayViews.swift */; };
 		194CEC322C22097E00E1A37F /* LibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC312C22097E00E1A37F /* LibraryViews.swift */; };
@@ -56,7 +55,6 @@
 		19063BF52C6F2FB3009DBDA9 /* DayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayModel.swift; sourceTree = "<group>"; };
 		19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
-		19063BFB2C6FDCED009DBDA9 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		194CEC2D2C22085100E1A37F /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
 		194CEC2F2C22091200E1A37F /* TodayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViews.swift; sourceTree = "<group>"; };
 		194CEC312C22097E00E1A37F /* LibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViews.swift; sourceTree = "<group>"; };
@@ -96,7 +94,6 @@
 				19063BF12C6A645B009DBDA9 /* BottomSheetView.swift */,
 				197062CC2C18CED300DABA84 /* BottomNavigation.swift */,
 				194CEC312C22097E00E1A37F /* LibraryViews.swift */,
-				19063BFB2C6FDCED009DBDA9 /* SwiftUIView.swift */,
 				194CEC2F2C22091200E1A37F /* TodayViews.swift */,
 				19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */,
 				19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */,
@@ -255,7 +252,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				19063BFC2C6FDCED009DBDA9 /* SwiftUIView.swift in Sources */,
 				19063BF02C6A47CF009DBDA9 /* AddButtonView.swift in Sources */,
 				19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */,
 				19063BF22C6A645B009DBDA9 /* BottomSheetView.swift in Sources */,
@@ -397,6 +393,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 9Y6DT7J2QV;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -413,7 +410,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = procssnate.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -427,6 +424,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 9Y6DT7J2QV;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -443,7 +441,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.iosApp;
+				PRODUCT_BUNDLE_IDENTIFIER = procssnate.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
