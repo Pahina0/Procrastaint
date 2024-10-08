@@ -1,14 +1,19 @@
 package ap.panini.procrastaint.ui
 
 import androidx.compose.runtime.Immutable
-import ap.panini.procrastaint.data.model.Time
+import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Parser
+import ap.panini.procrastaint.util.TaskGroup
+import ap.panini.procrastaint.util.Time
 import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class MainActivityScreenModel : StateScreenModel<MainActivityScreenModel.State>(State()) {
-
+class MainActivityScreenModel(
+    private val db: AppRepository
+) : StateScreenModel<MainActivityScreenModel.State>(State()) {
     private var parser = Parser()
 
     @Immutable
@@ -24,7 +29,31 @@ class MainActivityScreenModel : StateScreenModel<MainActivityScreenModel.State>(
     )
 
     fun save() {
-        TODO("Import into DB")
+        screenModelScope.launch {
+            val success = db.insertTask(
+                state.value.run {
+                    val curParsed = autoParsed.getOrNull(viewing)
+                    TaskGroup(
+                        startTimes = manualStartTimes + (curParsed?.startTimes ?: emptySet()),
+                        endTime = endTime ?: curParsed?.endTime,
+                        title = if (curParsed?.extractedRange == null) {
+                            task
+                        } else {
+                            task.substring(0..<curParsed.extractedRange.first) + task.substring(
+                                curParsed.extractedRange.last + 1
+                            )
+                        },
+                        description = description,
+                        repeatTag = repeatTag ?: curParsed?.repeatTag,
+                        repeatOften = repeatInterval ?: curParsed?.repeatOften ?: 0
+                    )
+                }
+            )
+
+            if (success) {
+                mutableState.update { State() }
+            }
+        }
     }
 
     fun setRepeatTag(tag: Time?) {
@@ -34,6 +63,7 @@ class MainActivityScreenModel : StateScreenModel<MainActivityScreenModel.State>(
             )
         }
     }
+
     fun setRepeatInterval(interval: Int?) {
         mutableState.update {
             it.copy(
@@ -51,7 +81,15 @@ class MainActivityScreenModel : StateScreenModel<MainActivityScreenModel.State>(
             it.copy(
                 task = title,
                 autoParsed = parsed,
-                viewing = if (parsed.isEmpty()) -1 else 0
+                viewing = if (parsed.isEmpty()) {
+                    -1
+                } else if (it.viewing == it.autoParsed.size) {
+                    parsed.size
+                } else if (it.viewing < parsed.size && it.viewing != -1) {
+                    it.viewing
+                } else {
+                    0
+                }
             )
         }
     }

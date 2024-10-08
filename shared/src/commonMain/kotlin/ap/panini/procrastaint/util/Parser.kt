@@ -1,8 +1,7 @@
 package ap.panini.procrastaint.util
 
 import ap.panini.kwhen.TimeParser
-import ap.panini.procrastaint.data.model.Time
-import ap.panini.procrastaint.data.model.Time.Companion.toTime
+import ap.panini.procrastaint.util.Time.Companion.toTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -19,12 +18,12 @@ class Parser {
                 Parsed(
                     it.text,
                     it.range,
-                    startTimes,
+                    startTimes.toSet(),
                     it.endTime?.toMillisecondLocal(),
                     it.tagsTimeStart.map { mapped -> mapped.toTime() }.toSet(),
                     it.tagsTimeEnd.map { mapped -> mapped.toTime() }.toSet(),
                     repeatTag = it.repeatTag?.toTime(),
-                    repeatOften = it.repeatOften ?: 0
+                    repeatOften = it.repeatOften?.toInt() ?: 0
                 )
             }
         }
@@ -36,7 +35,7 @@ class Parser {
 data class Parsed(
     val text: String,
     val extractedRange: IntRange,
-    val startTimes: List<Long>,
+    val startTimes: Set<Long>,
     val endTime: Long?,
     val tagsTimeStart: Set<Time>,
     val tagsTimeEnd: Set<Time>,

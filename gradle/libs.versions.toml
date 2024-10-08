@@ -1,24 +1,27 @@
 [versions]
-agp = "8.5.0"
-detekt = "1.23.6"
+agp = "8.7.0"
+datastorePreferences = "1.1.1"
+detekt = "1.23.7"
 detektRules = "0.4.4"
-koin = "3.5.6"
-kotlin = "1.9.23"
-compose = "1.7.0-beta03"
+koin = "4.0.0"
+kotlin = "2.0.20"
+compose = "1.7.3"
 compose-compiler = "1.5.13"
-compose-material3 = "1.2.1"
-androidx-activityCompose = "1.9.0"
+compose-material3 = "1.3.0"
+androidx-activityCompose = "1.9.2"
 kotlinxDatetime = "0.6.0"
-androidx-room = "2.7.0-alpha04"
-ksp = "1.9.23-1.0.19"
-kwhen = "0.0.2"
-navigationCompose = "2.7.7"
-sqliteBundled = "2.5.0-alpha04"
-sqliteBundledAndroid = "2.5.0-alpha04"
+androidx-room = "2.7.0-alpha09"
+ksp = "2.0.20-1.0.24"
+kwhen = "0.0.4"
+navigationCompose = "2.8.2"
+sqliteBundled = "2.5.0-alpha09"
+sqliteBundledAndroid = "2.5.0-alpha09"
 voyagerTabNavigator = "1.1.0-beta02"
 voyagerVersion = "1.1.0-beta02"
 
 [libraries]
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
@@ -53,3 +56,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 room = { id = "androidx.room", version.ref = "androidx-room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
