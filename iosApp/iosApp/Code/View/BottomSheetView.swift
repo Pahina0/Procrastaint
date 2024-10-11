@@ -104,6 +104,7 @@ struct BottomSheetView: View {
     }
 }
 
+//Previews the specific button or UI element without needing to setup an entire preview provider
 #Preview {
     BottomSheetView()
 }
