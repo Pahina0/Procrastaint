@@ -38,6 +38,9 @@ kotlin {
             implementation(libs.kwhen)
 
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.datastore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

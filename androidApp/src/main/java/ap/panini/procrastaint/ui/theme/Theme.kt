@@ -9,6 +9,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+const val StronglyDeemphasizedAlpha = 0.6f
+const val SlightlyDeemphasizedAlpha = 0.75f
+
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
     onPrimary = onPrimaryLight,

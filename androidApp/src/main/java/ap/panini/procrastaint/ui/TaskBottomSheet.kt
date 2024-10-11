@@ -52,19 +52,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import ap.panini.procrastaint.data.model.Time
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_END
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_START
 import ap.panini.procrastaint.ui.Action.ACTION_NONE
 import ap.panini.procrastaint.ui.components.TimePickerDialog
 import ap.panini.procrastaint.util.Date
-import ap.panini.procrastaint.util.Date.dayOfMonth
 import ap.panini.procrastaint.util.Date.formatMilliseconds
-import ap.panini.procrastaint.util.Date.hour
-import ap.panini.procrastaint.util.Date.minute
-import ap.panini.procrastaint.util.Date.month
-import ap.panini.procrastaint.util.Date.year
 import ap.panini.procrastaint.util.Parsed
+import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.dayOfMonth
+import ap.panini.procrastaint.util.hour
+import ap.panini.procrastaint.util.minute
+import ap.panini.procrastaint.util.month
+import ap.panini.procrastaint.util.year
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -76,7 +76,6 @@ private enum class Action {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskBottomSheet(
-    visible: Boolean,
     state: MainActivityScreenModel.State,
     updateTitle: (String) -> Unit,
     updateDescription: (String) -> Unit,
@@ -85,7 +84,8 @@ fun TaskBottomSheet(
     editManualStartTime: (Long) -> Unit,
     editEndTime: (Long?) -> Unit,
     setRepeatTag: (Time?) -> Unit,
-    setRepeatOften: (Int?) -> Unit
+    setRepeatOften: (Int?) -> Unit,
+    saveTask: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
@@ -93,80 +93,78 @@ fun TaskBottomSheet(
 
     var selectedAction by remember { mutableStateOf(ACTION_NONE) }
 
-    if (visible) {
-        ModalBottomSheet(
-            modifier = Modifier.fillMaxWidth(),
-            onDismissRequest = {
-                scope.launch {
-                    bottomSheetState.hide()
-                }.invokeOnCompletion {
-                    onDismissRequest()
-                }
-            },
-            sheetState = bottomSheetState
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // input task
-                OutlinedTextField(
-                    value = state.task,
-                    onValueChange = { updateTitle(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Whats on your mind?") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    trailingIcon = {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Outlined.TaskAlt,
-                                contentDescription = "Save task"
-                            )
-                        }
-                    }
-                )
-
-                ActionList(
-                    setAction = { selectedAction = it },
-                    viewNextParsed = viewNextParsed,
-                    viewing = state.viewing,
-                    currentViewingSize = state.autoParsed.size
-                )
-
-                ActionDisplay(
-                    selectedAction,
-                    state.endTime,
-                    currentAutoParsed?.endTime,
-                    editEndTime,
-                    editManualStartTime,
-                    setAction = { selectedAction = it }
-                )
-
-                TimeChips(
-                    currentAutoParsed,
-                    state.manualStartTimes,
-                    state.endTime,
-                    editManualStartTime,
-                    { editEndTime(null) }
-                )
-
-                RepeatTime(
-                    repeatOften = state.repeatInterval ?: currentAutoParsed?.repeatOften,
-                    repeatTag = state.repeatTag ?: currentAutoParsed?.repeatTag ?: Time.DAY,
-                    setRepeatOften = setRepeatOften,
-                    setRepeatTag = setRepeatTag
-                )
-
-                OutlinedTextField(
-                    value = state.description,
-                    onValueChange = { updateDescription(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Description") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                )
+    ModalBottomSheet(
+        modifier = Modifier.fillMaxWidth(),
+        onDismissRequest = {
+            scope.launch {
+                bottomSheetState.hide()
+            }.invokeOnCompletion {
+                onDismissRequest()
             }
+        },
+        sheetState = bottomSheetState
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // input task
+            OutlinedTextField(
+                value = state.task,
+                onValueChange = { updateTitle(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = "Whats on your mind?") },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                trailingIcon = {
+                    IconButton(onClick = { saveTask() }) {
+                        Icon(
+                            imageVector = Icons.Outlined.TaskAlt,
+                            contentDescription = "Save task"
+                        )
+                    }
+                }
+            )
+
+            ActionList(
+                setAction = { selectedAction = it },
+                viewNextParsed = viewNextParsed,
+                viewing = state.viewing,
+                currentViewingSize = state.autoParsed.size
+            )
+
+            ActionDisplay(
+                selectedAction,
+                state.endTime,
+                currentAutoParsed?.endTime,
+                editEndTime,
+                editManualStartTime,
+                setAction = { selectedAction = it }
+            )
+
+            TimeChips(
+                currentAutoParsed,
+                state.manualStartTimes,
+                state.endTime,
+                editManualStartTime,
+                { editEndTime(null) }
+            )
+
+            RepeatTime(
+                repeatOften = state.repeatInterval ?: currentAutoParsed?.repeatOften,
+                repeatTag = state.repeatTag ?: currentAutoParsed?.repeatTag ?: Time.DAY,
+                setRepeatOften = setRepeatOften,
+                setRepeatTag = setRepeatTag
+            )
+
+            OutlinedTextField(
+                value = state.description,
+                onValueChange = { updateDescription(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = "Description") },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            )
         }
     }
 }
@@ -412,7 +410,7 @@ private fun TimeChips(
                     )
                 },
                 colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer
+                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
                 )
             )
         } else {
