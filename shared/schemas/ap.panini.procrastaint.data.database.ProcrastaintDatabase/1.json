@@ -2,23 +2,12 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "39e59ce6dc6cc84020961ae528133735",
+    "identityHash": "ba519ffe295c03163b5731a3502fe4e4",
     "entities": [
       {
         "tableName": "Task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTimes` TEXT NOT NULL, `endTime` INTEGER, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `completed` INTEGER NOT NULL, `repeatTag` TEXT, `repeatOften` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT, `startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `completed` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
-          {
-            "fieldPath": "startTimes",
-            "columnName": "startTimes",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "endTime",
-            "columnName": "endTime",
-            "affinity": "INTEGER"
-          },
           {
             "fieldPath": "title",
             "columnName": "title",
@@ -28,14 +17,17 @@
           {
             "fieldPath": "description",
             "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
-            "fieldPath": "completed",
-            "columnName": "completed",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "endTime",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "repeatTag",
@@ -45,8 +37,12 @@
           {
             "fieldPath": "repeatOften",
             "columnName": "repeatOften",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "completed",
+            "columnName": "completed",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "id",
@@ -65,7 +61,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39e59ce6dc6cc84020961ae528133735')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ba519ffe295c03163b5731a3502fe4e4')"
     ]
   }
 }
