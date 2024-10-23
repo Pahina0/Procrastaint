@@ -40,17 +40,24 @@ class SettingsTab : Tab {
 
 @Composable
 fun SettingsScreen() {
-    // Use Column to stack buttons and other settings
     Column {
         Text(text = "Settings")
 
-        // Add buttons for different settings
         Button(
             onClick = { /* Handle theme change */ },
             modifier = Modifier.padding(8.dp)
         ) {
             Text("Change Theme")
         }
+
+        Button(
+            onClick = { /* Handle notification toggle */ },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Toggle Notifications")
+        }
+
+        // Add other setting options
 
     }
 }
