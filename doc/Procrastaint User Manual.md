@@ -1,0 +1,7 @@
+# <p style="text-align:center;">User Manual </p>
+### <p style="text-align:center;">Procrastaint </p>
+
+## About
+This app is designed as a smart and efficient to-do list, with the primary goal of minimizing the number of clicks and steps needed to navigate and manage your tasks. Your time should be spent doing tasks, not making plan for them — there’s no need to go through complex menus or forms. Instead, all you have to do is type out a sentence describing the task you want to add. The app uses Natural Language Processing (NLP) to understand your input and automatically extract relevant information, such as the date and time you want the task completed. It then assigns the task to that specific time on your calendar, making the process fast and effortless.  Whether you need to set a one-time appointment, schedule a task for a particular range of hours, or create a recurring reminder, the app can process your request with ease. This level of automation helps reduce the friction typically associated with task management, allowing you to focus more on getting things done rather than managing your to-do list. It handles various formats of times including range based tasks and repeating tasks.
+
+##
