@@ -17,7 +17,19 @@ struct CalendarView: View {
         VStack(spacing: 20) {
 			//month tabber
 			HStack {
-			
+				//left arrow
+				Button(action: {
+					//scroll to left month
+				}) {
+					Image(systemName: "arrowtriangle.left")
+						//so that size of icon changes as scree size does
+						.resizable()
+						.scaledToFit()
+						.frame(width: UIScreen.main.bounds.width * 0.04)
+						.foregroundColor(.black) // Sets the icon color
+				}
+				
+
 			}
             // Weekday Headers
             HStack {
@@ -62,7 +74,7 @@ struct MonthView: View {
     let monthOffset: Int
 
 
-	//specifies layout for each month 
+	//specifies layout for each month
     var body: some View {
         VStack {
             Text(monthYearString)
