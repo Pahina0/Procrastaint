@@ -31,24 +31,25 @@ struct CalendarView: View {
 
             // Month Grid in ScrollView
             ScrollViewReader{reader in
+				let numMonths: Int = 25
                 ScrollView {
                 //spacing in between each month
                     LazyVStack(spacing: 20) {
 						//12 is the number of Months included
 						// Always be an odd number so current month can be centered
 						//change to 25 allows for year in andvance and previous to be seen
-						var numMonths: Int = 25
                         ForEach(0..<numMonths, id: \.self) { offset in
                             MonthView(monthOffset: offset - (numMonths/2))
                         }
                     }
                 }
                 .onAppear{
-                    
-                    reader.scrollTo(6,anchor: .top)
+					//when it loads automatically goes to center (aka current)
+                    reader.scrollTo(numMonths/2,anchor: .top)
                 }
                 .onTapGesture(count:2){
-                    reader.scrollTo(6,anchor: .top)
+					//Can double tap to go to center
+                    reader.scrollTo(numMonths/2,anchor: .top)
                 }
                 
             }
@@ -60,6 +61,8 @@ struct CalendarView: View {
 struct MonthView: View {
     let monthOffset: Int
 
+
+	//specifies layout for each month 
     var body: some View {
         VStack {
             Text(monthYearString)
