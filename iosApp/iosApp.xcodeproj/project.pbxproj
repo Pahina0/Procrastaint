@@ -66,8 +66,8 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		974FE18A2CCC48C6000CCC2A /* monthTab.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = monthTab.md; sourceTree = "<group>"; };
 		97F5F93E2CB9BF9A000F1E77 /* Fodera-Tasks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Fodera-Tasks.md"; sourceTree = "<group>"; };
-		97F5F93F2CB9BFF7000F1E77 /* Different-Spans.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Different-Spans.md"; sourceTree = "<group>"; };
 		97F5F9402CB9C5DC000F1E77 /* template.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = template.md; sourceTree = "<group>"; };
 		97F5F9432CB9CC50000F1E77 /* Spans-Plan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Spans-Plan.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -169,8 +169,8 @@
 			children = (
 				97F5F9432CB9CC50000F1E77 /* Spans-Plan.png */,
 				97F5F93E2CB9BF9A000F1E77 /* Fodera-Tasks.md */,
-				97F5F93F2CB9BFF7000F1E77 /* Different-Spans.md */,
 				97F5F9402CB9C5DC000F1E77 /* template.md */,
+				974FE18A2CCC48C6000CCC2A /* monthTab.md */,
 			);
 			path = docs;
 			sourceTree = "<group>";

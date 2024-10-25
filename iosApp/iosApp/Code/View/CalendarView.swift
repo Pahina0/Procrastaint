@@ -29,7 +29,25 @@ struct CalendarView: View {
 						.foregroundColor(.black) // Sets the icon color
 				}
 				
-
+				/*
+				read in the current month and present initially,
+				swipe left, goes left
+				swipe right, goes right 
+				 */
+				
+				
+				//right arrow
+				Button(action: {
+					//scroll to right month
+				}) {
+					Image(systemName: "arrowtriangle.right")
+						//so that size of icon changes as scree size does
+						.resizable()
+						.scaledToFit()
+						.frame(width: UIScreen.main.bounds.width * 0.04)
+						.foregroundColor(.black) // Sets the icon color
+				}
+				
 			}
             // Weekday Headers
             HStack {

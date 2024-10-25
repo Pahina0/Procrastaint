@@ -19,7 +19,7 @@ Future Tasks:
 	3ish year span √
 		decided to go with 1 year because too much overhead
 	
-	Tues: Figure out how everthing interconnects
+	adding month tabber at top 
 	 
 	Backend for actually adding a task -> doesn’t do that rn 
 	Search by tag in library section
