@@ -9,16 +9,23 @@ General Notes:
 	There was a space in file path which hopefully caused error-> that was the Error. 
 
 
+	Create issue, new branch, and 
+	don;t PR until after review, just leave it 
 
 
 
 Future Tasks: 
 	Support different years between calendar, so you can swap between the 
-	3ish year span 
+	3ish year span √
+		decided to go with 1 year because too much overhead
+	
 	Tues: Figure out how everthing interconnects
 	 
 	Backend for actually adding a task -> doesn’t do that rn 
 	Search by tag in library section
 	Settings if have nothing else to commit 
-	Create issue, new branch, and 
-	don;t PR until after review, just leave it 
+	
+	make calendar range dynamic, only load what you scroll 
+	
+	
+	

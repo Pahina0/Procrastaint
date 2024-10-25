@@ -38,24 +38,26 @@ Debug:
 
 Things I learned: 
 
-Include this header on all new files: 
-	//
-	//  DayModel.swift
-	//  iosApp
-	//
-	//  Created by Yi Chen on 8/16/24.
-	//  Copyright © 2024 orgName. All rights reserved.
-	//
+	Include this header on all new files: 
+		//
+		//  DayModel.swift
+		//  iosApp
+		//
+		//  Created by Joe Fodera 10/25/2024.
+		//  Copyright © 2024 orgName. All rights reserved.
+		//
 
-//Previews the specific button or UI element without needing to setup an entire preview provider
-	#Preview {
-		BottomSheetView()
-	}
+	//Previews the specific button or UI element without needing to setup an entire preview provider
+		#Preview {
+			BottomSheetView()
+		}
 
-The 'list.bullet.clipboard' can be found in the sf symbols app I dowloaded, these are preloaded onto any IOS device and therefore
-do not need to import a library to use them: 
-	.tabItem { Label("Today", systemImage: "list.bullet.clipboard") }
-	
+	The 'list.bullet.clipboard' can be found in the sf symbols app I dowloaded, these are preloaded onto any IOS device and therefore
+	do not need to import a library to use them: 
+		.tabItem { Label("Today", systemImage: "list.bullet.clipboard") }
+		
+	I am working in SWIFTU rn. 
+		swift is for the background logic while swiftUI is for the GUI . 
 
 
 Any challenges I came across: 

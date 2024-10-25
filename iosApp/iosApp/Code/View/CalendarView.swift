@@ -15,6 +15,10 @@ struct CalendarView: View {
     var body: some View {
         
         VStack(spacing: 20) {
+			//month tabber
+			HStack {
+			
+			}
             // Weekday Headers
             HStack {
                 ForEach(Calendar.current.shortWeekdaySymbols, id: \.self) { weekday in
@@ -28,9 +32,14 @@ struct CalendarView: View {
             // Month Grid in ScrollView
             ScrollViewReader{reader in
                 ScrollView {
+                //spacing in between each month
                     LazyVStack(spacing: 20) {
-                        ForEach(0..<12, id: \.self) { offset in
-                            MonthView(monthOffset: offset - 6)
+						//12 is the number of Months included
+						// Always be an odd number so current month can be centered
+						//change to 25 allows for year in andvance and previous to be seen
+						var numMonths: Int = 25
+                        ForEach(0..<numMonths, id: \.self) { offset in
+                            MonthView(monthOffset: offset - (numMonths/2))
                         }
                     }
                 }
