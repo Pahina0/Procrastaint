@@ -1,5 +1,10 @@
 Overall Procrast-aint Notes 
 
+When setting up env: 
+	make sure I have a unique identifier: 
+		the one for the main is PRODUCT_BUNDLE_IDENTIFIER = procssnate.iosApp;
+		Mine is PRODUCT_BUNDLE_IDENTIFIER = procssnate.joe;
+
 General Notes: 
 	Shared backend is kotlin but frontend is swift
 	Disables user script sandboxing 
