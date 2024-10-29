@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+
+
 struct CalendarView: View {
     @State private var currentMonthOffset: Int = 0
 
@@ -35,6 +37,18 @@ struct CalendarView: View {
 				swipe right, goes right 
 				 */
 				
+			    var nextMonthDate: String {
+					//0 so that it is the current date
+					let date = Calendar.current.date(byAdding: .month, value: 0, to: Date())!
+					let formatter = DateFormatter()
+					formatter.dateStyle = .medium
+					return formatter.string(from: date)
+				}
+				
+			
+				
+				Text(nextMonthDate)
+				.padding()
 				
 				//right arrow
 				Button(action: {
@@ -49,6 +63,7 @@ struct CalendarView: View {
 				}
 				
 			}
+			
             // Weekday Headers
             HStack {
                 ForEach(Calendar.current.shortWeekdaySymbols, id: \.self) { weekday in
@@ -65,10 +80,10 @@ struct CalendarView: View {
                 ScrollView {
                 //spacing in between each month
                     LazyVStack(spacing: 20) {
-						//12 is the number of Months included
 						// Always be an odd number so current month can be centered
 						//change to 25 allows for year in andvance and previous to be seen
                         ForEach(0..<numMonths, id: \.self) { offset in
+							//note that definition of struct is below
                             MonthView(monthOffset: offset - (numMonths/2))
                         }
                     }
@@ -141,6 +156,7 @@ struct MonthView: View {
     }
 
     private var monthYearString: String {
+		//offset tells which ones to calc for each
         let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
