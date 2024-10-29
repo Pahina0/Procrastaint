@@ -18,7 +18,7 @@ Plan:
 	Will also Expand the range of the calender to go on through multiple years; being able to display more than only 12 months at a time 
 	
 
-
+Continue work on the top swipe bar. Add functionality to the left and right arrow buttons. Figure out how to link the indexing from the calendar for loop to the above H-stack which is currently out of scope. Also add center portion of month tabber.
 
 
 Before submit checklist: 
