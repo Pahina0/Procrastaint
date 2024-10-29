@@ -70,6 +70,9 @@ Citations:
 
 Current:
 
+	Trying to figure out how to get the id of the current month up to the h-stack so that on a button press I can move to the next month: 
+		will probably use: @State private var targetIndex: Int?
+
 
 Helpful Code Chunks: 
 

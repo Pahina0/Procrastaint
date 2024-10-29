@@ -41,7 +41,7 @@ struct CalendarView: View {
 					//0 so that it is the current date
 					let date = Calendar.current.date(byAdding: .month, value: 0, to: Date())!
 					let formatter = DateFormatter()
-					formatter.dateStyle = .medium
+					formatter.dateFormat = "MMMM yyyy"
 					return formatter.string(from: date)
 				}
 				
