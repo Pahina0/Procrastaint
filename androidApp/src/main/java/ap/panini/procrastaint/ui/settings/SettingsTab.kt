@@ -64,6 +64,13 @@ fun SettingsScreen() {
             Text("Set Daily Reminder")
         }
 
+        Button(
+            onClick = { /* Handle resetting settings */ },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Reset to Default")
+        }
+
         // Add other setting options
 
     }
