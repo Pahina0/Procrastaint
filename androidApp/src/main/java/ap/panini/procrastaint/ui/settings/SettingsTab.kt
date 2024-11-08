@@ -57,6 +57,13 @@ fun SettingsScreen() {
             Text("Toggle Notifications")
         }
 
+        Button(
+            onClick = { /* Handle setting reminders */ },
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Set Daily Reminder")
+        }
+
         // Add other setting options
 
     }
