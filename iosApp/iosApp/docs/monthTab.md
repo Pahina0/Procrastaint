@@ -72,6 +72,24 @@ Current:
 
 	Trying to figure out how to get the id of the current month up to the h-stack so that on a button press I can move to the next month: 
 		will probably use: @State private var targetIndex: Int?
+		
+	/*
+	Have to copy over stack and them move it to the opposite function. Will need to edit the bottom of the original as well. Global vars 
+	will not work here, as they work weird in swift UI 8*/ 
+	
+	
+				    var nextMonthDate: String {
+					//0 so that it is the current date
+					let date = Calendar.current.date(byAdding: .month, value: 0, to: Date())!
+					let formatter = DateFormatter()
+					formatter.dateFormat = "MMMM yyyy"
+					return formatter.string(from: date)
+				}
+				
+			
+				
+				Text(nextMonthDate)
+				.padding()
 
 
 Helpful Code Chunks: 

@@ -37,18 +37,7 @@ struct CalendarView: View {
 				swipe right, goes right 
 				 */
 				
-			    var nextMonthDate: String {
-					//0 so that it is the current date
-					let date = Calendar.current.date(byAdding: .month, value: 0, to: Date())!
-					let formatter = DateFormatter()
-					formatter.dateFormat = "MMMM yyyy"
-					return formatter.string(from: date)
-				}
-				
-			
-				
-				Text(nextMonthDate)
-				.padding()
+
 				
 				//right arrow
 				Button(action: {
@@ -194,3 +183,4 @@ struct MonthView: View {
 #Preview {
     CalendarView()
 }
+
