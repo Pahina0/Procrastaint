@@ -13,7 +13,7 @@ import SwiftUI
 struct CalendarView: View {
     @State private var currentMonthOffset: Int = 0
 
-    
+     
     var body: some View {
         
         VStack(spacing: 20) {
@@ -46,6 +46,7 @@ struct CalendarView: View {
 				}
 				
 				CardView(text: nextMonthDate)
+				SwipeStackView()
 				
 				//right arrow
 				Button(action: {
@@ -100,6 +101,42 @@ struct CalendarView: View {
     }
 }
 
+
+//Month Tabber Structs
+
+struct SwipeStackView: View {
+    @State private var cards = ["Card 1", "Card 2", "Card 3", "Card 4"]
+    @State private var currentIndex = 0
+    @State private var offset: CGSize = .zero
+
+    var body: some View {
+        ZStack {
+            ForEach(currentIndex..<cards.count, id: \.self) { index in
+                CardView(text: cards[index])
+                    .offset(index == currentIndex ? offset : .zero)
+                    .rotationEffect(Angle(degrees: Double(offset.width / 10)))
+                    .gesture(
+                        DragGesture()
+                            .onChanged { gesture in
+                                offset = gesture.translation
+                            }
+                            .onEnded { _ in
+                                if offset.width > 100 {
+                                    // Swipe right
+                                    currentIndex += 1
+                                } else if offset.width < -100 {
+                                    // Swipe left
+                                    currentIndex += 1
+                                }
+                                offset = .zero
+                            }
+                    )
+            }
+        }
+    }
+}
+
+
 struct CardView: View {
     var text: String
     
@@ -117,6 +154,8 @@ struct CardView: View {
     }
 }
 
+
+//Month View Structs
 struct MonthView: View {
     let monthOffset: Int
 
