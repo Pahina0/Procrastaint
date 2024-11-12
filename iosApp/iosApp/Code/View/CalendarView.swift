@@ -15,6 +15,7 @@ struct CalendarView: View {
 
     
     var body: some View {
+		CardView(text: "1")
         
         VStack(spacing: 20) {
 			//month tabber
@@ -100,6 +101,24 @@ struct CalendarView: View {
             }
         }
         .padding()
+    }
+}
+
+struct CardView: View {
+    var text: String
+    
+
+    var body: some View {
+        ZStack {
+
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white)
+                .shadow(radius: 10)
+            Text(text)
+                .font(.largeTitle)
+                .foregroundColor(.blue)//setting the text color 
+        }
+        .frame(width: 300, height: 400)
     }
 }
 
