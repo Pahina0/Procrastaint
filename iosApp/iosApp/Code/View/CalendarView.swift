@@ -111,23 +111,34 @@ struct SwipeStackView: View {
 
     var body: some View {
         ZStack {
+            // Loop through cards, starting from the current index
             ForEach(currentIndex..<cards.count, id: \.self) { index in
+                // Only display the card at the current index
                 CardView(text: cards[index])
                     .offset(index == currentIndex ? offset : .zero)
-                    .rotationEffect(Angle(degrees: Double(offset.width / 10)))
                     .gesture(
                         DragGesture()
                             .onChanged { gesture in
                                 offset = gesture.translation
                             }
                             .onEnded { _ in
+                                // Check if swipe exceeds the threshold
                                 if offset.width > 100 {
-                                    // Swipe right
-                                    currentIndex += 1
+                                    // Swipe right: Move to the next card
+                                    if currentIndex < cards.count - 1 {
+                                        withAnimation {
+                                            currentIndex += 1
+                                        }
+                                    }
                                 } else if offset.width < -100 {
-                                    // Swipe left
-                                    currentIndex += 1
+                                    // Swipe left: Move to the next card
+                                    if currentIndex < cards.count - 1 {
+                                        withAnimation {
+                                            currentIndex += 1
+                                        }
+                                    }
                                 }
+                                // Reset the offset to zero after swipe
                                 offset = .zero
                             }
                     )
