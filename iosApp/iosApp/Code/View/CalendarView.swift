@@ -15,7 +15,6 @@ struct CalendarView: View {
 
     
     var body: some View {
-		CardView(text: "1")
         
         VStack(spacing: 20) {
 			//month tabber
@@ -46,10 +45,7 @@ struct CalendarView: View {
 					return formatter.string(from: date)
 				}
 				
-			
-				
-				Text(nextMonthDate)
-				.padding()
+				CardView(text: nextMonthDate)
 				
 				//right arrow
 				Button(action: {
@@ -115,10 +111,9 @@ struct CardView: View {
                 .fill(Color.white)
                 .shadow(radius: 10)
             Text(text)
-                .font(.largeTitle)
-                .foregroundColor(.blue)//setting the text color 
+                .foregroundColor(.black)//setting the text color
         }
-        .frame(width: 300, height: 400)
+        .frame(width: 150, height: 30)
     }
 }
 
