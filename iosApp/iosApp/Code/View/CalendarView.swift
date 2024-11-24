@@ -52,17 +52,19 @@ struct CalendarView: View {
 					ForEach(0..<3) { index in
 					VStack {
 						//vstack with only one element, text with page number
-						Text("Page \(index + 1)")
-							.font(.largeTitle)
-							.bold()
+						Text(nextMonthDate)
+							.font(.system(size: UIScreen.main.bounds.width * 0.02))
 					}
-						.frame(maxWidth: 100, maxHeight: 100)
-						.background(Color.red)
-						.foregroundColor(.white)
+						//defining the frame as same as tab view
+						.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
+						.background(Color.white)
+						.foregroundColor(.black)
 					}
 				}
 				//so that no dots at the bottom but can still swipe
 				.tabViewStyle(.page(indexDisplayMode: .never))
+				//so frame doesn't take that much space, based on screen size
+				.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
 
 
 
@@ -88,7 +90,6 @@ struct CalendarView: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            .padding(.top)
 
             // Month Grid in ScrollView
             ScrollViewReader{reader in
