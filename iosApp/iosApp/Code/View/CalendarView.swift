@@ -15,6 +15,10 @@ struct CalendarView: View {
 
      
     var body: some View {
+    
+		//overall vars for view:
+		let numMonths: Int = 25
+    
         
         VStack(spacing: 20) {
 			//month tabber
@@ -49,11 +53,17 @@ struct CalendarView: View {
 				
 				TabView {
 					//iterates over 0,1,2
+					
+					ForEach(0..<numMonths, id: \.self) { offset in
+							//note that definition of struct is below
+                            monthYearString(monthOffset: offset - (numMonths/2))
+					}
+					
 					ForEach(0..<3) { index in
 					VStack {
 						//vstack with only one element, text with page number
 						Text(nextMonthDate)
-							.font(.system(size: UIScreen.main.bounds.width * 0.02))
+							.font(.system(size: UIScreen.main.bounds.width * 0.06))
 					}
 						//defining the frame as same as tab view
 						.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
@@ -93,7 +103,6 @@ struct CalendarView: View {
 
             // Month Grid in ScrollView
             ScrollViewReader{reader in
-				let numMonths: Int = 25
                 ScrollView {
                 //spacing in between each month
                     LazyVStack(spacing: 20) {
@@ -120,8 +129,15 @@ struct CalendarView: View {
     }
 }
 
-
-
+//month Tabber helpers
+var monthYearString: String {
+	let monthOffset: Int
+	//offset tells which ones to calc for each
+	let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
+	let formatter = DateFormatter()
+	formatter.dateFormat = "MMMM yyyy"
+	return formatter.string(from: date)
+}
 
 
 
