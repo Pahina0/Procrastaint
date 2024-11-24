@@ -34,8 +34,7 @@ struct CalendarView: View {
 						//so that size of icon changes as scree size does
 						.resizable()
 						.scaledToFit()
-						.frame(width: UIScreen.main.bounds.width * 0.04)
-						.foregroundColor(.black) // Sets the icon color
+						.frame(width: UIScreen.main.bounds.width * 0.06)
 				}
 				
 				/*
@@ -43,15 +42,7 @@ struct CalendarView: View {
 				swipe left, goes left
 				swipe right, goes right 
 				 */
-				
-			    var nextMonthDate: String {
-					//0 so that it is the current date
-					let date = Calendar.current.date(byAdding: .month, value: 0, to: Date())!
-					let formatter = DateFormatter()
-					formatter.dateFormat = "MMMM yyyy"
-					return formatter.string(from: date)
-				}
-				
+							
 				
 				TabView(selection: $selectedTab){
 					//iterates over 0,1,2
@@ -62,16 +53,17 @@ struct CalendarView: View {
                             Text(monthYearString(monthOffset: offset - (numMonths/2)))
                             //same size as normal tital
                             .font(.title)
+                            
 					}
 						//defining the frame as same as tab view
 						.frame(width: UIScreen.main.bounds.width * 0.6, height: UIScreen.main.bounds.height * 0.05)
 						.background(Color.white)
-						.foregroundColor(.black)
 				}
 				//so that no dots at the bottom but can still swipe
 				.tabViewStyle(.page(indexDisplayMode: .never))
 				//so frame doesn't take that much space, based on screen size
-				.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
+				.frame(width: UIScreen.main.bounds.width * 0.6, height: UIScreen.main.bounds.height * 0.05)
+				//so that it centers the list onAppear
 				.onAppear {
 					// Set the selected tab to the middle of the list
 					selectedTab = numMonths / 2
@@ -87,8 +79,7 @@ struct CalendarView: View {
 						//so that size of icon changes as scree size does
 						.resizable()
 						.scaledToFit()
-						.frame(width: UIScreen.main.bounds.width * 0.04)
-						.foregroundColor(.black) // Sets the icon color
+						.frame(width: UIScreen.main.bounds.width * 0.06)
 				}
 				
 			}
