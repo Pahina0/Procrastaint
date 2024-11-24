@@ -45,9 +45,7 @@ struct CalendarView: View {
 					return formatter.string(from: date)
 				}
 				
-				CardView(text: nextMonthDate)
-				SwipeStackView()
-				
+
 				//right arrow
 				Button(action: {
 					//scroll to right month
@@ -102,68 +100,8 @@ struct CalendarView: View {
 }
 
 
-//Month Tabber Structs
-
-struct SwipeStackView: View {
-    @State private var cards = ["Card 1", "Card 2", "Card 3", "Card 4"]
-    @State private var currentIndex = 0
-    @State private var offset: CGSize = .zero
-
-    var body: some View {
-        ZStack {
-            // Loop through cards, starting from the current index
-            ForEach(currentIndex..<cards.count, id: \.self) { index in
-                // Only display the card at the current index
-                CardView(text: cards[index])
-                    .offset(index == currentIndex ? offset : .zero)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { gesture in
-                                offset = gesture.translation
-                            }
-                            .onEnded { _ in
-                                // Check if swipe exceeds the threshold
-                                if offset.width > 100 {
-                                    // Swipe right: Move to the next card
-                                    if currentIndex < cards.count - 1 {
-                                        withAnimation {
-                                            currentIndex += 1
-                                        }
-                                    }
-                                } else if offset.width < -100 {
-                                    // Swipe left: Move to the next card
-                                    if currentIndex < cards.count - 1 {
-                                        withAnimation {
-                                            currentIndex += 1
-                                        }
-                                    }
-                                }
-                                // Reset the offset to zero after swipe
-                                offset = .zero
-                            }
-                    )
-            }
-        }
-    }
-}
 
 
-struct CardView: View {
-    var text: String
-    
-
-    var body: some View {
-        ZStack {
-
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .shadow(radius: 10)
-            Text(text)
-                .foregroundColor(.black)//setting the text color
-        }
-        .frame(width: 150, height: 30)
-    }
-}
 
 
 //Month View Structs
