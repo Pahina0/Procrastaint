@@ -45,6 +45,26 @@ struct CalendarView: View {
 					return formatter.string(from: date)
 				}
 				
+				
+				
+				TabView {
+					//iterates over 0,1,2
+					ForEach(0..<3) { index in
+					VStack {
+						//vstack with only one element, text with page number
+						Text("Page \(index + 1)")
+							.font(.largeTitle)
+							.bold()
+					}
+						.frame(maxWidth: 100, maxHeight: 100)
+						.background(Color.red)
+						.foregroundColor(.white)
+					}
+				}
+				//so that no dots at the bottom but can still swipe
+				.tabViewStyle(.page(indexDisplayMode: .never))
+
+
 
 				//right arrow
 				Button(action: {
