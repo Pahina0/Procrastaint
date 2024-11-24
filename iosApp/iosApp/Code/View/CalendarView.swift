@@ -56,7 +56,8 @@ struct CalendarView: View {
 					
 					ForEach(0..<numMonths, id: \.self) { offset in
 							//note that definition of struct is below
-                            monthYearString(monthOffset: offset - (numMonths/2))
+							//function returns text
+                            Text(monthYearString(monthOffset: offset - (numMonths/2)))
 					}
 					
 					ForEach(0..<3) { index in
@@ -130,16 +131,13 @@ struct CalendarView: View {
 }
 
 //month Tabber helpers
-var monthYearString: String {
-	let monthOffset: Int
-	//offset tells which ones to calc for each
+//function that returns text for when called in monthTabber 
+func monthYearString(monthOffset: Int) -> String {
 	let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
 	let formatter = DateFormatter()
-	formatter.dateFormat = "MMMM yyyy"
+	formatter.dateFormat = "MMMM yyyy" // Full month and year format
 	return formatter.string(from: date)
 }
-
-
 
 //Month View Structs
 struct MonthView: View {
