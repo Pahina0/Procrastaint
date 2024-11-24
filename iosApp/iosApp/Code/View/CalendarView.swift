@@ -12,12 +12,15 @@ import SwiftUI
 
 struct CalendarView: View {
     @State private var currentMonthOffset: Int = 0
+		//allows state to change and swift UI to re-render
+	@State private var selectedTab = 0
 
      
     var body: some View {
     
 		//overall vars for view:
 		let numMonths: Int = 25
+
     
         
         VStack(spacing: 20) {
@@ -50,32 +53,29 @@ struct CalendarView: View {
 				}
 				
 				
-				
-				TabView {
+				TabView(selection: $selectedTab){
 					//iterates over 0,1,2
 					
 					ForEach(0..<numMonths, id: \.self) { offset in
 							//note that definition of struct is below
 							//function returns text
                             Text(monthYearString(monthOffset: offset - (numMonths/2)))
-					}
-					
-					ForEach(0..<3) { index in
-					VStack {
-						//vstack with only one element, text with page number
-						Text(nextMonthDate)
-							.font(.system(size: UIScreen.main.bounds.width * 0.06))
+                            //same size as normal tital
+                            .font(.title)
 					}
 						//defining the frame as same as tab view
-						.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
+						.frame(width: UIScreen.main.bounds.width * 0.6, height: UIScreen.main.bounds.height * 0.05)
 						.background(Color.white)
 						.foregroundColor(.black)
-					}
 				}
 				//so that no dots at the bottom but can still swipe
 				.tabViewStyle(.page(indexDisplayMode: .never))
 				//so frame doesn't take that much space, based on screen size
 				.frame(width: UIScreen.main.bounds.width * 0.5, height: UIScreen.main.bounds.height * 0.05)
+				.onAppear {
+					// Set the selected tab to the middle of the list
+					selectedTab = numMonths / 2
+				}
 
 
 
@@ -126,12 +126,12 @@ struct CalendarView: View {
                 
             }
         }
-        .padding()
     }
 }
 
+
 //month Tabber helpers
-//function that returns text for when called in monthTabber 
+//function that returns text for when called in monthTabber
 func monthYearString(monthOffset: Int) -> String {
 	let date = Calendar.current.date(byAdding: .month, value: monthOffset, to: Date())!
 	let formatter = DateFormatter()
