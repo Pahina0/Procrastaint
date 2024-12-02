@@ -112,6 +112,7 @@ struct CalendarView: View {
                     reader.scrollTo(numMonths/2,anchor: .top)
                 }
 				.onChange(of: selectedTab) {
+					//so that every single time tab updates, so does the scroll view ready 
 					reader.scrollTo(selectedTab, anchor: .top)
                 }
                 .onTapGesture(count:2){
