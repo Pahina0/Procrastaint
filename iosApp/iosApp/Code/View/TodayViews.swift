@@ -24,8 +24,8 @@ struct Task: Identifiable,Hashable {
 struct TodayViews: View {
     //for UI testing only
     @State private var tasksForTheDay: [HourlyTask] = [
-        HourlyTask(hour: 7, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
-            HourlyTask(hour: 14, tasks: [Task(title:"Task3",description: "")]),
+        HourlyTask(hour: 12, tasks: [Task(title:"Lunch",description: "Eat lunch at noon")]),
+            HourlyTask(hour: 16, tasks: [Task(title:"Dinner",description: "Eat Dinner at 4")]),
             HourlyTask(hour: 17, tasks: [Task(title:"Task6",description: ""),Task(title:"Task5",description: ""), Task(title:"Task4",description: "")]),
         ]
 
