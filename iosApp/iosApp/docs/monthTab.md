@@ -76,6 +76,8 @@ Current:
 	Swiping through dummy cards 
 	swipe through actual months and connect them to ones in seperate view
 	
+	Month Tabber complete !!!
+	
 	
 	
 

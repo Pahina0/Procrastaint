@@ -30,6 +30,7 @@ struct CalendarView: View {
 				//left arrow
 				Button(action: {
 					//scroll to left month
+					selectedTab -= 1
 				}) {
 					Image(systemName: "arrowtriangle.left")
 						//so that size of icon changes as scree size does
@@ -38,13 +39,12 @@ struct CalendarView: View {
 						.frame(width: UIScreen.main.bounds.width * 0.06)
 				}
 				
+				
 				/*
 				read in the current month and present initially,
 				swipe left, goes left
 				swipe right, goes right 
 				 */
-							
-				
 				TabView(selection: $selectedTab){
 					//iterates over 0,1,2
 					
@@ -75,6 +75,7 @@ struct CalendarView: View {
 				//right arrow
 				Button(action: {
 					//scroll to right month
+					selectedTab += 1
 				}) {
 					Image(systemName: "arrowtriangle.right")
 						//so that size of icon changes as scree size does
@@ -112,7 +113,7 @@ struct CalendarView: View {
                     reader.scrollTo(numMonths/2,anchor: .top)
                 }
 				.onChange(of: selectedTab) {
-					//so that every single time tab updates, so does the scroll view ready 
+					//so that every single time tab updates, so does the scroll view ready
 					reader.scrollTo(selectedTab, anchor: .top)
                 }
                 .onTapGesture(count:2){
