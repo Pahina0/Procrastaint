@@ -111,6 +111,11 @@ struct CalendarView: View {
 					//when it loads automatically goes to center (aka current)
                     reader.scrollTo(numMonths/2,anchor: .top)
                 }
+				.onChange(of: selectedTab) { newIndex in
+                    withAnimation { // Optional: Add animation
+                        proxy.scrollTo(newIndex, anchor: .center)
+                    }
+                }
                 .onTapGesture(count:2){
 					//Can double tap to go to center
                     reader.scrollTo(numMonths/2,anchor: .top)
