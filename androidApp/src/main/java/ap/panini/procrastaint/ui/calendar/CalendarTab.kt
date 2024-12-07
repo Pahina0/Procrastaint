@@ -53,35 +53,76 @@ class CalendarTab : Tab {
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun ScrollableCalendar() {
-        val today = LocalDate.now()
-        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
-        val daysToShow = 365 // Display a year's worth of dates
+        var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
-        LazyColumn(
-            modifier = androidx.compose.ui.Modifier
+
+        val firstDayOfWeek =
+            currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
+        val daysInMonth = currentMonth.lengthOfMonth()
+
+
+        // Combine empty slots and days into one list
+        val calendarCells = List(firstDayOfWeek) { null } +
+                (1..daysInMonth).map { currentMonth.atDay(it) }
+
+
+        val daysOfWeek = DayOfWeek.values().map {
+            it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        }
+
+
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(daysToShow) { offset ->
-                val date = today.plusDays(offset.toLong())
-                CalendarItem(date.format(formatter))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
+                    Text("<", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+                Text(
+                    text = "${
+                        currentMonth.month.getDisplayName(
+                            TextStyle.FULL,
+                            Locale.getDefault()
+                        )
+                    } ${currentMonth.year}",
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                )
+                IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
+                    Text(">", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
             }
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                daysOfWeek.forEach { day ->
+                    Text(
+                        text = day,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+
         }
     }
-
-    @Composable
-    fun CalendarItem(formattedDate: String) {
-        Row(
-            modifier = androidx.compose.ui.Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(
-                text = formattedDate,
-                modifier = androidx.compose.ui.Modifier.weight(1f),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-
 }
