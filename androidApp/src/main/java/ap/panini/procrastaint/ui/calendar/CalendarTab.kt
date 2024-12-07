@@ -34,6 +34,25 @@ class CalendarTab : Tab {
 
     @Composable
     override fun Content() {
-        Text(text = "Calendar")
+        ScrollableCalendar()
     }
+
+    @Composable
+    fun ScrollableCalendar() {
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
+        val daysToShow = 365 // Display a year's worth of dates
+
+        LazyColumn(
+            modifier = androidx.compose.ui.Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(daysToShow) { offset ->
+                val date = today.plusDays(offset.toLong())
+                CalendarItem(date.format(formatter))
+            }
+        }
+    }
+
 }
