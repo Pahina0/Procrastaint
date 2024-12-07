@@ -56,8 +56,7 @@ class CalendarTab : Tab {
         var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
 
-        val firstDayOfWeek =
-            currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
+        val firstDayOfWeek = currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
         val daysInMonth = currentMonth.lengthOfMonth()
 
 
@@ -72,57 +71,89 @@ class CalendarTab : Tab {
 
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
                     Text("<", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
                 Text(
-                    text = "${
+                        text = "${
                         currentMonth.month.getDisplayName(
-                            TextStyle.FULL,
-                            Locale.getDefault()
+                                TextStyle.FULL,
+                                Locale.getDefault()
                         )
-                    } ${currentMonth.year}",
-                    style = MaterialTheme.typography.titleLarge,
+            } ${currentMonth.year}",
+            style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
-                )
-                IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
-                    Text(">", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                }
+               )
+            IconButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
+                Text(">", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
+        }
 
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
 
-            Row(
+        Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                daysOfWeek.forEach { day ->
+        ) {
+            daysOfWeek.forEach { day ->
                     Text(
-                        text = day,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(1f)
+                            text = day,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.weight(1f)
                     )
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Calendar Grid
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(7),
+            modifier = Modifier.fillMaxHeight(),
+            content = {
+                items(calendarCells.size) { index ->
+                    val date = calendarCells[index]
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .aspectRatio(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (date != null) {
+                            Card(
+                                modifier = Modifier.fillMaxSize(),
+                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+                                elevation = CardDefaults.cardElevation(2.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = date.dayOfMonth.toString(),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        } else {
+                            Box(modifier = Modifier.fillMaxSize())
+                        }
+                    }
                 }
             }
-
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-
+        )
         }
     }
 }
