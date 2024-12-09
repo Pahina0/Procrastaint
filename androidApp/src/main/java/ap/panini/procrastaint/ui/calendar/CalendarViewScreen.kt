@@ -4,6 +4,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import ap.panini.procrastaint.data.model.Task
+import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.ui.theme.SlightlyDeemphasizedAlpha
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -14,6 +17,10 @@ fun CalendarScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     var showDisplayOptions by remember { mutableStateOf(false) }
+
+    var date by remember {
+        mutableStateOf(value:"")
+    }
 
     Scaffold(
         topBar = {
@@ -139,4 +146,77 @@ fun CalendarTaskItem(task: Task, modifier: Modifier = Modifier, check: (Task) ->
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalendarDisplayOptionsSheet(
+    options: TaskListScreenModel.Options,
+    onDismissRequest: () -> Unit,
+    changeFilterOptions: (String, Boolean) -> Unit
+) {
+    ModalBottomSheet(onDismissRequest = onDismissRequest) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Calendar Display Options",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            CalendarFilterOption(
+                checked = options.showComplete,
+                title = "Completed Tasks",
+                preference = PreferenceRepository.SHOW_COMPLETE,
+                changeFilterOptions = changeFilterOptions
+            )
+
+            CalendarFilterOption(
+                checked = options.showIncomplete,
+                title = "Incomplete Tasks",
+                preference = PreferenceRepository.SHOW_INCOMPLETE,
+                changeFilterOptions = changeFilterOptions
+            )
+
+            CalendarFilterOption(
+                checked = options.showOld,
+                title = "Past Tasks",
+                preference = PreferenceRepository.SHOW_OLD,
+                changeFilterOptions = changeFilterOptions
+            )
+        }
+    }
+}
+
+@Composable
+fun CalendarFilterOption(
+    checked: Boolean,
+    title: String,
+    preference: String,
+    changeFilterOptions: (String, Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = {
+                changeFilterOptions(
+                    preference,
+                    it
+                )
+            }
+        )
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
+}
+
+// Assuming these are pre-existing or imported
 const val SlightlyDeemphasizedAlpha = 0.6f
