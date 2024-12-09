@@ -13,17 +13,23 @@ import androidx. compose. foundation. layout. Arrangement
 import androidx. compose. foundation. layout. Column
 import androidx. compose. foundation. Canvas
 import androidx. compose. foundation. layout. fillMaxSize
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 
 import ap.panini.procrastaint.ui.theme.SlightlyDeemphasizedAlpha
 import ap. panini. procrastaint. ui. theme. primaryDarkHighContrast
 import ap. panini. procrastaint. ui. theme. primaryContainerDarkHighContrast
+import ap.panini.procrastaint.ui.calendar.CalendarViewScreenModel
+import ap.panini.procrastaint.ui.inbox.TaskListScreenModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CalendarScreen(
-    //calendarState: CalendarViewModel.State,
+    calendarState: CalendarViewScreenModel.State,
     modifier: Modifier = Modifier
-    CalendarInput: List<CalendarInput>
+    CalendarInput: CalendarViewScreenModel.CalendarInput: List<CalendarInput>,
+
     onDayClick: (Int) -> Unit,
     strokeWidth: Float = 15f,
     month: String
@@ -44,9 +50,10 @@ fun CalendarScreen(
         ){
             val canvasHeight = size.height
             val canvasWidth = size.width
-            val ySteps = canvasHeight/ CALENDAR_ROWS
+            val ySteps = canvasHeight/ CalendarViewScreenModel.CALENDAR_ROWS
             val xSteps = canvasWidth/ CALENDAR_COLUMNS
 
+            //drawing the layout of calendar
             drawRoundRect(
                 primaryContainerDarkHighContrast,
                 cornerRadius = CornerRadius(x:25f, y:25f),
@@ -54,6 +61,24 @@ fun CalendarScreen(
                     width = strokeWidth
 
                 )
+
+                for (i in 1 until  CALENDAR_ROWS){
+                    drawLine(
+                        color = primaryContainerDarkHighContrast,
+                        start = Offset( x:0f; y: yStep*i),
+                        end = Offset(canvasWidth; y: yStep*i),
+                        strokeWidth = strokeWidth
+                    )
+                }
+
+                for (i in 1 until  CALENDAR_COLUMNS){
+                    drawLine(
+                        color = primaryContainerDarkHighContrast,
+                        start = Offset( x:0f; y: yStep*i),
+                    end = Offset(canvasWidth; y: yStep*i),
+                    strokeWidth = strokeWidth
+                    )
+                }
 
             )
         }

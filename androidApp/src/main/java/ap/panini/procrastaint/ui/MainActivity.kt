@@ -84,16 +84,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        /*
-        //To hold calendar date
-        val calendar: ArrayList<CalendarDay> = ArrayList()
-        val calendar = Calendar.getInstance()
-
-        calendar.set(year:2024,month:7,date:20)
-        val calendarDay = CalendarDay(calendar)
-        calendarDay.labelColor = R.color.red
-        */
-
 
     }
 
