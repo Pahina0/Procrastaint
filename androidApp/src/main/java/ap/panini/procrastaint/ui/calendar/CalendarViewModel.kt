@@ -121,3 +121,76 @@ class CalendarViewModelModel {
     val options: Options
         get() = _options
 
+    // Method to load tasks (simplified, replace with actual data source in production)
+    fun loadTasks() {
+        _state = _state.copy(isLoading = true)
+        try {
+            // Simulate task loading - replace with actual data fetching
+            val tasks = listOf(
+                TaskUtils.createTask(
+                    title = "Team Meeting",
+                    description = "Weekly team sync",
+                    dueDate = LocalDateTime.now().plusDays(1),
+                    priority = Task.Priority.HIGH
+                ),
+                TaskUtils.createTask(
+                    title = "Project Deadline",
+                    description = "Complete quarterly report",
+                    dueDate = LocalDateTime.now().plusWeeks(2),
+                    priority = Task.Priority.HIGH
+                )
+            )
+            _state = _state.copy(
+                tasks = applyFilters(tasks),
+                isLoading = false
+            )
+        } catch (e: Exception) {
+            _state = _state.copy(
+                error = "Failed to load tasks",
+                isLoading = false
+            )
+        }
+    }
+
+    // Complete a task
+    fun completeTask(task: Task) {
+        val updatedTasks = _state.tasks.map {
+            if (it.id == task.id) {
+                it.copy(completed = LocalDateTime.now())
+            } else it
+        }
+        _state = _state.copy(tasks = applyFilters(updatedTasks))
+    }
+
+    // Change filter options
+    fun changeFilterOption(key: String, value: Boolean) {
+        when (key) {
+            PreferenceRepository.SHOW_COMPLETE -> {
+                PreferenceRepository.setPreference(key, value)
+                _options = _options.copy(showComplete = value)
+            }
+            PreferenceRepository.SHOW_INCOMPLETE -> {
+                PreferenceRepository.setPreference(key, value)
+                _options = _options.copy(showIncomplete = value)
+            }
+            PreferenceRepository.SHOW_OLD -> {
+                PreferenceRepository.setPreference(key, value)
+                _options = _options.copy(showOld = value)
+            }
+        }
+        // Reapply filters after changing options
+        _state = _state.copy(tasks = applyFilters(_state.tasks))
+    }
+
+    // Apply filters based on current options
+    private fun applyFilters(tasks: List<Task>): List<Task> {
+        return tasks.filter { task ->
+            val isCompleted = task.completed != null
+            val isOld = task.isOld()
+
+            (options.showComplete && isCompleted) ||
+                    (options.showIncomplete && !isCompleted) ||
+                    (options.showOld && isOld)
+        }
+    }
+}
