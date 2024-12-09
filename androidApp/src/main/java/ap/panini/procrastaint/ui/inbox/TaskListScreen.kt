@@ -40,7 +40,7 @@ import ap.panini.procrastaint.ui.theme.SlightlyDeemphasizedAlpha
 @Composable
 fun UpcomingScreen(
     upcomingState: TaskListScreenModel.State,
-    onCompleteTask: (Task) -> Unit,
+    onCompleteT bask: (Task) -> Unit,
     options: TaskListScreenModel.Options,
     changeFilterOptions: (key: String, to: Boolean) -> Unit,
     modifier: Modifier = Modifier
