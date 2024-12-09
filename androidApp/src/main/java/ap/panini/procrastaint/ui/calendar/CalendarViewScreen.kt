@@ -1,19 +1,64 @@
 package ap.panini.procrastaint.ui.calendar
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ap.panini.procrastaint.data.model.Task
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import androidx. compose. ui. unit. sp
+import androidx. compose. material3.TopAppBar
+import androidx. compose. foundation. layout. Arrangement
+import androidx. compose. foundation. layout. Column
+import androidx. compose. foundation. Canvas
+import androidx. compose. foundation. layout. fillMaxSize
+
 import ap.panini.procrastaint.ui.theme.SlightlyDeemphasizedAlpha
+import ap. panini. procrastaint. ui. theme. primaryDarkHighContrast
+import ap. panini. procrastaint. ui. theme. primaryContainerDarkHighContrast
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CalendarScreen(
-    calendarState: CalendarViewModel.State,
+    //calendarState: CalendarViewModel.State,
     modifier: Modifier = Modifier
+    CalendarInput: List<CalendarInput>
+    onDayClick: (Int) -> Unit,
+    strokeWidth: Float = 15f,
+    month: String
 ) {
+
+    Column (
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ){
+        Text(
+            text = month,
+            fortWeight = fontWeight.SemiBold,
+            color = primaryDarkHighContrast,
+            fontSize = 40.sp
+        )
+        Canvas(
+            modifier = Modifier.fillMaxSize()
+        ){
+            val canvasHeight = size.height
+            val canvasWidth = size.width
+            val ySteps = canvasHeight/ CALENDAR_ROWS
+            val xSteps = canvasWidth/ CALENDAR_COLUMNS
+
+            drawRoundRect(
+                primaryContainerDarkHighContrast,
+                cornerRadius = CornerRadius(x:25f, y:25f),
+                style = Stroke(
+                    width = strokeWidth
+
+                )
+
+            )
+        }
+    }
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     var showDisplayOptions by remember { mutableStateOf(false) }

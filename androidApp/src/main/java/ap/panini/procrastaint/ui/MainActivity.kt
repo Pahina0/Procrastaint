@@ -50,9 +50,12 @@ class MainActivity : ComponentActivity() {
 
     private val screenModel: MainActivityScreenModel by inject()
 
+    /*
     //CALENDARVIEW IN CALENDAR TAB
     private lateinit var calendarView: calendarView
     private var events: MutableMap<String, String> = mutableMapOf()
+
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +83,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        /*
         //To hold calendar date
         val calendar: ArrayList<CalendarDay> = ArrayList()
         val calendar = Calendar.getInstance()
@@ -87,6 +92,8 @@ class MainActivity : ComponentActivity() {
         calendar.set(year:2024,month:7,date:20)
         val calendarDay = CalendarDay(calendar)
         calendarDay.labelColor = R.color.red
+        */
+
 
     }
 
