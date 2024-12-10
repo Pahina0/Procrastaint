@@ -109,7 +109,18 @@ class CalendarTab : Tab {
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
-                
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = {
+                    try {
+                        val parsedDate = LocalDate.parse(searchDateText)
+                        currentMonth = YearMonth.of(parsedDate.year, parsedDate.month)
+                        highlightedDate = parsedDate
+                    } catch (e: Exception) {
+                        // Handle invalid date format
+                    }
+                }) {
+                    Text("Search")
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
