@@ -57,6 +57,8 @@ class CalendarTab : Tab {
     fun ScrollableCalendar() {
         var currentMonth by remember { mutableStateOf(YearMonth.now()) }
         val today = LocalDate.now()
+        var searchDateText by remember { mutableStateOf("") }
+        var highlightedDate by remember { mutableStateOf<LocalDate?>(null) }
 
         val firstDayOfWeek = currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
         val daysInMonth = currentMonth.lengthOfMonth()
@@ -94,6 +96,24 @@ class CalendarTab : Tab {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Search Bar
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = searchDateText,
+                    onValueChange = { searchDateText = it },
+                    placeholder = { Text("Enter date (YYYY-MM-DD)") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+                
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
