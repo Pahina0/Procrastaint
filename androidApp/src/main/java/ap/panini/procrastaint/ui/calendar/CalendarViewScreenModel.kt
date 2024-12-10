@@ -1,12 +1,16 @@
 package ap.panini.procrastaint.ui.calendar
 
+import androidx.compose.foundation.background
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.bundle.Bundle
 import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.ui.theme.secondaryContainerDarkHighContrast
 import cafe.adriel.voyager.core.model.StateScreenModel
+import androidx. compose. foundation. layout. fillMaxSize
+import androidx. compose. foundation. layout. fillMaxWidth
 
 class CalendarViewScreenModel(
     private const val CALENDAR_ROWS: Int = 5,
@@ -30,13 +34,15 @@ class CalendarViewScreenModel(
 
             ){
                 Calendar(
-                    calendarInput = ,
-                    onDayClick = ,
+                    calendarInput = calendarInputList,
+                    onDayClick = {
+
+                    },
                     month = "December"
                     modifier = Modifier
-                        .padding()
-                        .fillMaxsize()
-                        aspectratio()
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                        aspectratio(1.3f)
                 )
             }
         }
