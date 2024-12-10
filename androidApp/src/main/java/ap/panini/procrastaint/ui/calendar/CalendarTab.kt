@@ -128,6 +128,8 @@ class CalendarTab : Tab {
             content = {
                 items(calendarCells.size) { index ->
                     val date = calendarCells[index]
+                    val isToday = date == today
+
                     Box(
                         modifier = Modifier
                             .padding(4.dp)
@@ -137,13 +139,18 @@ class CalendarTab : Tab {
                         if (date != null) {
                             Card(
                                 modifier = Modifier.fillMaxSize(),
-                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+                                colors = CardDefaults.cardColors(
+                                    if (isToday) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.surface
+                                ),
                                 elevation = CardDefaults.cardElevation(2.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Text(
                                         text = date.dayOfMonth.toString(),
-                                        fontSize = 16.sp
+                                        fontSize = 16.sp,
+                                        color = if (isToday) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                        fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
                                     )
                                 }
                             }
