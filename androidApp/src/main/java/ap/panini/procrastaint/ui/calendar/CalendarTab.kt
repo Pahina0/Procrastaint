@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.calendar
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -73,7 +75,22 @@ class CalendarTab : Tab {
         Column(
                 modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .pointerInput(Unit) {
+            detectHorizontalDragGestures(
+                onDragEnd = { /* No-op */ },
+                onHorizontalDrag = { change, dragAmount ->
+                    change.consume()
+                    if (dragAmount > 0) {
+                        // Swipe right to move to the previous month
+                        currentMonth = currentMonth.minusMonths(1)
+                    } else if (dragAmount < 0) {
+                        // Swipe left to move to the next month
+                        currentMonth = currentMonth.plusMonths(1)
+                    }
+                }
+            )
+        },
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
