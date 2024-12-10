@@ -1,39 +1,44 @@
 package ap.panini.procrastaint.ui.calendar
 
 import android.graphics.Paint
+import android.os.Bundle
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Path
 import ap.panini.procrastaint.data.model.Task
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
-import androidx. compose. ui. unit. sp
 import androidx. compose. material3.TopAppBar
 import androidx. compose. foundation. layout. Arrangement
 import androidx. compose. foundation. layout. Column
 import androidx. compose. foundation. Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx. compose. foundation. layout. fillMaxSize
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.ui.unit.sp
 import ap.panini.procrastaint.ui.theme.SlightlyDeemphasizedAlpha
 import ap. panini. procrastaint. ui. theme. primaryDarkHighContrast
 import ap. panini. procrastaint. ui. theme. primaryContainerDarkHighContrast
 import ap.panini.procrastaint.ui.calendar.CalendarViewScreenModel
 import ap.panini.procrastaint.ui.inbox.TaskListScreenModel
 import ap.panini.procrastaint.ui.theme.tertiaryContainerDarkHighContrast
-import kotlin.io.path.Path
-import kotlin.io.path.moveTo
-import kotlin.io.path.lineTo
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

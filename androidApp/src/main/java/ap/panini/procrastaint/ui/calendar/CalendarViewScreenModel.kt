@@ -1,6 +1,8 @@
 package ap.panini.procrastaint.ui.calendar
 
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxScopeInstance.align
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,6 +13,12 @@ import ap.panini.procrastaint.ui.theme.secondaryContainerDarkHighContrast
 import cafe.adriel.voyager.core.model.StateScreenModel
 import androidx. compose. foundation. layout. fillMaxSize
 import androidx. compose. foundation. layout. fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.unit.sp
+import ap.panini.procrastaint.ui.theme.inverseSurfaceDarkHighContrast
 
 class CalendarViewScreenModel(
     private const val CALENDAR_ROWS: Int = 5,
@@ -26,6 +34,11 @@ class CalendarViewScreenModel(
             val calendarInputList by remember{
                 mutableStateOf(createCalendarList())
             }
+
+            val clickCalendarElem by remember{
+                mutableStateOf<CalendarInput?>(null)
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -36,7 +49,7 @@ class CalendarViewScreenModel(
                 Calendar(
                     calendarInput = calendarInputList,
                     onDayClick = {
-
+                        clickCalendarElem = calendarInputList.first { it.day == day}
                     },
                     month = "December"
                     modifier = Modifier
@@ -44,6 +57,23 @@ class CalendarViewScreenModel(
                         .fillMaxWidth()
                         aspectratio(1.3f)
                 )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .align(LineHeightStyle.Alignment.Center)
+
+                ){
+                    clickedCalendarElem?.toDos?.forEach {
+                        Text(
+                            if(it.contains("Day")) it else "- $it",
+                            color = inverseSurfaceDarkHighContrast,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = if(it.contains("Day")) 25.sp else 18.sp
+                        )
+                    }
+                }
             }
         }
     }
