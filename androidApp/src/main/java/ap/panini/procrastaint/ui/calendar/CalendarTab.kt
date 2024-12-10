@@ -60,6 +60,8 @@ class CalendarTab : Tab {
         var searchDateText by remember { mutableStateOf("") }
         var highlightedDate by remember { mutableStateOf<LocalDate?>(null) }
 
+        val dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.getDefault())
+
         val firstDayOfWeek = currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
         val daysInMonth = currentMonth.lengthOfMonth()
 
@@ -105,14 +107,14 @@ class CalendarTab : Tab {
                 TextField(
                     value = searchDateText,
                     onValueChange = { searchDateText = it },
-                    placeholder = { Text("Enter date (YYYY-MM-DD)") },
+                    placeholder = { Text("Enter date (MM-DD-YYYY)") },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
                     try {
-                        val parsedDate = LocalDate.parse(searchDateText)
+                        val parsedDate = LocalDate.parse(searchDateText, dateFormatter)
                         currentMonth = YearMonth.of(parsedDate.year, parsedDate.month)
                         highlightedDate = parsedDate
                     } catch (e: Exception) {
