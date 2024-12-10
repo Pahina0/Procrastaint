@@ -2,7 +2,6 @@ package ap.panini.procrastaint.ui.calendar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -28,6 +27,12 @@ class CalendarTab : Tab {
 
     @Composable
     override fun Content() {
-        Text(text = "Calendar")
+        //Text(text = "Calendar")
+        Calendar(
+            calendarInput = TODO(),
+            onDayClick = TODO(),
+            //strokeWidth: Float = 15f,
+            month = "December"
+        )
     }
 }
