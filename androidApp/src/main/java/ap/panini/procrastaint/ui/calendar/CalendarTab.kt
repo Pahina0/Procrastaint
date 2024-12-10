@@ -54,7 +54,7 @@ class CalendarTab : Tab {
     @Composable
     fun ScrollableCalendar() {
         var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-
+        val today = LocalDate.now()
 
         val firstDayOfWeek = currentMonth.atDay(1).dayOfWeek.value % 7 // Adjust to 0 (Sunday) to 6 (Saturday)
         val daysInMonth = currentMonth.lengthOfMonth()
