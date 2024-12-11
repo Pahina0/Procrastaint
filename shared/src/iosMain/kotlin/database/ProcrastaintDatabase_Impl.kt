@@ -115,3 +115,17 @@ public class ProcrastaintDatabase_Impl : ProcrastaintDatabase() {
     return _typeConvertersMap
   }
 
+  public override fun getRequiredAutoMigrationSpecClasses(): Set<KClass<out AutoMigrationSpec>> {
+    val _autoMigrationSpecsSet: MutableSet<KClass<out AutoMigrationSpec>> = mutableSetOf()
+    return _autoMigrationSpecsSet
+  }
+
+  public override
+      fun createAutoMigrations(autoMigrationSpecs: Map<KClass<out AutoMigrationSpec>, AutoMigrationSpec>):
+      List<Migration> {
+    val _autoMigrations: MutableList<Migration> = mutableListOf()
+    return _autoMigrations
+  }
+
+  public override fun getTaskDao(): TaskDao = _taskDao.value
+}
