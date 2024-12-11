@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.ui.calendar
 
+import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,8 +46,11 @@ import ap.panini.procrastaint.ui.theme.onSurfaceVariantLight
 import ap.panini.procrastaint.ui.theme.scrimLight
 import ap.panini.procrastaint.ui.theme.secondaryContainerLight
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.YearMonth
 
 class MonthToMonthCalendar : ComponentActivity() {
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -91,12 +95,17 @@ class MonthToMonthCalendar : ComponentActivity() {
             ) {
                 Calendar(
                     calendarInput = calendarInputList,
-                    onDayClick =  { day->
+                    onDayClick = { clickedDay ->
+                        clickedCalendarElem = calendarInputList.firstOrNull {
+                            it.day == clickedDay
+                        }
+                    },
+                    /*onDayClick =  { day->
                         clickedCalendarElem = calendarInputList.first {
                             it.day == day
                         }
-                    },
-                    month = "December", //apply whole year logic here needed
+                    },*/
+                    month = YearMonth.now().month.name.lowercase().replaceFirstChar { it.uppercase() },
                     modifier = Modifier
                         .padding(10.dp)
                         .fillMaxWidth()
@@ -138,21 +147,36 @@ class MonthToMonthCalendar : ComponentActivity() {
     }
 
     //function create calendar item
+    @SuppressLint("NewApi")
     private fun createCalendarList(): List<CalendarInput> {
-        val calendarInputs = mutableListOf<CalendarInput>()
-        for (i in 1..31) {
+        val today = LocalDate.now()
+        val yearMonth = YearMonth.of(today.year, today.monthValue) // Current year and month
+        val daysInMonth = yearMonth.lengthOfMonth() // Get number of days in the month
+
+        return (1..daysInMonth).map { day ->
+            CalendarInput(
+                day = day,
+                toDos = listOf(
+                    "Event 1 for day $day",
+                    "Event 2 for day $day"
+                )
+            )
+        }
+
+        /*val calendarInputs = mutableListOf<CalendarInput>()
+        for (i in 1..daysInMonth) {
             calendarInputs.add(
                 CalendarInput(
-                    i,
+                    day = day,
                     toDos = listOf(
-                        "Day $i:",
-                        "event 1",
-                        "event 2"
+                        "Event 1 for day $day",
+                        "Event 2 for day $day"
                     )
                 )
             )
         }
         return calendarInputs
+        */
     }
 
 }
