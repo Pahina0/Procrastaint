@@ -29,9 +29,14 @@ class CalendarTab : Tab {
     override fun Content() {
         //Text(text = "Calendar")
         Calendar(
-            calendarInput = TODO(),
-            onDayClick = TODO(),
-            //strokeWidth: Float = 15f,
+            calendarInput = listOf(
+                CalendarInput(day = 1, toDos = listOf("AA","BB")),
+                CalendarInput(day = 5, toDos = listOf("CC","DD")),
+                CalendarInput(day = 25, toDos = listOf("EE","FF"))
+            ),
+            onDayClick = { day ->
+                println("Day clicked: $day") // Replace with your actual logic
+            },
             month = "December"
         )
     }
