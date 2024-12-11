@@ -15,6 +15,24 @@
 		19063BF62C6F2FB3009DBDA9 /* DayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF52C6F2FB3009DBDA9 /* DayModel.swift */; };
 		19063BF82C6F2FE1009DBDA9 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */; };
 		19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */; };
+		191D29532D09303E0090844A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19E234BB2C5423F3001AF0E1 /* WidgetKit.framework */; };
+		191D29542D09303E0090844A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19E234BD2C5423F3001AF0E1 /* SwiftUI.framework */; };
+		191D29572D09303E0090844A /* iOSWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29562D09303E0090844A /* iOSWidgetsBundle.swift */; };
+		191D29592D09303E0090844A /* iOSWidgetsLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29582D09303E0090844A /* iOSWidgetsLiveActivity.swift */; };
+		191D295B2D09303E0090844A /* iOSWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D295A2D09303E0090844A /* iOSWidgets.swift */; };
+		191D295D2D09303E0090844A /* AppIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D295C2D09303E0090844A /* AppIntent.swift */; };
+		191D295F2D0930400090844A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 191D295E2D0930400090844A /* Assets.xcassets */; };
+		191D29632D0930400090844A /* iOSWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 191D29522D09303D0090844A /* iOSWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		191D29682D0930D30090844A /* TaskModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29672D0930D30090844A /* TaskModel.swift */; };
+		191D29692D0930D30090844A /* TaskModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29672D0930D30090844A /* TaskModel.swift */; };
+		191D296B2D0931070090844A /* TaskTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D296A2D0931070090844A /* TaskTimelineProvider.swift */; };
+		191D296C2D0931070090844A /* TaskTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D296A2D0931070090844A /* TaskTimelineProvider.swift */; };
+		191D296E2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D296D2D0932AE0090844A /* ProcrastaintWidget.swift */; };
+		191D296F2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D296D2D0932AE0090844A /* ProcrastaintWidget.swift */; };
+		191D29712D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */; };
+		191D29722D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */; };
+		191D29742D09330E0090844A /* CompleteTaskIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29732D09330E0090844A /* CompleteTaskIntent.swift */; };
+		191D29752D09330E0090844A /* CompleteTaskIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29732D09330E0090844A /* CompleteTaskIntent.swift */; };
 		194CEC2E2C22085100E1A37F /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2D2C22085100E1A37F /* SettingViews.swift */; };
 		194CEC302C22091200E1A37F /* TodayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2F2C22091200E1A37F /* TodayViews.swift */; };
 		194CEC322C22097E00E1A37F /* LibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC312C22097E00E1A37F /* LibraryViews.swift */; };
@@ -23,6 +41,16 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		191D29612D0930400090844A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7555FF73242A565900829871 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 191D29512D09303D0090844A;
+			remoteInfo = iOSWidgetsExtension;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		19E234CE2C5423F5001AF0E1 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -30,6 +58,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				191D29632D0930400090844A /* iOSWidgetsExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,6 +84,18 @@
 		19063BF52C6F2FB3009DBDA9 /* DayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayModel.swift; sourceTree = "<group>"; };
 		19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
+		191D29522D09303D0090844A /* iOSWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = iOSWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		191D29562D09303E0090844A /* iOSWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSWidgetsBundle.swift; sourceTree = "<group>"; };
+		191D29582D09303E0090844A /* iOSWidgetsLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSWidgetsLiveActivity.swift; sourceTree = "<group>"; };
+		191D295A2D09303E0090844A /* iOSWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSWidgets.swift; sourceTree = "<group>"; };
+		191D295C2D09303E0090844A /* AppIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntent.swift; sourceTree = "<group>"; };
+		191D295E2D0930400090844A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		191D29602D0930400090844A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		191D29672D0930D30090844A /* TaskModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModel.swift; sourceTree = "<group>"; };
+		191D296A2D0931070090844A /* TaskTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTimelineProvider.swift; sourceTree = "<group>"; };
+		191D296D2D0932AE0090844A /* ProcrastaintWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcrastaintWidget.swift; sourceTree = "<group>"; };
+		191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcrastaintWidgetEntryView.swift; sourceTree = "<group>"; };
+		191D29732D09330E0090844A /* CompleteTaskIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteTaskIntent.swift; sourceTree = "<group>"; };
 		194CEC2D2C22085100E1A37F /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
 		194CEC2F2C22091200E1A37F /* TodayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViews.swift; sourceTree = "<group>"; };
 		194CEC312C22097E00E1A37F /* LibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViews.swift; sourceTree = "<group>"; };
@@ -68,6 +109,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		191D294F2D09303D0090844A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				191D29542D09303E0090844A /* SwiftUI.framework in Frameworks */,
+				191D29532D09303E0090844A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7555FF78242A565900829871 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -102,6 +152,23 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		191D29552D09303E0090844A /* iOSWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				191D29562D09303E0090844A /* iOSWidgetsBundle.swift */,
+				191D29582D09303E0090844A /* iOSWidgetsLiveActivity.swift */,
+				191D295A2D09303E0090844A /* iOSWidgets.swift */,
+				191D296D2D0932AE0090844A /* ProcrastaintWidget.swift */,
+				191D295C2D09303E0090844A /* AppIntent.swift */,
+				191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */,
+				191D29732D09330E0090844A /* CompleteTaskIntent.swift */,
+				191D296A2D0931070090844A /* TaskTimelineProvider.swift */,
+				191D295E2D0930400090844A /* Assets.xcassets */,
+				191D29602D0930400090844A /* Info.plist */,
+			);
+			path = iOSWidgets;
+			sourceTree = "<group>";
+		};
 		197062CA2C18C7F700DABA84 /* Code */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +176,7 @@
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				19063BF32C6A9B87009DBDA9 /* DateManager.swift */,
 				19063BF52C6F2FB3009DBDA9 /* DayModel.swift */,
+				191D29672D0930D30090844A /* TaskModel.swift */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -125,6 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				7555FF7D242A565900829871 /* iosApp */,
+				191D29552D09303E0090844A /* iOSWidgets */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
 			);
@@ -134,6 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				7555FF7B242A565900829871 /* iosApp.app */,
+				191D29522D09303D0090844A /* iOSWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -161,6 +231,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		191D29512D09303D0090844A /* iOSWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 191D29662D0930400090844A /* Build configuration list for PBXNativeTarget "iOSWidgetsExtension" */;
+			buildPhases = (
+				191D294E2D09303D0090844A /* Sources */,
+				191D294F2D09303D0090844A /* Frameworks */,
+				191D29502D09303D0090844A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iOSWidgetsExtension;
+			productName = iOSWidgetsExtension;
+			productReference = 191D29522D09303D0090844A /* iOSWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		7555FF7A242A565900829871 /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -175,6 +262,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				191D29622D0930400090844A /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			productName = iosApp;
@@ -191,6 +279,9 @@
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = orgName;
 				TargetAttributes = {
+					191D29512D09303D0090844A = {
+						CreatedOnToolsVersion = 15.4;
+					};
 					7555FF7A242A565900829871 = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
@@ -210,11 +301,20 @@
 			projectRoot = "";
 			targets = (
 				7555FF7A242A565900829871 /* iosApp */,
+				191D29512D09303D0090844A /* iOSWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		191D29502D09303D0090844A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				191D295F2D0930400090844A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7555FF79242A565900829871 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -248,20 +348,41 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		191D294E2D09303D0090844A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				191D296C2D0931070090844A /* TaskTimelineProvider.swift in Sources */,
+				191D29752D09330E0090844A /* CompleteTaskIntent.swift in Sources */,
+				191D29592D09303E0090844A /* iOSWidgetsLiveActivity.swift in Sources */,
+				191D295D2D09303E0090844A /* AppIntent.swift in Sources */,
+				191D29692D0930D30090844A /* TaskModel.swift in Sources */,
+				191D296F2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */,
+				191D29722D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */,
+				191D295B2D09303E0090844A /* iOSWidgets.swift in Sources */,
+				191D29572D09303E0090844A /* iOSWidgetsBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7555FF77242A565900829871 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				19063BF02C6A47CF009DBDA9 /* AddButtonView.swift in Sources */,
 				19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */,
+				191D296B2D0931070090844A /* TaskTimelineProvider.swift in Sources */,
 				19063BF22C6A645B009DBDA9 /* BottomSheetView.swift in Sources */,
+				191D29742D09330E0090844A /* CompleteTaskIntent.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				191D29712D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */,
 				194CEC2E2C22085100E1A37F /* SettingViews.swift in Sources */,
 				194CEC302C22091200E1A37F /* TodayViews.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				19063BF82C6F2FE1009DBDA9 /* CalendarView.swift in Sources */,
+				191D296E2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */,
 				19063BF62C6F2FB3009DBDA9 /* DayModel.swift in Sources */,
 				194CEC322C22097E00E1A37F /* LibraryViews.swift in Sources */,
+				191D29682D0930D30090844A /* TaskModel.swift in Sources */,
 				19063BF42C6A9B87009DBDA9 /* DateManager.swift in Sources */,
 				197062CD2C18CED300DABA84 /* BottomNavigation.swift in Sources */,
 			);
@@ -269,7 +390,83 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		191D29622D0930400090844A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 191D29512D09303D0090844A /* iOSWidgetsExtension */;
+			targetProxy = 191D29612D0930400090844A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		191D29642D0930400090844A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9Y6DT7J2QV;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iOSWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = iOSWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 orgName. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = procssnate.iosApp.iOSWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		191D29652D0930400090844A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9Y6DT7J2QV;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iOSWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = iOSWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 orgName. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = procssnate.iosApp.iOSWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		7555FFA3242A565B00829871 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -451,6 +648,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		191D29662D0930400090844A /* Build configuration list for PBXNativeTarget "iOSWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				191D29642D0930400090844A /* Debug */,
+				191D29652D0930400090844A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7555FF76242A565900829871 /* Build configuration list for PBXProject "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
