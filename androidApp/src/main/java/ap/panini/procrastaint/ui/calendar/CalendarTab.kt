@@ -81,6 +81,18 @@ class CalendarTab : Tab {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            if (isYearView) {
+                YearView(currentMonth = currentMonth, onMonthSelected = {
+                    currentMonth = it
+                    isYearView = false
+                })
+            } else {
+                MonthView(currentMonth = currentMonth, onMonthChanged = {
+                    currentMonth = it
+                })
+            }
+
         }
     }
 
@@ -88,44 +100,53 @@ class CalendarTab : Tab {
     @Composable
     fun YearView(currentMonth: YearMonth, onMonthSelected: (YearMonth) -> Unit) {
         val currentYear = currentMonth.year
-        val months = YearMonth.of(currentYear, 1).run {
-            (0 until 12).map { plusMonths(it.toLong()) }
-        }
+        val months = (1..12).map { YearMonth.of(currentYear, it) } // List of YearMonth for all months of the year
 
-        Text(
-            text = currentYear.toString(),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Display current year at the top
+            Text(
+                text = currentYear.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
-            content = {
-                items(months) { month ->
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
-                        onClick = { onMonthSelected(month) },
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
+            // Grid displaying all 12 months
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3), // 3 months per row
+                modifier = Modifier.fillMaxSize(),
+                content = {
+                    items(months.size) { index ->
+                        val month = months[index]
+                        Card(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            onClick = { onMonthSelected(month) },
+                            elevation = CardDefaults.cardElevation(4.dp)
                         ) {
-                            Text(
-                                text = month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
