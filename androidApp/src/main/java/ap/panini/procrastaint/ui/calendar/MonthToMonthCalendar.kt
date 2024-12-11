@@ -47,6 +47,9 @@ class MonthToMonthCalendar : ComponentActivity() {
             val calendarInputList by remember {
                 mutableStateOf(createCalendarList())
             }
+            var clickedCalendarElem by remember {
+                mutableStateOf<CalendarInput?>(null)
+            }
 
             Box(
                 modifier = Modifier
@@ -56,8 +59,10 @@ class MonthToMonthCalendar : ComponentActivity() {
             ) {
                 Calendar(
                     calendarInput = calendarInputList,
-                    onDayClick =  {
-
+                    onDayClick =  { day->
+                        clickedCalendarElem = calendarInputList.first {
+                            it.day == day
+                        }
                     },
                     month = "December", //apply whole year logic here needed
                     modifier = Modifier
@@ -65,6 +70,21 @@ class MonthToMonthCalendar : ComponentActivity() {
                         .fillMaxWidth()
                         .aspectRatio(1.3f)
                 )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .align(Alignment.Center)
+                ) {
+                    clickedCalendarElem?.toDos?.forEach {
+                        Text(
+                            if (it.contains("Day")) it else "- $it",
+                            color = onPrimaryLight,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = if (it.contains("Day")) 25.sp else 18.sp
+                        )
+                    }
+                }
             }
         }
     }
@@ -129,12 +149,12 @@ fun Calendar(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(true){
-                    detectTapGestures {
+                    detectTapGestures (
                         //calculate the relative amount of the user click
                         onTap = { offset ->
                             val column = (offset.x / canvasSize.width * CALENDAR_COLUMNS.toInt() + 1)
                             val row = (offset.x / canvasSize.height * CALENDAR_ROWS.toInt() + 1)
-                            val day = column + (row-1) * CALENDAR_COLUMNS
+                            val day = toInt(column + (row-1) * CALENDAR_COLUMNS)
                             if (day <= calendarInput.size){
                                 onDayClick(day)
                                 clickAnimationOffset = offset
@@ -145,7 +165,7 @@ fun Calendar(
                                 }
                             }
                         }
-                    }
+                    )
                 }
         ){
             val canvasHeight = size.height
@@ -168,7 +188,7 @@ fun Calendar(
 
             clipPath(path){
                 drawCircle(
-                    brush = Brush.radialGradiaent(
+                    brush = Brush.radialGradient(
                         listOf(onPrimaryContainerLight.copy(0.8f),onPrimaryContainerLight.copy(0.2f)),
                         center = clickAnimationOffset,
                         radius = animationRadius + 0.1f
