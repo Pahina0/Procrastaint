@@ -54,7 +54,23 @@ class CalendarTab : Tab {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun ScrollableCalendar() {
+    fun YearView(currentMonth: YearMonth, onMonthSelected: (YearMonth) -> Unit) {
+        val currentYear = currentMonth.year
+        val months = YearMonth.of(currentYear, 1).run {
+            (0 until 12).map { plusMonths(it.toLong()) }
+        }
+
+        Text(
+            text = currentYear.toString(),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun MonthView(currentMonth: YearMonth, onMonthChanged: (YearMonth) -> Unit) {
         var currentMonth by remember { mutableStateOf(YearMonth.now()) }
         val today = LocalDate.now()
         var searchDateText by remember { mutableStateOf("") }
