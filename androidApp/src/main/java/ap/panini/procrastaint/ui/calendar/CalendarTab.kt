@@ -54,6 +54,38 @@ class CalendarTab : Tab {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
+    fun ScrollableCalendar() {
+        var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+        var isYearView by remember { mutableStateOf(false) }
+        val today = LocalDate.now()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Toggle between Month View and Year View
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = { isYearView = false }) {
+                    Text("Month View")
+                }
+                Button(onClick = { isYearView = true }) {
+                    Text("Year View")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
     fun YearView(currentMonth: YearMonth, onMonthSelected: (YearMonth) -> Unit) {
         val currentYear = currentMonth.year
         val months = YearMonth.of(currentYear, 1).run {
@@ -95,8 +127,6 @@ class CalendarTab : Tab {
             }
         )
     }
-
-    
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
