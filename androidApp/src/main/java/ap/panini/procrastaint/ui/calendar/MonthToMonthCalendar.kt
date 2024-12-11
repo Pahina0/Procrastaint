@@ -50,6 +50,32 @@ class MonthToMonthCalendar : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            //onBack button
+            var selectedDay by remember { mutableStateOf<CalendarInput?>(null) }
+
+            // Handle back navigation
+            val onBack: () -> Unit = {
+                selectedDay = null
+            }
+
+            if (selectedDay == null) {
+                // Month View (Default)
+                MonthView(
+                    onDayClick = { day ->
+                        selectedDay = day
+                    }
+                )
+            } else {
+                // Day View (Triggered when a day is clicked)
+                DayView(
+                    day = selectedDay!!.day,
+                    toDos = selectedDay!!.toDos,
+                    onBack = onBack
+                )
+            }
+
+            //Month to month calendar
             val calendarInputList by remember {
                 mutableStateOf(createCalendarList())
             }
@@ -82,6 +108,9 @@ class MonthToMonthCalendar : ComponentActivity() {
                     DayView(
                         day = calendarInput.day,
                         toDos = calendarInput.toDos,
+                        onBack = {
+                            clickedCalendarElem = null // resets the view to show the month view again
+                        },
                         modifier = Modifier
                             .align(Alignment.Center)
                             .background(MaterialTheme.colorScheme.background)

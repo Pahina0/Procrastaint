@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ fun DayView(
     day: Int,
     toDos: List<String>,
     modifier: Modifier = Modifier,
+    onBack: () -> Unit // Function to go back to the Month view
 ){
     Column(
         modifier = modifier
@@ -32,14 +34,30 @@ fun DayView(
     ) {
         Text(
             text = "Day $day",
+            style = MaterialTheme.typography.headlineMedium,
+            color = scrimLight
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Display the to-dos for the day
         toDos.forEach { todo ->
             Text(
                 text = "- $todo",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //Button to go back to the Month view
+        Button(
+            onClick = onBack,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Back to Month View")
+        }
+
     }
 }
 
@@ -55,7 +73,7 @@ fun DayItem(day: String, isToday: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = day,
+            text = "$day",
             color = if (isToday) scrimLight else secondaryLight
         )
     }

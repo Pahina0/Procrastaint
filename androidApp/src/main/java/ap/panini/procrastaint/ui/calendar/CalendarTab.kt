@@ -36,6 +36,7 @@ class CalendarTab : Tab {
             ),
             onDayClick = { day ->
                 println("Day clicked: $day") // Replace with your actual logic
+                println("Day clicked: $day") // logic update needed
             },
             month = "December"
         )
