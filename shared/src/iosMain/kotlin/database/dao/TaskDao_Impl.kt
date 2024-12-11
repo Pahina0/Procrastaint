@@ -269,3 +269,94 @@ public class TaskDao_Impl(
     }
   }
 
+  public override fun getIncompleteTasks(): Flow<List<Task>> {
+    val _sql: String = "SELECT * FROM TASK WHERE completed IS NULL"
+    return createFlow(__db, false, arrayOf("TASK")) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        val _cursorIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
+        val _cursorIndexOfDescription: Int = getColumnIndexOrThrow(_stmt, "description")
+        val _cursorIndexOfStartTime: Int = getColumnIndexOrThrow(_stmt, "startTime")
+        val _cursorIndexOfEndTime: Int = getColumnIndexOrThrow(_stmt, "endTime")
+        val _cursorIndexOfRepeatTag: Int = getColumnIndexOrThrow(_stmt, "repeatTag")
+        val _cursorIndexOfRepeatOften: Int = getColumnIndexOrThrow(_stmt, "repeatOften")
+        val _cursorIndexOfCompleted: Int = getColumnIndexOrThrow(_stmt, "completed")
+        val _cursorIndexOfId: Int = getColumnIndexOrThrow(_stmt, "id")
+        val _result: MutableList<Task> = mutableListOf()
+        while (_stmt.step()) {
+          val _item: Task
+          val _tmpTitle: String
+          _tmpTitle = _stmt.getText(_cursorIndexOfTitle)
+          val _tmpDescription: String?
+          if (_stmt.isNull(_cursorIndexOfDescription)) {
+            _tmpDescription = null
+          } else {
+            _tmpDescription = _stmt.getText(_cursorIndexOfDescription)
+          }
+          val _tmpStartTime: Long?
+          if (_stmt.isNull(_cursorIndexOfStartTime)) {
+            _tmpStartTime = null
+          } else {
+            _tmpStartTime = _stmt.getLong(_cursorIndexOfStartTime)
+          }
+          val _tmpEndTime: Long?
+          if (_stmt.isNull(_cursorIndexOfEndTime)) {
+            _tmpEndTime = null
+          } else {
+            _tmpEndTime = _stmt.getLong(_cursorIndexOfEndTime)
+          }
+          val _tmpRepeatTag: Time?
+          if (_stmt.isNull(_cursorIndexOfRepeatTag)) {
+            _tmpRepeatTag = null
+          } else {
+            _tmpRepeatTag = __Time_stringToEnum(_stmt.getText(_cursorIndexOfRepeatTag))
+          }
+          val _tmpRepeatOften: Int?
+          if (_stmt.isNull(_cursorIndexOfRepeatOften)) {
+            _tmpRepeatOften = null
+          } else {
+            _tmpRepeatOften = _stmt.getLong(_cursorIndexOfRepeatOften).toInt()
+          }
+          val _tmpCompleted: Long?
+          if (_stmt.isNull(_cursorIndexOfCompleted)) {
+            _tmpCompleted = null
+          } else {
+            _tmpCompleted = _stmt.getLong(_cursorIndexOfCompleted)
+          }
+          _item =
+              Task(_tmpTitle,_tmpDescription,_tmpStartTime,_tmpEndTime,_tmpRepeatTag,_tmpRepeatOften,_tmpCompleted)
+          _item.id = _stmt.getLong(_cursorIndexOfId).toInt()
+          _result.add(_item)
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  private fun __Time_enumToString(_value: Time): String = when (_value) {
+    Time.SECOND -> "SECOND"
+    Time.MINUTE -> "MINUTE"
+    Time.HOUR -> "HOUR"
+    Time.DAY -> "DAY"
+    Time.WEEK -> "WEEK"
+    Time.MONTH -> "MONTH"
+    Time.YEAR -> "YEAR"
+  }
+
+  private fun __Time_stringToEnum(_value: String): Time = when (_value) {
+    "SECOND" -> Time.SECOND
+    "MINUTE" -> Time.MINUTE
+    "HOUR" -> Time.HOUR
+    "DAY" -> Time.DAY
+    "WEEK" -> Time.WEEK
+    "MONTH" -> Time.MONTH
+    "YEAR" -> Time.YEAR
+    else -> throw IllegalArgumentException("Can't convert value to enum, unknown value: " + _value)
+  }
+
+  public companion object {
+    public fun getRequiredConverters(): List<KClass<*>> = emptyList()
+  }
+}
