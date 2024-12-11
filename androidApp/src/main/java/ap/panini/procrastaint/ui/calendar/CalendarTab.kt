@@ -66,7 +66,37 @@ class CalendarTab : Tab {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.fillMaxSize(),
+            content = {
+                items(months) { month ->
+                    Card(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        onClick = { onMonthSelected(month) },
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        )
     }
+
+    
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
