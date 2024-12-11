@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ap.panini.procrastaint.ui.theme.onPrimaryContainerLight
-import ap.panini.procrastaint.ui.theme.onPrimaryLight
-import ap.panini.procrastaint.ui.theme.onSecondaryLight
+import ap.panini.procrastaint.ui.theme.onSurfaceVariantLight
+import ap.panini.procrastaint.ui.theme.scrimLight
 import ap.panini.procrastaint.ui.theme.secondaryContainerLight
 import kotlinx.coroutines.launch
 
@@ -97,7 +98,7 @@ class MonthToMonthCalendar : ComponentActivity() {
                     clickedCalendarElem?.toDos?.forEach {
                         Text(
                             if (it.contains("Day")) it else "- $it",
-                            color = onPrimaryLight,
+                            color = scrimLight,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = if (it.contains("Day")) 25.sp else 18.sp
                         )
@@ -159,13 +160,13 @@ fun Calendar(
         Text(
             text = month,
             fontWeight = FontWeight.SemiBold,
-            color = onPrimaryLight,
+            color = scrimLight,
             fontSize = 40.sp
         )
 
         Canvas(
             modifier = Modifier
-                .fillMaxSize()
+                .size(400.dp)
                 .pointerInput(true){
                     detectTapGestures (
                         //calculate the relative amount of the user click
@@ -192,8 +193,8 @@ fun Calendar(
             val ySteps = canvasHeight/ CALENDAR_ROWS
             val xSteps = canvasWidth/ CALENDAR_COLUMNS
 
-            val column = (clickAnimationOffset.x / canvasSize.width * CALENDAR_COLUMNS.toInt() )
-            val row = (clickAnimationOffset.x / canvasSize.height * CALENDAR_ROWS.toInt() )
+            val column = clickAnimationOffset.x / canvasSize.width * CALENDAR_COLUMNS.toInt()
+            val row = clickAnimationOffset.x / canvasSize.height * CALENDAR_ROWS.toInt()
 
             //path exactly the grid item
             val path = Path().apply{
@@ -208,7 +209,7 @@ fun Calendar(
                 drawCircle(
                     brush = Brush.radialGradient(
                         listOf(
-                            onPrimaryContainerLight.copy(0.6f),
+                            onPrimaryContainerLight.copy(0.8f),
                             onPrimaryContainerLight.copy(0.2f)
                         ),
                         center = clickAnimationOffset,
@@ -245,7 +246,7 @@ fun Calendar(
                 )
             }
             //draw calendar dates
-            val textHeight = 17.dp.toPx()
+            val textHeight = 12.dp.toPx()
             for(i in calendarInput.indices){
                 val column = i % CALENDAR_COLUMNS
                 val row = i / CALENDAR_COLUMNS
@@ -260,7 +261,7 @@ fun Calendar(
                         textPositionY,
                         Paint().apply {
                             textSize = textHeight
-                            color = onSecondaryLight.toArgb()
+                            color = onSurfaceVariantLight.toArgb()
                             isFakeBoldText = true
                             textAlign = Paint.Align.CENTER
                         }
@@ -276,12 +277,24 @@ fun Calendar(
                             textPositionY + (index + 1) * textHeight,
                             Paint().apply {
                                 textSize = textHeight * 0.75f
-                                color = onSecondaryLight.toArgb()
+                                color = scrimLight.toArgb()
                                 textAlign = Paint.Align.CENTER
                             }
                         )
                     }
                 }
+            }
+            // Draw animation (circle when clicked)
+            if (animationRadius > 0f) {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        listOf(onPrimaryContainerLight.copy(0.8f), onPrimaryContainerLight.copy(0.2f)),
+                        center = clickAnimationOffset,
+                        radius = animationRadius
+                    ),
+                    radius = animationRadius,
+                    center = clickAnimationOffset
+                )
             }
         }
     }

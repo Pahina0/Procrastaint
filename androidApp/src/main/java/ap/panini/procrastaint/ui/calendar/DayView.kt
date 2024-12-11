@@ -17,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.ui.theme.scrimLight
+import ap.panini.procrastaint.ui.theme.secondaryLight
 
 @Composable
 fun DayView(
     day: Int,
     toDos: List<String>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ){
     Column(
         modifier = modifier
@@ -30,7 +32,6 @@ fun DayView(
     ) {
         Text(
             text = "Day $day",
-            style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(8.dp))
         toDos.forEach { todo ->
@@ -55,7 +56,7 @@ fun DayItem(day: String, isToday: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = day,
-            color = if (isToday) Color.White else Color.Black
+            color = if (isToday) scrimLight else secondaryLight
         )
     }
 }
