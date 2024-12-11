@@ -28,6 +28,16 @@ class CalendarTab : Tab {
 
     @Composable
     override fun Content() {
-        Text(text = "Calendar")
+        //Text(text = "Calendar")
+        CalendarScreen(
+            calendarInput = listOf(
+                CalendarInput(day = 20, toDos = listOf("test1","test2")),
+                CalendarInput(day = 25, toDos = listOf("test3","test4"))
+            ),
+            onDayClick = { day ->
+                println("Day clicked: $day") // logic update needed
+            },
+            month = "December"
+        )
     }
 }
