@@ -83,14 +83,14 @@ class CalendarTab : Tab {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (isYearView) {
-                YearView(currentMonth = currentMonth, onMonthSelected = {
-                    currentMonth = it
+                YearView(currentMonth = currentMonth) { selectedMonth ->
+                    currentMonth = selectedMonth
                     isYearView = false
-                })
+                }
             } else {
-                MonthView(currentMonth = currentMonth, onMonthChanged = {
-                    currentMonth = it
-                })
+                MonthView(currentMonth = currentMonth) { updatedMonth ->
+                    currentMonth = updatedMonth
+                }
             }
 
         }
