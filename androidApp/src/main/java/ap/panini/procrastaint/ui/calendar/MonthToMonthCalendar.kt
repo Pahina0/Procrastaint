@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,6 +75,19 @@ class MonthToMonthCalendar : ComponentActivity() {
                         .fillMaxWidth()
                         .aspectRatio(1.3f)
                 )
+
+                //Show DayView when a day is clicked
+                clickedCalendarElem?.let { calendarInput ->
+                    DayView(
+                        day = calendarInput.day,
+                        toDos = calendarInput.toDos,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(16.dp)
+                    )
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,9 +170,9 @@ fun Calendar(
                     detectTapGestures (
                         //calculate the relative amount of the user click
                         onTap = { offset ->
-                            val column = (offset.x / canvasSize.width * CALENDAR_COLUMNS.toInt() + 1)
-                            val row = (offset.x / canvasSize.height * CALENDAR_ROWS.toInt() + 1)
-                            val day = (column + (row-1) * CALENDAR_COLUMNS)
+                            val column = (offset.x / canvasSize.width * CALENDAR_COLUMNS.toInt())
+                            val row = (offset.x / canvasSize.height * CALENDAR_ROWS.toInt())
+                            val day = column + (row * CALENDAR_COLUMNS) + 1
                             if (day <= calendarInput.size){
                                 onDayClick(day.toInt())
                                 clickAnimationOffset = offset
@@ -178,22 +192,25 @@ fun Calendar(
             val ySteps = canvasHeight/ CALENDAR_ROWS
             val xSteps = canvasWidth/ CALENDAR_COLUMNS
 
-            val column = (clickAnimationOffset.x / canvasSize.width * CALENDAR_COLUMNS.toInt() + 1)
-            val row = (clickAnimationOffset.x / canvasSize.height * CALENDAR_ROWS.toInt() + 1)
+            val column = (clickAnimationOffset.x / canvasSize.width * CALENDAR_COLUMNS.toInt() )
+            val row = (clickAnimationOffset.x / canvasSize.height * CALENDAR_ROWS.toInt() )
 
             //path exactly the grid item
             val path = Path().apply{
-                moveTo( (column-1)*xSteps, (row-1)*ySteps)
-                lineTo(column*xSteps, (row-1)*ySteps)
-                lineTo(column*xSteps,row*ySteps)
-                lineTo((column-1)*xSteps,row*ySteps)
+                moveTo(column * xSteps, row * ySteps)
+                lineTo((column + 1) * xSteps, row * ySteps)
+                lineTo((column + 1) * xSteps, (row + 1) * ySteps)
+                lineTo(column * xSteps, (row + 1) * ySteps)
                 close()
             }
 
             clipPath(path){
                 drawCircle(
                     brush = Brush.radialGradient(
-                        listOf(onPrimaryContainerLight.copy(0.8f),onPrimaryContainerLight.copy(0.2f)),
+                        listOf(
+                            onPrimaryContainerLight.copy(0.6f),
+                            onPrimaryContainerLight.copy(0.2f)
+                        ),
                         center = clickAnimationOffset,
                         radius = animationRadius + 0.1f
                     ),
@@ -210,7 +227,7 @@ fun Calendar(
                 )
             )
 
-            //draw the grids
+            //draw the grid lines
             for(i in 1 until CALENDAR_ROWS){
                 drawLine(
                     color = onPrimaryContainerLight,
@@ -230,20 +247,40 @@ fun Calendar(
             //draw calendar dates
             val textHeight = 17.dp.toPx()
             for(i in calendarInput.indices){
-                val textPositionX = xSteps * (i% CALENDAR_ROWS) + strokeWidth
-                val textPositionY = (i / CALENDAR_COLUMNS) * ySteps + textHeight + strokeWidth/2
-                drawContext.canvas.nativeCanvas.apply{
+                val column = i % CALENDAR_COLUMNS
+                val row = i / CALENDAR_COLUMNS
+                val textPositionX = xSteps * column + xSteps / 2
+                val textPositionY = ySteps * row + textHeight + strokeWidth
+
+                // Draw the day number
+                drawContext.canvas.nativeCanvas.apply {
                     drawText(
-                        "${i+1}",
+                        "${calendarInput[i].day}",
                         textPositionX,
                         textPositionY,
-                        Paint().apply{
+                        Paint().apply {
                             textSize = textHeight
                             color = onSecondaryLight.toArgb()
                             isFakeBoldText = true
-
+                            textAlign = Paint.Align.CENTER
                         }
                     )
+                }
+
+                // Draw events below the day number
+                calendarInput[i].toDos.forEachIndexed { index, todo ->
+                    drawContext.canvas.nativeCanvas.apply {
+                        drawText(
+                            todo,
+                            textPositionX,
+                            textPositionY + (index + 1) * textHeight,
+                            Paint().apply {
+                                textSize = textHeight * 0.75f
+                                color = onSecondaryLight.toArgb()
+                                textAlign = Paint.Align.CENTER
+                            }
+                        )
+                    }
                 }
             }
         }
