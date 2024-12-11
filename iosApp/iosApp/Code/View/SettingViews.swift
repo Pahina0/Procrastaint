@@ -15,12 +15,12 @@ struct SettingViews: View {
                 // Account Section
                 Section {
                     NavigationLink{
-                        
+                        AccountView()
                     }label: {
                         Label("Account", systemImage: "person.circle")
                     }
                     NavigationLink{
-                        
+                        GeneralView()
                     }label: {
                         Label("General", systemImage: "gearshape")
                     }
@@ -37,7 +37,7 @@ struct SettingViews: View {
                 // Personalization Section
                 Section(header: Text("Personalization").foregroundColor(.blue)) {
                     NavigationLink{
-                        
+                        ThemeView()
                     }label: {
                         HStack {
                             Label("Theme", systemImage: "paintpalette")

@@ -33,6 +33,12 @@
 		191D29722D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */; };
 		191D29742D09330E0090844A /* CompleteTaskIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29732D09330E0090844A /* CompleteTaskIntent.swift */; };
 		191D29752D09330E0090844A /* CompleteTaskIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29732D09330E0090844A /* CompleteTaskIntent.swift */; };
+		191D29772D0942190090844A /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29762D0942190090844A /* AccountView.swift */; };
+		191D29782D0942190090844A /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29762D0942190090844A /* AccountView.swift */; };
+		191D297A2D0942500090844A /* ThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29792D0942500090844A /* ThemeView.swift */; };
+		191D297B2D0942500090844A /* ThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D29792D0942500090844A /* ThemeView.swift */; };
+		191D297D2D0942750090844A /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D297C2D0942750090844A /* GeneralView.swift */; };
+		191D297E2D0942750090844A /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191D297C2D0942750090844A /* GeneralView.swift */; };
 		194CEC2E2C22085100E1A37F /* SettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2D2C22085100E1A37F /* SettingViews.swift */; };
 		194CEC302C22091200E1A37F /* TodayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC2F2C22091200E1A37F /* TodayViews.swift */; };
 		194CEC322C22097E00E1A37F /* LibraryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194CEC312C22097E00E1A37F /* LibraryViews.swift */; };
@@ -96,6 +102,9 @@
 		191D296D2D0932AE0090844A /* ProcrastaintWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcrastaintWidget.swift; sourceTree = "<group>"; };
 		191D29702D0932E20090844A /* ProcrastaintWidgetEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcrastaintWidgetEntryView.swift; sourceTree = "<group>"; };
 		191D29732D09330E0090844A /* CompleteTaskIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteTaskIntent.swift; sourceTree = "<group>"; };
+		191D29762D0942190090844A /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		191D29792D0942500090844A /* ThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeView.swift; sourceTree = "<group>"; };
+		191D297C2D0942750090844A /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
 		194CEC2D2C22085100E1A37F /* SettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViews.swift; sourceTree = "<group>"; };
 		194CEC2F2C22091200E1A37F /* TodayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViews.swift; sourceTree = "<group>"; };
 		194CEC312C22097E00E1A37F /* LibraryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViews.swift; sourceTree = "<group>"; };
@@ -148,6 +157,9 @@
 				19063BF72C6F2FE1009DBDA9 /* CalendarView.swift */,
 				19063BF92C6F615B009DBDA9 /* DetailedDayView.swift */,
 				194CEC2D2C22085100E1A37F /* SettingViews.swift */,
+				191D29762D0942190090844A /* AccountView.swift */,
+				191D29792D0942500090844A /* ThemeView.swift */,
+				191D297C2D0942750090844A /* GeneralView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -353,12 +365,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				191D296C2D0931070090844A /* TaskTimelineProvider.swift in Sources */,
+				191D297B2D0942500090844A /* ThemeView.swift in Sources */,
 				191D29752D09330E0090844A /* CompleteTaskIntent.swift in Sources */,
 				191D29592D09303E0090844A /* iOSWidgetsLiveActivity.swift in Sources */,
 				191D295D2D09303E0090844A /* AppIntent.swift in Sources */,
+				191D29782D0942190090844A /* AccountView.swift in Sources */,
 				191D29692D0930D30090844A /* TaskModel.swift in Sources */,
 				191D296F2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */,
 				191D29722D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */,
+				191D297E2D0942750090844A /* GeneralView.swift in Sources */,
 				191D295B2D09303E0090844A /* iOSWidgets.swift in Sources */,
 				191D29572D09303E0090844A /* iOSWidgetsBundle.swift in Sources */,
 			);
@@ -368,17 +383,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				191D297A2D0942500090844A /* ThemeView.swift in Sources */,
 				19063BF02C6A47CF009DBDA9 /* AddButtonView.swift in Sources */,
 				19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */,
 				191D296B2D0931070090844A /* TaskTimelineProvider.swift in Sources */,
 				19063BF22C6A645B009DBDA9 /* BottomSheetView.swift in Sources */,
 				191D29742D09330E0090844A /* CompleteTaskIntent.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				191D29772D0942190090844A /* AccountView.swift in Sources */,
 				191D29712D0932E20090844A /* ProcrastaintWidgetEntryView.swift in Sources */,
 				194CEC2E2C22085100E1A37F /* SettingViews.swift in Sources */,
 				194CEC302C22091200E1A37F /* TodayViews.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				19063BF82C6F2FE1009DBDA9 /* CalendarView.swift in Sources */,
+				191D297D2D0942750090844A /* GeneralView.swift in Sources */,
 				191D296E2D0932AE0090844A /* ProcrastaintWidget.swift in Sources */,
 				19063BF62C6F2FB3009DBDA9 /* DayModel.swift in Sources */,
 				194CEC322C22097E00E1A37F /* LibraryViews.swift in Sources */,
