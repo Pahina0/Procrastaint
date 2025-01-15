@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -76,7 +77,7 @@ private enum class Action {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskBottomSheet(
-    state: MainActivityScreenModel.State,
+    state: MainActivityViewModel.MainUiState,
     updateTitle: (String) -> Unit,
     updateDescription: (String) -> Unit,
     viewNextParsed: () -> Unit,
@@ -216,7 +217,7 @@ private fun RepeatTime(
             onExpandedChange = { repeatTagExpanded = it }
         ) {
             OutlinedTextField(
-                modifier = Modifier.menuAnchor(),
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 value = timeOptions.getOrDefault(repeatTag, "auto"),
                 onValueChange = {},
                 readOnly = true,

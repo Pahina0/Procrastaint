@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -10,15 +11,12 @@ android {
     defaultConfig {
         applicationId = "ap.panini.procrastaint"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {
@@ -48,13 +46,14 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.koin.android)
-
-    implementation(libs.voyager.navigator)
-    implementation(libs.voyager.screenmodel)
-    implementation(libs.voyager.koin)
-    implementation(libs.voyager.tab.navigator)
+    implementation(libs.koin.androidx.compose)
 
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.material.icons.extended)
+
+    // destinations
+    implementation(libs.destinations.core)
+    ksp(libs.destinations.ksp)
+    implementation(libs.destinations.bottom.sheet)
 }

@@ -1,35 +1,39 @@
 [versions]
-agp = "8.7.1"
+agp = "8.8.0"
+core = "2.1.0-beta15"
 datastorePreferences = "1.1.1"
 detekt = "1.23.7"
 detektRules = "0.4.4"
 koin = "4.0.0"
-kotlin = "2.0.20"
-compose = "1.7.4"
-compose-compiler = "1.5.13"
-compose-material3 = "1.3.0"
+koinComposeViewmodel = "4.0.1"
+kotlin = "2.1.0"
+compose = "1.7.6"
+compose-material3 = "1.3.1"
 androidx-activityCompose = "1.9.3"
 kotlinxDatetime = "0.6.0"
-androidx-room = "2.7.0-alpha10"
-ksp = "2.0.20-1.0.24"
+androidx-room = "2.7.0-alpha12"
+ksp = "2.1.0-1.0.29"
 kwhen = "0.0.4"
-navigationCompose = "2.8.3"
-sqliteBundled = "2.5.0-alpha10"
-sqliteBundledAndroid = "2.5.0-alpha10"
-voyagerTabNavigator = "1.1.0-beta02"
-voyagerVersion = "1.1.0-beta02"
+navigationCompose = "2.8.5"
+sqliteBundled = "2.5.0-alpha12"
+sqliteBundledAndroid = "2.5.0-alpha12"
 
 [libraries]
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
+destinations-bottom-sheet = { module = "io.github.raamcosta.compose-destinations:bottom-sheet", version.ref = "core" }
+destinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
 detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRules" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 insert-koin-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeViewmodel" }
 koin-core = { module = "io.insert-koin:koin-core" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -41,11 +45,8 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
+destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "core" }
 kwhen = { module = "io.github.pahinaa.kwhen:kwhen", version.ref = "kwhen" }
-voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerVersion" }
-voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
-voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyagerVersion" }
-voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyagerTabNavigator" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
