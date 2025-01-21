@@ -22,6 +22,15 @@ interface TaskDao {
     @Query("SELECT * FROM TASK WHERE completed IS NULL")
     fun getIncompleteTasks(): Flow<List<Task>>
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update
     suspend fun updateTask(task: Task)
+
+    @Query(
+        """
+        SELECT * FROM Task 
+        WHERE completed IS NULL OR startTime > :from
+        ORDER BY startTime
+        """
+    )
+    fun getUpcomingTasksGrouped(from: Long): Flow<List<Task>>
 }

@@ -92,10 +92,6 @@ class MainActivity : ComponentActivity() {
                 BottomBar(navController.rememberDestinationsNavigator(), curDestination)
             },
 
-            topBar = {
-                TopBar(curDestination)
-            },
-
             floatingActionButton = {
                 FloatingActionButton(onClick = {
                     showBottomSheet = true
@@ -128,30 +124,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    private fun TopBar(
-        curDestination: TypedDestinationSpec<out Any?>,
-        modifier: Modifier = Modifier,
-    ) {
-        CenterAlignedTopAppBar(
-            modifier = modifier,
-            title = {
-                Crossfade(
-                    curDestination
-                ) { state ->
-                    Text(
-                        BottomBarDestination.entries.firstOrNull {
-                            it.direction == state
-                        }?.let { stringResource(it.label) }
-                            ?: "Unknown?",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            },
-        )
-    }
 
     @Composable
     private fun BottomBar(

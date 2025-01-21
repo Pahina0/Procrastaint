@@ -1,6 +1,5 @@
-package ap.panini.procrastaint.ui.inbox
+package ap.panini.procrastaint.ui.upcoming
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.model.Task
@@ -22,6 +21,7 @@ class UpcomingViewModel(
     private val _uiState = MutableStateFlow(UpcomingUiState())
     val uiState: StateFlow<UpcomingUiState> = _uiState.asStateFlow()
 
+
     init {
         getAllTasks()
     }
@@ -41,16 +41,22 @@ class UpcomingViewModel(
     }
 
     fun checkTask(task: Task) {
-        if (task.completed == null) {
-            task.completed = Date.getTime()
-        } else {
-            task.completed = null
+
+        viewModelScope.launch {
+            db.updateTask(
+                task.copy(
+                    completed = if (task.completed == null) {
+                        Date.getTime()
+                    } else {
+                        null
+                    }
+                )
+            )
         }
 
-        viewModelScope.launch { db.updateTask(task) }
     }
 
-    @Immutable
+    //    @Immutable
     data class UpcomingUiState(
         val tasks: List<Task> = listOf(),
     )

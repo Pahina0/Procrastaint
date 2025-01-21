@@ -31,7 +31,7 @@ data class TaskGroup(
                 startTime = it,
                 endTime = endTime,
                 title = title,
-                description = description.run { ifBlank { null } },
+                description = description,
                 repeatTag = repeatTag,
                 repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
             )

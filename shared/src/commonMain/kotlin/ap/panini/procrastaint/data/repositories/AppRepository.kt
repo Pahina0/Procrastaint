@@ -21,5 +21,7 @@ class AppRepository(private val taskDao: TaskDao) {
     fun getTaskHistory(): Flow<List<Task>> = taskDao.getTaskHistory()
     fun getIncompleteTasks(): Flow<List<Task>> = taskDao.getIncompleteTasks()
 
+    fun getUpcomingTasks(from: Long): Flow<List<Task>> = taskDao.getUpcomingTasksGrouped(from)
+
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
 }
