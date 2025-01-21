@@ -8,7 +8,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +32,9 @@ fun TaskView(
     ) {
         Checkbox(
             checked = task.completed != null,
-            onCheckedChange = { onCheck(task) },
+            onCheckedChange = {
+                onCheck(task)
+            },
         )
 
         Column(modifier = Modifier.weight(1f)) {
@@ -59,14 +60,12 @@ fun TaskView(
                 )
             }
         }
-
-
     }
 }
 
 @Preview
 @Composable
-fun PreviewTaskView() {
+private fun PreviewTaskView() {
     var task by remember {
         mutableStateOf(
             Task(

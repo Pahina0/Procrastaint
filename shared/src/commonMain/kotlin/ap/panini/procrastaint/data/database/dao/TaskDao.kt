@@ -22,7 +22,7 @@ interface TaskDao {
     @Query("SELECT * FROM TASK WHERE completed IS NULL")
     fun getIncompleteTasks(): Flow<List<Task>>
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTask(task: Task)
 
     @Query(

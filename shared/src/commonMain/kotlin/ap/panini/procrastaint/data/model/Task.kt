@@ -17,13 +17,14 @@ data class Task(
     val repeatOften: Int? = null,
 
     val completed: Long? = null,
-) {
+
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
+) {
 
     fun getTimeRangeString() =
         startTime?.formatMilliseconds() + (
-                endTime?.let { " to ${it.formatMilliseconds()}" }
-                    ?: ""
-                )
+            endTime?.let { " to ${it.formatMilliseconds()}" }
+                ?: ""
+            )
 }
