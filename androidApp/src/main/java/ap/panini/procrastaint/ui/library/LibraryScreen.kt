@@ -11,5 +11,8 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 fun LibraryScreen(
     modifier: Modifier = Modifier
 ) {
-    Text("Library")
+    Text(
+        "Library",
+        modifier = modifier
+    )
 }

@@ -13,5 +13,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 
 ) {
-    Text("Settings")
+    Text(
+        "Settings",
+        modifier = modifier
+    )
 }

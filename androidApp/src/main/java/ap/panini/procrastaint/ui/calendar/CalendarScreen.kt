@@ -13,5 +13,8 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 fun CalendarScreen(
     modifier: Modifier = Modifier
 ) {
-    Text(text = "Calendar")
+    Text(
+        text = "Calendar",
+        modifier = modifier
+    )
 }

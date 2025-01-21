@@ -19,14 +19,13 @@ import org.koin.androidx.compose.koinViewModel
 @Destination<RootGraph>
 @Composable
 fun UpcomingScreen(
-    modifier: Modifier = Modifier, viewModel: UpcomingViewModel = koinViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: UpcomingViewModel = koinViewModel()
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
-
     LazyColumn(modifier = modifier.padding(10.dp)) {
         itemsIndexed(items = state.tasks, key = { _, task -> task.id }) { index, task ->
-
 
             // sees if it should show the header of the current date
             if (index == 0 || state.tasks[index - 1].startTime?.formatMilliseconds(
@@ -51,4 +50,3 @@ fun UpcomingScreen(
         }
     }
 }
-

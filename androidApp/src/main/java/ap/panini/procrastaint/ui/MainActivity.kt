@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Upcoming
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -36,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import ap.panini.procrastaint.R
@@ -71,7 +68,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MainContent() {
@@ -81,10 +77,8 @@ class MainActivity : ComponentActivity() {
         val scrollBehavior =
             TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-
         val curDestination = navController.currentDestinationAsState().value
             ?: NavGraphs.root.startDestination
-
 
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -100,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             if (showBottomSheet) {
                 TaskBottomSheet(
                     viewModel.uiState.collectAsStateWithLifecycle().value,
@@ -124,14 +118,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     private fun BottomBar(
         destinationsNavigator: DestinationsNavigator,
         curDestination: TypedDestinationSpec<out Any?>,
         modifier: Modifier = Modifier,
     ) {
-
         NavigationBar(modifier = modifier) {
             BottomBarDestination.entries.forEach { destination ->
                 NavigationBarItem(
@@ -148,7 +140,8 @@ class MainActivity : ComponentActivity() {
                                 destination.iconSelected
                             } else {
                                 destination.iconDeselected
-                            }, contentDescription = stringResource(destination.label)
+                            },
+                            contentDescription = stringResource(destination.label)
                         )
                     },
                     label = { Text(stringResource(destination.label)) },
@@ -156,7 +149,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 
     private enum class BottomBarDestination(
         val direction: DirectionDestinationSpec,
