@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import ap.panini.procrastaint.data.database.dao.TaskDao
-import ap.panini.procrastaint.data.model.Task
+import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 
-@Database(entities = [Task::class], version = 1)
+@Database(entities = [TaskInfo::class, TaskMeta::class, TaskCompletion::class], version = 1)
 @ConstructedBy(ProcrastaintDatabaseConstructor::class)
 abstract class ProcrastaintDatabase : RoomDatabase() {
     abstract fun getTaskDao(): TaskDao

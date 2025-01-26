@@ -1,42 +1,72 @@
 package ap.panini.procrastaint.util
 
 import ap.panini.kwhen.TimeUnit
-import ap.panini.procrastaint.data.model.Task
+import ap.panini.procrastaint.data.entities.Task
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 
+/**
+ * a prototype task to be converted into a list of tasks.
+ * simpler than a normal task
+ */
 data class TaskGroup(
-    var startTimes: Set<Long>,
-    var endTime: Long?, // only needed if you repeat
+    val startTimes: Set<Long>,
+    val endTime: Long?, // only needed if you repeat
 
-    var title: String,
-    var description: String = "",
+    val title: String,
+    val description: String = "",
 
-    var repeatTag: Time? = null,
-    var repeatOften: Int = 0,
+    val repeatTag: Time? = null,
+    val repeatOften: Int = 0,
 ) {
 
     /**
      * @return null if invalid task, else the tasks separated
      */
-    fun toTaskList(): List<Task>? {
+    fun toTask(): Task? {
         if (endTime != null) {
             if (startTimes.isEmpty() ||
-                (startTimes.firstOrNull() ?: 0) > (endTime ?: Long.MAX_VALUE)
+                (startTimes.firstOrNull() ?: 0) > endTime
             ) {
                 return null
             }
         }
 
-        return startTimes.map {
-            Task(
-                startTime = it,
-                endTime = endTime,
-                title = title,
-                description = description,
-                repeatTag = repeatTag,
-                repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
+
+        // no start time
+        if (startTimes.isEmpty()) {
+            return Task(
+                taskInfo = TaskInfo(
+                    title = title,
+                    description = description,
+                ),
+                meta = listOf(
+                    TaskMeta(
+                        startTime = null,
+                        endTime = endTime,
+                        repeatTag = repeatTag,
+                        repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften },
+                    )
+                ),
             )
         }
+
+        return Task(
+            taskInfo = TaskInfo(
+                title = title,
+                description = description
+            ),
+            meta = startTimes.map {
+                TaskMeta(
+                    startTime = it,
+                    endTime = endTime,
+                    repeatTag = repeatTag,
+                    repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
+                )
+            }
+        )
     }
+
 }
 
 enum class Time {

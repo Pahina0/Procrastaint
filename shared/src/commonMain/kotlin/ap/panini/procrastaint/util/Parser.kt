@@ -23,7 +23,7 @@ class Parser {
                     it.tagsTimeStart.map { mapped -> mapped.toTime() }.toSet(),
                     it.tagsTimeEnd.map { mapped -> mapped.toTime() }.toSet(),
                     repeatTag = it.repeatTag?.toTime(),
-                    repeatOften = it.repeatOften?.toInt() ?: 0
+                    repeatOften = it.repeatOften ?: 0
                 )
             }
         }

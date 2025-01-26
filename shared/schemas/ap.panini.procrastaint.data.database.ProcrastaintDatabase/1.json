@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2f90c30eebd2f6d85167a3ad88d48e8a",
+    "identityHash": "75d1459cf660586071d8ab072cb90db9",
     "entities": [
       {
-        "tableName": "Task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT NOT NULL, `startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `completed` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "tableName": "TaskInfo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT NOT NULL, `description` TEXT NOT NULL, `taskId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "title",
@@ -20,6 +20,24 @@
             "affinity": "TEXT",
             "notNull": true
           },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "taskId"
+          ]
+        }
+      },
+      {
+        "tableName": "TaskMeta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `allDay` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
           {
             "fieldPath": "startTime",
             "columnName": "startTime",
@@ -41,13 +59,20 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "completed",
-            "columnName": "completed",
-            "affinity": "INTEGER"
+            "fieldPath": "allDay",
+            "columnName": "allDay",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "metaId",
+            "columnName": "metaId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -55,14 +80,118 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "id"
+            "metaId"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_TaskMeta_taskId",
+            "unique": false,
+            "columnNames": [
+              "taskId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskMeta_taskId` ON `${TABLE_NAME}` (`taskId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TaskInfo",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "taskId"
+            ],
+            "referencedColumns": [
+              "taskId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "TaskCompletion",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "metaId",
+            "columnName": "metaId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completionId",
+            "columnName": "completionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "completionId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TaskCompletion_taskId",
+            "unique": false,
+            "columnNames": [
+              "taskId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskCompletion_taskId` ON `${TABLE_NAME}` (`taskId`)"
+          },
+          {
+            "name": "index_TaskCompletion_metaId",
+            "unique": false,
+            "columnNames": [
+              "metaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskCompletion_metaId` ON `${TABLE_NAME}` (`metaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TaskInfo",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "taskId"
+            ],
+            "referencedColumns": [
+              "taskId"
+            ]
+          },
+          {
+            "table": "TaskMeta",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "metaId"
+            ],
+            "referencedColumns": [
+              "metaId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2f90c30eebd2f6d85167a3ad88d48e8a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '75d1459cf660586071d8ab072cb90db9')"
     ]
   }
 }

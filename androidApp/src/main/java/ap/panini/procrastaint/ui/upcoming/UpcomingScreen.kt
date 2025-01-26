@@ -25,10 +25,10 @@ fun UpcomingScreen(
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     LazyColumn(modifier = modifier.padding(10.dp)) {
-        itemsIndexed(items = state.tasks, key = { _, task -> task.id }) { index, task ->
+        itemsIndexed(items = state.taskInfos, key = { _, task -> task.taskId }) { index, task ->
 
             // sees if it should show the header of the current date
-            if (index == 0 || state.tasks[index - 1].startTime?.formatMilliseconds(
+            if (index == 0 || state.taskInfos[index - 1].startTime?.formatMilliseconds(
                     setOf(
                         Time.DAY, Time.MONTH, Time.YEAR
                     )

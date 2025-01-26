@@ -4,7 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,14 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import ap.panini.procrastaint.data.model.Task
+import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.Task
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
 @Composable
 fun TaskView(
-    task: Task,
-    onCheck: (Task) -> Unit,
+    task: TaskSingle,
+    onCheck: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -48,6 +55,21 @@ fun TaskView(
                     style = MaterialTheme.typography.labelMedium
                 )
             }
+
+            if (task.repeatOften != null && task.repeatTag != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Repeat, null,
+                        modifier = Modifier.height(15.dp)
+                    )
+                    Text(
+                        "${task.repeatOften} ${task.repeatTag!!.name}",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
         }
 
         if (task.startTime != null) {
@@ -63,21 +85,3 @@ fun TaskView(
     }
 }
 
-@Preview
-@Composable
-private fun PreviewTaskView() {
-    var task by remember {
-        mutableStateOf(
-            Task(
-                title = "Do something soon",
-                startTime = 2198049102284L
-            )
-        )
-    }
-
-    TaskView(
-        task = task,
-        onCheck = { task = it.copy(completed = 0L) },
-        modifier = Modifier.fillMaxSize()
-    )
-}

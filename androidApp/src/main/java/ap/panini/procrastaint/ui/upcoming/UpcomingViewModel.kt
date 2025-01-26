@@ -3,7 +3,8 @@ package ap.panini.procrastaint.ui.upcoming
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ap.panini.procrastaint.data.model.Task
+import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.AppRepository
 import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
 
 class UpcomingViewModel(
     private val db: AppRepository,
@@ -28,36 +30,35 @@ class UpcomingViewModel(
 
     private fun getAllTasks() {
         viewModelScope.launch {
-            db.getAllTasks()
-                .flowOn(Dispatchers.IO)
-                .collectLatest { tasks: List<Task> ->
+            db.getUpcomingTasks(
+                Date.getTodayStart(), Date.getTodayStart() + 7.days.inWholeMilliseconds
+            ).flowOn(Dispatchers.IO).collectLatest { taskInfos: List<TaskSingle> ->
                     _uiState.update {
-                        println(tasks)
+                        println(taskInfos)
                         it.copy(
-                            tasks = tasks
+                            taskInfos = taskInfos
                         )
                     }
                 }
         }
     }
 
-    fun checkTask(task: Task) {
-        println(task)
+    fun checkTask(task: TaskSingle) {
         viewModelScope.launch {
-            db.updateTask(
-                task.copy(
-                    completed = if (task.completed == null) {
-                        Date.getTime()
-                    } else {
-                        null
-                    }
+            if (task.completed == null) {
+                db.addCompletion(
+                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId)
                 )
-            )
+            } else {
+                db.removeCompletion(
+                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId)
+                )
+            }
         }
     }
 
     @Immutable
     data class UpcomingUiState(
-        val tasks: List<Task> = listOf(),
+        val taskInfos: List<TaskSingle> = listOf(),
     )
 }

@@ -1,36 +1,60 @@
 package ap.panini.procrastaint.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import ap.panini.procrastaint.data.model.Task
+import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
+import ap.panini.procrastaint.data.entities.TaskSingle
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
     @Insert
-    suspend fun insertTasks(tasks: List<Task>)
+    suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
 
-    @Query("SELECT * FROM Task")
-    fun getAllTasks(): Flow<List<Task>>
+    @Insert
+    suspend fun insertTaskMeta(taskMeta: TaskMeta)
 
-    @Query("SELECT * FROM TASK WHERE completed IS NOT NULL")
-    fun getTaskHistory(): Flow<List<Task>>
+    @Insert
+    suspend fun insertTaskCompletion(taskCompletion: TaskCompletion)
 
-    @Query("SELECT * FROM TASK WHERE completed IS NULL")
-    fun getIncompleteTasks(): Flow<List<Task>>
+    @Delete
+    suspend fun deleteTaskCompletion(taskCompletion: TaskCompletion)
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateTask(task: Task)
-
-    @Query(
-        """
-        SELECT * FROM Task 
-        WHERE completed IS NULL OR startTime > :from
-        ORDER BY startTime
-        """
-    )
-    fun getUpcomingTasksGrouped(from: Long): Flow<List<Task>>
+    // TODO: FIX repeating and their completions
+    @Query("""
+        SELECT ti.taskId, tm.metaId, ti.title, ti.description, tc.completionTime, *, tm.startTime, tm.endTime, tm.repeatTag, tm.repeatOften, tm.allDay
+        FROM TaskInfo ti
+        LEFT JOIN TaskMeta tm ON ti.taskId = tm.taskId
+        LEFT JOIN TaskCompletion tc ON ti.taskId = tc.taskId AND tm.metaId = tc.metaId
+        WHERE tc.time IS NULL OR (tm.startTime >= :from AND (tm.endTime IS NULL OR tm.endTime <= :to))
+        ORDER BY tm.startTime
+    """)
+    fun getUpcomingTasks(from: Long, to: Long) : Flow<List<TaskSingle>>
+//    @Insert
+//    suspend fun insertTasks(taskInfos: List<TaskInfo>)
+//
+//    @Query("SELECT * FROM Task")
+//    fun getAllTasks(): Flow<List<TaskInfo>>
+//
+//    @Query("SELECT * FROM TASK WHERE completed IS NOT NULL")
+//    fun getTaskHistory(): Flow<List<TaskInfo>>
+//
+//    @Query("SELECT * FROM TASK WHERE completed IS NULL")
+//    fun getIncompleteTasks(): Flow<List<TaskInfo>>
+//
+//    @Update(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun updateTask(taskInfo: TaskInfo)
+//
+//    @Query(
+//        """
+//        SELECT * FROM Task
+//        WHERE completed IS NULL OR startTime > :from
+//        ORDER BY startTime
+//        """
+//    )
+//    fun getUpcomingTasksGrouped(from: Long): Flow<List<TaskInfo>>
 }
