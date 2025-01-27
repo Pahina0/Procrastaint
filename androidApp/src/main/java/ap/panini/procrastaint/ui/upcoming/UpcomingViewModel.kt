@@ -47,11 +47,11 @@ class UpcomingViewModel(
         viewModelScope.launch {
             if (task.completed == null) {
                 db.addCompletion(
-                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId)
+                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId, task.completionId)
                 )
             } else {
                 db.removeCompletion(
-                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId)
+                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId, task.completionId)
                 )
             }
         }

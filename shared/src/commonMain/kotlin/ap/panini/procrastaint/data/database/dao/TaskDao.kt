@@ -26,11 +26,13 @@ interface TaskDao {
 
     // TODO: FIX repeating and their completions
     @Query("""
-        SELECT ti.taskId, tm.metaId, ti.title, ti.description, tc.completionTime, *, tm.startTime, tm.endTime, tm.repeatTag, tm.repeatOften, tm.allDay
+        SELECT ti.taskId, tm.metaId, tc.completionId, ti.title, ti.description, tc.completionTime AS completed, tm.startTime, tm.endTime, tm.repeatTag, tm.repeatOften, tm.allDay, COALESCE(tc.forTime, -1) AS currentEventTime
         FROM TaskInfo ti
         LEFT JOIN TaskMeta tm ON ti.taskId = tm.taskId
         LEFT JOIN TaskCompletion tc ON ti.taskId = tc.taskId AND tm.metaId = tc.metaId
-        WHERE tc.time IS NULL OR (tm.startTime >= :from AND (tm.endTime IS NULL OR tm.endTime <= :to))
+        WHERE tc.completionTime IS NULL 
+        OR (tm.startTime <= :to AND tm.endTime >= :from) 
+        OR (tm.startTime >= :from AND tm.startTime <= :to AND tm.endTime IS NULL)
         ORDER BY tm.startTime
     """)
     fun getUpcomingTasks(from: Long, to: Long) : Flow<List<TaskSingle>>

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "75d1459cf660586071d8ab072cb90db9",
+    "identityHash": "1aaac7a6c8d7069f3d6bc7349537af4a",
     "entities": [
       {
         "tableName": "TaskInfo",
@@ -110,11 +110,17 @@
       },
       {
         "tableName": "TaskCompletion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`completionTime` INTEGER NOT NULL, `forTime` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
-            "fieldPath": "time",
-            "columnName": "time",
+            "fieldPath": "completionTime",
+            "columnName": "completionTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "forTime",
+            "columnName": "forTime",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -191,7 +197,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '75d1459cf660586071d8ab072cb90db9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1aaac7a6c8d7069f3d6bc7349537af4a')"
     ]
   }
 }

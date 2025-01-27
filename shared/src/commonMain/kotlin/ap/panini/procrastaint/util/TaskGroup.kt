@@ -69,18 +69,3 @@ data class TaskGroup(
 
 }
 
-enum class Time {
-    SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR;
-
-    companion object {
-        fun TimeUnit.toTime() = when (this) {
-            TimeUnit.SECOND -> SECOND
-            TimeUnit.MINUTE -> MINUTE
-            TimeUnit.HOUR -> HOUR
-            TimeUnit.DAY -> DAY
-            TimeUnit.WEEK -> WEEK
-            TimeUnit.MONTH -> MONTH
-            TimeUnit.YEAR -> YEAR
-        }
-    }
-}

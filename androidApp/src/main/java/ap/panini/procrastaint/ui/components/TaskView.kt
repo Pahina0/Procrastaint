@@ -77,8 +77,10 @@ fun TaskView(
                 horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    task.startTime?.formatMilliseconds(setOf(Time.HOUR, Time.MINUTE), smart = false)
-                        ?: ""
+                    task.currentEventTime.formatMilliseconds(
+                        setOf(Time.HOUR, Time.MINUTE),
+                        smart = false
+                    )
                 )
             }
         }
