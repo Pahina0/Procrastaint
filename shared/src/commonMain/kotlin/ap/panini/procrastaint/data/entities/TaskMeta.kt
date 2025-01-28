@@ -29,5 +29,4 @@ data class TaskMeta(
     @PrimaryKey(autoGenerate = true)
     val metaId: Long = 0
 
-
 )

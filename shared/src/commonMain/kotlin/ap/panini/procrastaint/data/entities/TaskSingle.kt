@@ -10,7 +10,6 @@ data class TaskSingle(
     val metaId: Long,
     val completionId: Long,
 
-
     val title: String,
     val description: String,
     val completed: Long?,

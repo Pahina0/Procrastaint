@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.days
 
 class UpcomingViewModel(
     private val db: AppRepository,
@@ -31,15 +30,14 @@ class UpcomingViewModel(
     private fun getAllTasks() {
         viewModelScope.launch {
             db.getUpcomingTasks(
-                Date.getTodayStart(), Date.getTodayStart() + 7.days.inWholeMilliseconds
+                Date.getTodayStart()
             ).flowOn(Dispatchers.IO).collectLatest { taskInfos: List<TaskSingle> ->
-                    _uiState.update {
-                        println(taskInfos)
-                        it.copy(
-                            taskInfos = taskInfos
-                        )
-                    }
+                _uiState.update {
+                    it.copy(
+                        taskInfos = taskInfos
+                    )
                 }
+            }
         }
     }
 
@@ -47,11 +45,23 @@ class UpcomingViewModel(
         viewModelScope.launch {
             if (task.completed == null) {
                 db.addCompletion(
-                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId, task.completionId)
+                    TaskCompletion(
+                        Date.getTime(),
+                        task.currentEventTime,
+                        task.taskId,
+                        task.metaId,
+                        task.completionId
+                    )
                 )
             } else {
                 db.removeCompletion(
-                    TaskCompletion(Date.getTime(), task.currentEventTime, task.taskId, task.metaId, task.completionId)
+                    TaskCompletion(
+                        Date.getTime(),
+                        task.currentEventTime,
+                        task.taskId,
+                        task.metaId,
+                        task.completionId
+                    )
                 )
             }
         }

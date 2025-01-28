@@ -7,5 +7,3 @@ data class Task(
 
     val completions: List<TaskCompletion> = emptyList()
 )
-
-

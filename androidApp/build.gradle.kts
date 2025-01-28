@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "ap.panini.procrastaint"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "ap.panini.procrastaint"
         minSdk = 24

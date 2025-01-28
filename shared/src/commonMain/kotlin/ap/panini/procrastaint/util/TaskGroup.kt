@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.util
 
-import ap.panini.kwhen.TimeUnit
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.entities.TaskMeta
@@ -32,31 +31,17 @@ data class TaskGroup(
             }
         }
 
-
-        // no start time
-        if (startTimes.isEmpty()) {
-            return Task(
-                taskInfo = TaskInfo(
-                    title = title,
-                    description = description,
-                ),
-                meta = listOf(
-                    TaskMeta(
-                        startTime = null,
-                        endTime = endTime,
-                        repeatTag = repeatTag,
-                        repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften },
-                    )
-                ),
+        val meta = if (startTimes.isEmpty()) {
+            listOf(
+                TaskMeta(
+                    startTime = null,
+                    endTime = endTime,
+                    repeatTag = repeatTag,
+                    repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften },
+                )
             )
-        }
-
-        return Task(
-            taskInfo = TaskInfo(
-                title = title,
-                description = description
-            ),
-            meta = startTimes.map {
+        } else {
+            startTimes.map {
                 TaskMeta(
                     startTime = it,
                     endTime = endTime,
@@ -64,8 +49,15 @@ data class TaskGroup(
                     repeatOften = repeatOften.let { rep -> if (rep == 0) null else repeatOften }
                 )
             }
+        }
+
+        // no start time
+        return Task(
+            taskInfo = TaskInfo(
+                title = title,
+                description = description,
+            ),
+            meta = meta
         )
     }
-
 }
-

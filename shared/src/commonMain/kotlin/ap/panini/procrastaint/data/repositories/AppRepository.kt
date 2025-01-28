@@ -4,20 +4,11 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.TaskGroup
-import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimePeriod
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
 import kotlin.math.min
-import kotlin.time.Duration
 
 class AppRepository(private val taskDao: TaskDao) {
     suspend fun insertTask(task: TaskGroup): Boolean {
@@ -30,7 +21,6 @@ class AppRepository(private val taskDao: TaskDao) {
         }
 
         return true
-
     }
 
     suspend fun addCompletion(taskCompletion: TaskCompletion) =
@@ -43,78 +33,112 @@ class AppRepository(private val taskDao: TaskDao) {
             taskCompletion
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun getUpcomingTasks(from: Long, to: Long): Flow<List<TaskSingle>> =
         taskDao.getUpcomingTasks(from, to)
-            .mapLatest { list ->
-                val filteredList = mutableListOf<TaskSingle>()
+            .organize(
+                from = from,
+                to = to,
+                maxRepetition = 10
+            )
 
-                // task id to a list of all the completed times to the completed id
-                val completed = mutableMapOf<Long, MutableMap<Long, Long>>()
-                for (task in list) {
+    fun getUpcomingTasks(from: Long): Flow<List<TaskSingle>> =
+        taskDao.getAllTasks(from)
+            .organize(
+                from = from,
+                maxRepetition = 10
+            )
 
-                    // saves all the completed into a map
-                    if (task.completed != null) {
-                        completed.getOrPut(task.taskId) { mutableMapOf() }[task.currentEventTime] =
-                            task.completionId
-                    }
+    /**
+     * Get all repetitions in a tasks given a single task
+     *
+     * @param from
+     * @param to
+     * @param maxRepetition
+     * @param completed
+     * @return the list of all tasks that can be generated from that 1 task
+     */
+    private fun TaskSingle.getAllTasks(
+        from: Long,
+        to: Long,
+        maxRepetition: Long,
+        completed: Map<Long, MutableMap<Long, Long>>
+    ): List<TaskSingle> {
+        if (repeatOften == null || repeatTag == null || startTime == null) {
+            return listOf(
+                copy(
+                    currentEventTime = startTime ?: 0
+                )
+            )
+        }
 
-                    // saves all the unique tasks
-                    if (filteredList.isEmpty() || task.metaId != filteredList.last().metaId) {
-                        filteredList += task
-                    }
-                }
+        val items = mutableListOf<TaskSingle>()
+        val toTime = Instant.fromEpochMilliseconds(min(endTime ?: to, to))
+        var curTime = Instant.fromEpochMilliseconds(startTime)
 
+        var timesDuped = 0L
 
-                filteredList.map { task ->
-                    if (task.repeatOften == null || task.repeatTag == null || task.startTime == null) {
-                        return@map listOf(
-                            task.copy(
-                                currentEventTime = task.startTime ?: 0
-                            )
+        val fromTime = Instant.fromEpochMilliseconds(from)
+        while (curTime < fromTime) {
+            curTime = repeatTag.incrementBy(curTime, repeatOften)
+        }
+
+        while (curTime <= toTime && timesDuped <= maxRepetition) {
+            val isCompleted =
+                curTime.toEpochMilliseconds() in (
+                        completed[taskId]?.keys
+                            ?: emptySet()
                         )
-                    }
+            items += copy(
+                currentEventTime = curTime.toEpochMilliseconds(),
+                completed = if (isCompleted) {
+                    curTime.toEpochMilliseconds()
+                } else {
+                    null
+                },
+                completionId = completed[taskId]?.get(curTime.toEpochMilliseconds())
+                    ?: 0
+            )
 
+            ++timesDuped
+            curTime = repeatTag.incrementBy(curTime, repeatOften)
+        }
 
-                    val items = mutableListOf<TaskSingle>()
-                    val toTime = Instant.fromEpochMilliseconds(min(task.endTime ?: to, to))
-                    var curTime = Instant.fromEpochMilliseconds(task.startTime)
+        return items
+    }
 
-                    val fromTime = Instant.fromEpochMilliseconds(from)
-                    while (curTime < fromTime) {
-                        curTime = task.repeatTag.incrementBy(curTime, task.repeatOften)
-                    }
+    /**
+     * Organizes a list of tasks by grouping them by time and generating all its repeating parts
+     *
+     * @param from
+     * @param to
+     * @param maxRepetition
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun Flow<List<TaskSingle>>.organize(
+        from: Long,
+        to: Long = Long.MAX_VALUE,
+        maxRepetition: Long = Long.MAX_VALUE
+    ) = this.mapLatest { list ->
+        val filteredList = mutableListOf<TaskSingle>()
 
-
-                    while (curTime <= toTime) {
-
-                        val isCompleted =
-                            curTime.toEpochMilliseconds() in (completed[task.taskId]?.keys ?: emptySet())
-                        items += task.copy(
-                            currentEventTime = curTime.toEpochMilliseconds(),
-                            completed = if (isCompleted) {
-                                curTime.toEpochMilliseconds()
-                            } else {
-                                null
-                            },
-                            completionId = completed[task.taskId]?.get(curTime.toEpochMilliseconds()) ?: 0
-                        )
-
-                        curTime = task.repeatTag.incrementBy(curTime, task.repeatOften)
-                    }
-
-
-                    return@map items
-                }.flatten()
-                    .sortedBy { it.currentEventTime }
+        // task id to a list of all the completed times to the completed id
+        val completed = mutableMapOf<Long, MutableMap<Long, Long>>()
+        for (task in list) {
+            // saves all the completed into a map
+            if (task.completed != null) {
+                completed.getOrPut(task.taskId) { mutableMapOf() }[task.currentEventTime] =
+                    task.completionId
             }
-//
-//    fun getAllTasks(): Flow<List<TaskInfo>> = taskDao.getAllTasks()
-//
-//    fun getTaskHistory(): Flow<List<TaskInfo>> = taskDao.getTaskHistory()
-//    fun getIncompleteTasks(): Flow<List<TaskInfo>> = taskDao.getIncompleteTasks()
-//
-//    fun getUpcomingTasks(from: Long): Flow<List<TaskInfo>> = taskDao.getUpcomingTasksGrouped(from)
-//
-//    suspend fun updateTask(taskInfo: TaskInfo) = taskDao.updateTask(taskInfo)
+
+            // saves all the unique tasks
+            if (filteredList.isEmpty() || task.metaId != filteredList.last().metaId) {
+                filteredList += task
+            }
+        }
+
+        filteredList.map { task ->
+            task.getAllTasks(from, to, maxRepetition, completed)
+        }.flatten()
+            .sortedBy { it.currentEventTime }
+    }
 }
