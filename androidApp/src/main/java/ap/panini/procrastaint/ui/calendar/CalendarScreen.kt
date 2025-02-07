@@ -42,7 +42,15 @@ fun CalendarScreen(
         }
     ) { padding ->
         ScreenScaffold(modifier = Modifier.padding(padding)) {
-            DayView(state.taskInfos, viewModel::checkTask, modifier = Modifier.fillMaxSize())
+            DayView(
+                if (state.taskInfos.isEmpty()) {
+                    listOf()
+                } else {
+                    state.taskInfos[state.taskInfos.size / 2]
+                },
+                viewModel::checkTask,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

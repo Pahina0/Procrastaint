@@ -11,11 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days
 
@@ -29,27 +27,40 @@ class CalendarViewModel(
     init {
         viewModelScope.launch {
             _uiState.collectLatest {
-                getAllTasks(it.dateOffset)
+                getAllTasks()
             }
         }
     }
 
-    private fun getAllTasks(offset: Int) {
+    private fun getAllTasks() {
 
+        val dayMs = 1.days.inWholeMilliseconds
         viewModelScope.launch {
-            db.getUpcomingTasks(
-//                Date.getTodayStart() - 2.days.inWholeMilliseconds + offset,
-//                Date.getTodayStart() + 3.days.inWholeMilliseconds + offset
-                Date.getTodayStart() ,
-                Date.getTodayStart() + 1.days.inWholeMilliseconds + offset
-            ).flowOn(Dispatchers.IO)
-                .collectLatest { taskInfos: List<TaskSingle> ->
-                    _uiState.update {
-                        it.copy(
-                            taskInfos = taskInfos
-                        )
+            _uiState.collectLatest { v ->
+
+                db.getUpcomingTasks(
+                    v.minDate,
+                    v.maxDate
+                ).flowOn(Dispatchers.IO)
+                    .collectLatest { taskInfos: List<TaskSingle> ->
+                        _uiState.update {
+                            val organized = mutableListOf<List<TaskSingle>>()
+
+                            var fromTime = v.minDate
+                            var toTime = fromTime + dayMs
+
+                            while (toTime <= v.maxDate) {
+                                organized += taskInfos.filter { f -> f.currentEventTime in fromTime..<toTime }
+
+                                fromTime = toTime
+                                toTime += dayMs
+                            }
+                            it.copy(
+                                taskInfos = organized
+                            )
+                        }
                     }
-                }
+            }
         }
     }
 
@@ -81,8 +92,9 @@ class CalendarViewModel(
 
     @Immutable
     data class CalendarUiState(
-        val taskInfos: List<TaskSingle> = listOf(),
-        val dateOffset: Int = 0
+        val taskInfos: List<List<TaskSingle>> = listOf(),
+        val minDate: Long = Date.getTodayStart() - 2.days.inWholeMilliseconds,
+        val maxDate: Long = Date.getTodayStart() + 3.days.inWholeMilliseconds,
     )
 
 }
