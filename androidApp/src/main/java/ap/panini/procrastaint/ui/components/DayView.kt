@@ -1,8 +1,6 @@
 package ap.panini.procrastaint.ui.components
 
-import android.util.Log
 import androidx.collection.mutableIntIntMapOf
-import androidx.collection.mutableIntListOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,11 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +21,8 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.hour
 import kotlin.time.Duration.Companion.hours
+
+private const val HOURS = 24
 
 /**
  * Day view
@@ -41,11 +37,9 @@ fun DayView(
     onCheck: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val listState = rememberLazyListState()
     var amt = 0
     val indexes = remember { mutableIntIntMapOf(0, 0) }
-
 
     var remainingItems = tasks
     LazyColumn(
@@ -60,8 +54,7 @@ fun DayView(
             )
         }
 
-        (1 until 24).forEach { hour ->
-
+        for (hour in 1 until HOURS) {
             // gets all tasks under x hour
             val usingItems =
                 remainingItems.filter {
@@ -92,9 +85,7 @@ fun DayView(
                     )
                 )
             }
-
         }
-
 
         // displays all tasks under x hour
         items(items = remainingItems) {

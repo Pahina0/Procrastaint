@@ -6,8 +6,6 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.TaskGroup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import kotlin.math.min
@@ -87,9 +85,9 @@ class AppRepository(private val taskDao: TaskDao) {
         while (curTime <= toTime && timesDuped <= maxRepetition) {
             val isCompleted =
                 curTime.toEpochMilliseconds() in (
-                        completed[taskId]?.keys
-                            ?: emptySet()
-                        )
+                    completed[taskId]?.keys
+                        ?: emptySet()
+                    )
             items += copy(
                 currentEventTime = curTime.toEpochMilliseconds(),
                 completed = if (isCompleted) {

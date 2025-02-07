@@ -28,7 +28,6 @@ fun CalendarScreen(
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
-
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -54,4 +53,3 @@ fun CalendarScreen(
         }
     }
 }
-

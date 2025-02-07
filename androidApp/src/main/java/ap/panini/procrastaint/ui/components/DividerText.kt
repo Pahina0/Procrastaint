@@ -14,15 +14,19 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DividerText(text: String, modifier: Modifier = Modifier) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        HorizontalDivider(modifier = Modifier
-            .weight(1f)
-            .padding(horizontal = 10.dp))
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp)
+        )
 
         Text(text)
 
-        HorizontalDivider(modifier = Modifier
-            .weight(1f)
-            .padding(horizontal = 10.dp))
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 10.dp)
+        )
     }
 }
 

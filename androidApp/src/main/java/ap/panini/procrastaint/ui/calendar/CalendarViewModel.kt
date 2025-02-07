@@ -33,7 +33,6 @@ class CalendarViewModel(
     }
 
     private fun getAllTasks() {
-
         val dayMs = 1.days.inWholeMilliseconds
         viewModelScope.launch {
             _uiState.collectLatest { v ->
@@ -96,5 +95,4 @@ class CalendarViewModel(
         val minDate: Long = Date.getTodayStart() - 2.days.inWholeMilliseconds,
         val maxDate: Long = Date.getTodayStart() + 3.days.inWholeMilliseconds,
     )
-
 }
