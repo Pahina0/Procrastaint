@@ -29,7 +29,7 @@ class UpcomingViewModel(
 
     private fun getAllTasks() {
         viewModelScope.launch {
-            db.getUpcomingTasks(
+            db.getTasksBetween(
                 Date.getTodayStart()
             ).flowOn(Dispatchers.IO).collectLatest { taskInfos: List<TaskSingle> ->
                 _uiState.update {

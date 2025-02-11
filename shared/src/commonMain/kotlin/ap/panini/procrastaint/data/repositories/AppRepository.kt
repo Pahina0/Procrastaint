@@ -33,15 +33,15 @@ class AppRepository(private val taskDao: TaskDao) {
             taskCompletion
         )
 
-    fun getUpcomingTasks(from: Long, to: Long): Flow<List<TaskSingle>> =
-        taskDao.getUpcomingTasks(from, to)
+    fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
+        taskDao.getTasksBetween(from, to)
             .organize(
                 from = from,
                 to = to,
                 maxRepetition = 10
             )
 
-    fun getUpcomingTasks(from: Long): Flow<List<TaskSingle>> =
+    fun getTasksBetween(from: Long): Flow<List<TaskSingle>> =
         taskDao.getAllTasks(from)
             .organize(
                 from = from,

@@ -44,7 +44,7 @@ interface TaskDao {
         ORDER BY tm.startTime
     """
     )
-    fun getUpcomingTasks(from: Long, to: Long): Flow<List<TaskSingle>>
+    fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>>
 
     @Query(
         """

@@ -37,7 +37,7 @@ class CalendarViewModel(
         viewModelScope.launch {
             _uiState.collectLatest { v ->
 
-                db.getUpcomingTasks(
+                db.getTasksBetween(
                     v.minDate,
                     v.maxDate
                 ).flowOn(Dispatchers.IO)

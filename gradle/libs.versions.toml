@@ -14,6 +14,7 @@ androidx-room = "2.7.0-alpha13"
 ksp = "2.1.0-1.0.29"
 kwhen = "0.0.4"
 navigationCompose = "2.8.6"
+pagingCompose = "3.3.5"
 sqliteBundled = "2.5.0-alpha13"
 sqliteBundledAndroid = "2.5.0-alpha13"
 
@@ -22,6 +23,8 @@ androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "d
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingCompose" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
 destinations-bottom-sheet = { module = "io.github.raamcosta.compose-destinations:bottom-sheet", version.ref = "core" }
 destinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }

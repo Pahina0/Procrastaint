@@ -56,4 +56,8 @@ dependencies {
     implementation(libs.destinations.core)
     ksp(libs.destinations.ksp)
     implementation(libs.destinations.bottom.sheet)
+
+
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 }
