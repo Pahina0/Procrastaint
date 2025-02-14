@@ -9,5 +9,5 @@ import org.koin.dsl.module
 val androidModule = module {
     viewModel { MainActivityViewModel(get()) }
     viewModel { UpcomingViewModel(get()) }
-    viewModel { CalendarViewModel(get()) }
+    viewModel { params -> CalendarViewModel(time = params.get(), get()) }
 }

@@ -19,16 +19,26 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
 @Composable
-fun TasksMiniPreview(date: Long, tasks: List<TaskSingle>, modifier: Modifier = Modifier) {
+fun TasksMiniPreview(
+    date: Long,
+    tasks: List<TaskSingle>,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     val states = tasks.joinToString("") { it.completed?.let { "O" } ?: "X" }
 
     Card(
-        modifier = modifier.width(100.dp).height(70.dp),
+        onClick = onClick,
+        modifier = modifier
+            .width(100.dp)
+            .height(70.dp),
         shape = RoundedCornerShape(50.dp),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(10.dp).fillMaxSize(),
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly
 
         ) {

@@ -41,6 +41,7 @@ import com.ramcosta.composedestinations.generated.destinations.LibraryScreenDest
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.UpcomingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
@@ -85,7 +86,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-        ) {
+            ) {
             if (showBottomSheet) {
                 TaskBottomSheet(
                     viewModel.uiState.collectAsStateWithLifecycle().value,
@@ -142,13 +143,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private enum class BottomBarDestination(
-        val direction: DirectionDestinationSpec,
+        val direction: Direction,
         val iconSelected: ImageVector,
         val iconDeselected: ImageVector,
         @StringRes val label: Int
     ) {
         Calendar(
-            CalendarScreenDestination,
+            CalendarScreenDestination(),
             Icons.Default.CalendarMonth,
             Icons.Outlined.CalendarMonth,
             R.string.calendar
