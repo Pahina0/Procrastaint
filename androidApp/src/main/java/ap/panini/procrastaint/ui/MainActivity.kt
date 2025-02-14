@@ -42,7 +42,6 @@ import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDes
 import com.ramcosta.composedestinations.generated.destinations.UpcomingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
@@ -86,7 +85,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             if (showBottomSheet) {
                 TaskBottomSheet(
                     viewModel.uiState.collectAsStateWithLifecycle().value,

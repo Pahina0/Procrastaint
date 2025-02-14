@@ -29,13 +29,10 @@ class CalendarPagingSource(
         )
     }
 
-
     override fun getRefreshKey(state: PagingState<Long, Pair<Long, Flow<List<TaskSingle>>>>): Long? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
-
-
 }

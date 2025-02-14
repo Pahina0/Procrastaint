@@ -39,7 +39,6 @@ class CalendarViewModel(
     }.flow
         .cachedIn(viewModelScope)
 
-
     init {
         viewModelScope.launch {
             _uiState.collectLatest {

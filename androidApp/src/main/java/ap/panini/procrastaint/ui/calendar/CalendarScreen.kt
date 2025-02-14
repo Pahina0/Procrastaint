@@ -36,8 +36,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun CalendarScreen(
     navigator: DestinationsNavigator,
-    startTime: Long = Date.getTodayStart(),
     modifier: Modifier = Modifier,
+    startTime: Long = Date.getTodayStart(),
     viewModel: CalendarViewModel = koinViewModel(parameters = { parametersOf(startTime) }),
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
