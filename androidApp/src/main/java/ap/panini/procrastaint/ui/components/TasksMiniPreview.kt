@@ -2,12 +2,14 @@ package ap.panini.procrastaint.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +27,6 @@ fun TasksMiniPreview(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val states = tasks.joinToString("") { it.completed?.let { "O" } ?: "X" }
 
     Card(
         onClick = onClick,
@@ -43,7 +44,10 @@ fun TasksMiniPreview(
 
         ) {
             Text(date.formatMilliseconds(setOf(Time.DAY)))
-            Text(states, overflow = TextOverflow.Ellipsis, maxLines = 1)
+
+            Row {
+                Text(tasks.filter { it.completed == null }.size.toString())
+            }
         }
     }
 }

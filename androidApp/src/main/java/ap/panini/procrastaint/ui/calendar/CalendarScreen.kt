@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavOptions
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.components.DayView
@@ -31,6 +32,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(
+    style = CalendarTransitions::class,
     start = true
 )
 @Composable
@@ -70,7 +72,13 @@ fun CalendarScreen(
                             time,
                             itemState,
                             onClick = {
-                                navigator.navigate(CalendarScreenDestination(startTime = time))
+                                navigator.navigate(
+                                    CalendarScreenDestination(startTime = time),
+                                ) {
+                                    popUpTo(CalendarScreenDestination) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         )
                     }

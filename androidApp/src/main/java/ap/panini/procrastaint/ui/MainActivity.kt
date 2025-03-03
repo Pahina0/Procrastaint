@@ -122,6 +122,9 @@ class MainActivity : ComponentActivity() {
                     onClick = {
                         destinationsNavigator.navigate(destination.direction) {
                             launchSingleTop = true
+                            popUpTo(destination.direction) {
+                                inclusive = true
+                            }
                         }
                     },
                     icon = {
