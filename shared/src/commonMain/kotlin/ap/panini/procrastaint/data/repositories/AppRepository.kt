@@ -38,14 +38,13 @@ class AppRepository(private val taskDao: TaskDao) {
             .organize(
                 from = from,
                 to = to,
-                maxRepetition = 10
             )
 
-    fun getTasksBetween(from: Long): Flow<List<TaskSingle>> =
+    fun getTasksFrom(from: Long): Flow<List<TaskSingle>> =
         taskDao.getAllTasks(from)
             .organize(
                 from = from,
-                maxRepetition = 10
+                maxRepetition = 5
             )
 
     /**
@@ -93,13 +92,13 @@ class AppRepository(private val taskDao: TaskDao) {
                 completed = if (isCompleted) {
                     curTime.toEpochMilliseconds()
                 } else {
+                    ++timesDuped
                     null
                 },
                 completionId = completed[taskId]?.get(curTime.toEpochMilliseconds())
                     ?: 0
             )
 
-            ++timesDuped
             curTime = repeatTag.incrementBy(curTime, repeatOften)
         }
 

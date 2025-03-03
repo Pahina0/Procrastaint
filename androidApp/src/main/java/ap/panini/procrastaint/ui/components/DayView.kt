@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.ui.components
 
-import androidx.collection.mutableIntIntMapOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,7 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +41,7 @@ fun DayView(
 ) {
     val listState = rememberLazyListState()
     var amt = 0
-    val indexes = remember { mutableIntIntMapOf(0, 0) }
+    var firstTask by remember { mutableIntStateOf(-1) }
 
     var remainingItems = tasks
     LazyColumn(
@@ -56,10 +58,9 @@ fun DayView(
 
         for (hour in 1 until HOURS) {
             // gets all tasks under x hour
-            val usingItems =
-                remainingItems.filter {
-                    it.currentEventTime.hour().toLong() < hour.hours.inWholeHours
-                }
+            val usingItems = remainingItems.filter {
+                it.currentEventTime.hour().toLong() < hour.hours.inWholeHours
+            }
             amt += usingItems.size
 
             // removes those under x hour
@@ -73,9 +74,11 @@ fun DayView(
             if (usingItems.isEmpty()) {
                 item { Spacer(modifier = Modifier.height(50.dp)) }
                 ++amt
+            } else if (firstTask == -1) {
+                firstTask = amt - 1
             }
 
-            indexes[hour] = ++amt
+            ++amt
 
             item {
                 DividerText(
@@ -93,12 +96,20 @@ fun DayView(
         }
         if (remainingItems.isEmpty()) {
             item { Spacer(modifier = Modifier.height(50.dp)) }
+        } else if (firstTask == -1) {
+            firstTask = amt - 1
         }
     }
 
     LaunchedEffect(true) {
         // scrolls to current time
-        listState.animateScrollToItem(indexes[Date.getTime().hour()])
+        listState.animateScrollToItem(
+            if (firstTask == -1) {
+                Date.getTime().hour() * 2 // have to account for spacing
+            } else {
+                firstTask
+            }
+        )
     }
 }
 

@@ -29,12 +29,12 @@ class UpcomingViewModel(
 
     private fun getAllTasks() {
         viewModelScope.launch {
-            db.getTasksBetween(
+            db.getTasksFrom(
                 Date.getTodayStart()
             ).flowOn(Dispatchers.IO).collectLatest { taskInfos: List<TaskSingle> ->
                 _uiState.update {
                     it.copy(
-                        taskInfos = taskInfos
+                        taskInfos = taskInfos.filter { f -> f.completed == null }
                     )
                 }
             }
