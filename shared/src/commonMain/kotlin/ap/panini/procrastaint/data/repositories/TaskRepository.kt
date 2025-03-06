@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.Instant
 import kotlin.math.min
 
-class AppRepository(private val taskDao: TaskDao) {
+class TaskRepository(private val taskDao: TaskDao) {
     suspend fun insertTask(task: TaskGroup): Boolean {
         val tasks = task.toTask() ?: return false
 

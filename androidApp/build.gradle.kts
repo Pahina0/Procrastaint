@@ -35,6 +35,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    defaultConfig {
+        manifestPlaceholders["oidcRedirectScheme"] = "https://procrastaint/callback"
+    }
+
+
 }
 
 dependencies {
@@ -59,4 +65,11 @@ dependencies {
 
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+
+    // google auth
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    implementation(libs.appauth)
 }

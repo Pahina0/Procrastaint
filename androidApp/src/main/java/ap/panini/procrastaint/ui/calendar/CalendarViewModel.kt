@@ -8,7 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.data.repositories.AppRepository
+import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.hours
 
 class CalendarViewModel(
     private val time: Long,
-    private val db: AppRepository
+    private val db: TaskRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CalendarUiState())

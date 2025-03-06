@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-        ) {
+            ) {
             if (showBottomSheet) {
                 TaskBottomSheet(
                     viewModel.uiState.collectAsStateWithLifecycle().value,

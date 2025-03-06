@@ -3,7 +3,7 @@ package ap.panini.procrastaint.ui
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ap.panini.procrastaint.data.repositories.AppRepository
+import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Parser
 import ap.panini.procrastaint.util.TaskGroup
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
-    private val db: AppRepository
+    private val db: TaskRepository
 ) : ViewModel() {
     private var parser = Parser()
 

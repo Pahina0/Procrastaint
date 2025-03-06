@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.data.repositories.AppRepository
+import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UpcomingViewModel(
-    private val db: AppRepository,
+    private val db: TaskRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UpcomingUiState())

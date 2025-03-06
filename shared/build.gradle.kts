@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
 kotlin {
@@ -33,6 +34,7 @@ kotlin {
             implementation(libs.insert.koin.koin.core)
             implementation(libs.koin.core)
 
+            // db
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
 
@@ -40,15 +42,26 @@ kotlin {
 
             implementation(libs.kotlinx.datetime)
 
+            // preferences
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.androidx.datastore)
+
+            implementation(libs.ktorfit.lib)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+
+            implementation(libs.ktor.client.auth)
+
+            // https://github.com/kalinjul/kotlin-multiplatform-oidc?tab=readme-ov-file
+            implementation(libs.oidc.appsupport)
+            implementation(libs.oidc.ktor)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
 
-    task("testClasses")
+    tasks.register("testClasses")
 }
 android {
     namespace = "ap.panini.procrastaint"
