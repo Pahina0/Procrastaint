@@ -9,3 +9,4 @@ captures
 local.properties
 xcuserdata
 .kotlin
+shared/src/main/res/values/android_client_id.xml

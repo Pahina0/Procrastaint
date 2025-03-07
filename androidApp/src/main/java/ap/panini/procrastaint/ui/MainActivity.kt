@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainActivityViewModel by inject()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 MainContent()
             }
         }
+
     }
 
     @Composable

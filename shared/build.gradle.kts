@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
+
+
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -51,10 +54,8 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
 
             implementation(libs.ktor.client.auth)
-
-            // https://github.com/kalinjul/kotlin-multiplatform-oidc?tab=readme-ov-file
-            implementation(libs.oidc.appsupport)
-            implementation(libs.oidc.ktor)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -65,7 +66,7 @@ kotlin {
 }
 android {
     namespace = "ap.panini.procrastaint"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 24
     }

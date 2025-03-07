@@ -1,5 +1,5 @@
 package ap.panini.procrastaint.data.network
 
-actual fun getClientPrefix(): String {
+actual fun getGoogleId(): String {
     TODO("Not yet implemented")
 }
