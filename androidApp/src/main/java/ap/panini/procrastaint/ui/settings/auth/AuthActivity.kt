@@ -21,13 +21,11 @@ import net.openid.appauth.AuthorizationResponse
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
-
 class AuthActivity : ComponentActivity() {
     private val preference: PreferenceRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         val resp = AuthorizationResponse.fromIntent(intent)
 
@@ -50,13 +48,11 @@ class AuthActivity : ComponentActivity() {
             }
         }
 
-
         val calendarRepository: CalendarRepository = get()
         val googleAuth: GoogleAuth = get()
         googleAuth.preformTokenRequest(
             resp.createTokenExchangeRequest(),
             onSuccess = {
-
                 lifecycleScope.launch {
                     preference.setString(
                         PreferenceRepository.GOOGLE_ACCESS_TOKEN,
@@ -67,18 +63,14 @@ class AuthActivity : ComponentActivity() {
                         it.refreshToken!!
                     )
 
-
                     calendarRepository.googleCreateCalendar()
                     returnToSettings()
                 }
-
             },
             onException = {
                 returnToSettings()
             }
         )
-
-
     }
 
     private fun returnToSettings() {

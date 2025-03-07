@@ -18,7 +18,6 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-
 @Destination<RootGraph>
 @Composable
 fun SettingsScreen(
@@ -28,10 +27,8 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
 
-
     Scaffold(modifier = modifier) {
         Box(modifier = Modifier.padding(it)) {
-
             Column(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
@@ -45,9 +42,7 @@ fun SettingsScreen(
                 ) {
                     Text("Sign in with Google")
                 }
-
             }
         }
     }
 }
-

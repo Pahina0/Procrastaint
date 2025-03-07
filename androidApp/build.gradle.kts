@@ -39,8 +39,6 @@ android {
     defaultConfig {
         manifestPlaceholders["appAuthRedirectScheme"] = "ap.panini.procrastaint"
     }
-
-
 }
 
 dependencies {
@@ -71,6 +69,5 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
 
-
-    implementation (libs.appauth)
+    implementation(libs.appauth)
 }

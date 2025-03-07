@@ -14,5 +14,4 @@ class CalendarRepository(
             gcApi.createCalendar(GoogleCalendar("Procrastaint")).id!!
         )
     }
-
 }

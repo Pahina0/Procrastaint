@@ -28,20 +28,20 @@ class GoogleAuth(context: Context) : OAuth {
                     return@RetrieveConfigurationCallback
                 }
                 // use serviceConfiguration as needed
-            })
+            }
+        )
 
         authRequest =
             AuthorizationRequest.Builder(
-                authorizationServiceConfig,  // the authorization service configuration
+                authorizationServiceConfig, // the authorization service configuration
                 getGoogleId(),
-                ResponseTypeValues.CODE,  // the response_type value: we want a code
+                ResponseTypeValues.CODE, // the response_type value: we want a code
                 "ap.panini.procrastaint:/oauth2redirect".toUri()
             ).setScopes("https://www.googleapis.com/auth/calendar.app.created")
                 .build()
 
         authService = AuthorizationService(context)
     }
-
 
     override fun auth(
         context: Context,

@@ -28,13 +28,11 @@ object GoogleAuth {
         preferenceRepository: PreferenceRepository,
     ) {
         bearer {
-
             loadTokens {
                 val access =
                     preferenceRepository.getString(PreferenceRepository.GOOGLE_ACCESS_TOKEN).first()
 
                 if (access.isBlank()) return@loadTokens null
-
 
                 val refresh =
                     preferenceRepository.getString(PreferenceRepository.GOOGLE_REFRESH_TOKEN)
@@ -78,5 +76,4 @@ object GoogleAuth {
             }
         }
     }
-
 }

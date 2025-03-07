@@ -34,7 +34,6 @@ class PreferenceRepository(
         it[stringPreferencesKey(key)] ?: stringPreference[key]!!
     }
 
-
     suspend fun setString(key: String, value: String) {
         dataStore.edit { it[stringPreferencesKey(key)] = value }
     }

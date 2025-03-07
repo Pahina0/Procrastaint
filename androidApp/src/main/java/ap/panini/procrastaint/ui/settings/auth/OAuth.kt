@@ -22,5 +22,4 @@ interface OAuth {
                 onSuccess(resp)
             }
         }
-
 }

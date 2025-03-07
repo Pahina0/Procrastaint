@@ -12,4 +12,3 @@ data class TokenInfo(
     @SerialName("token_type") val tokenType: String,
     @SerialName("id_token") val idToken: String,
 )
-
