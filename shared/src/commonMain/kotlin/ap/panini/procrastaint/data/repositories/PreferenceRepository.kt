@@ -34,7 +34,7 @@ class PreferenceRepository(
         it[stringPreferencesKey(key)] ?: stringPreference[key]!!
     }
 
-    suspend fun setString(key: String, value: String) {
+    suspend fun setString(key: String, value: String = stringPreference[key]!!) {
         dataStore.edit { it[stringPreferencesKey(key)] = value }
     }
 //    fun getBoolean(key: String): Flow<Boolean> = dataStore.data.map {

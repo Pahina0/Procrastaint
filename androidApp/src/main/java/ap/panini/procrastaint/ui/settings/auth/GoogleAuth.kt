@@ -37,7 +37,10 @@ class GoogleAuth(context: Context) : OAuth {
                 getGoogleId(),
                 ResponseTypeValues.CODE, // the response_type value: we want a code
                 "ap.panini.procrastaint:/oauth2redirect".toUri()
-            ).setScopes("https://www.googleapis.com/auth/calendar.app.created")
+            ).setScopes(
+                "https://www.googleapis.com/auth/calendar.app.created",
+                "https://www.googleapis.com/auth/calendar.calendarlist.readonly"
+            )
                 .build()
 
         authService = AuthorizationService(context)

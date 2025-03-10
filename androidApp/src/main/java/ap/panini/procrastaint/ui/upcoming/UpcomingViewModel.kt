@@ -43,25 +43,22 @@ class UpcomingViewModel(
 
     fun checkTask(task: TaskSingle) {
         viewModelScope.launch {
+
+            val completion =
+                TaskCompletion(
+                    Date.getTime(),
+                    task.currentEventTime,
+                    task.taskId,
+                    task.metaId,
+                    task.completionId
+                )
             if (task.completed == null) {
                 db.addCompletion(
-                    TaskCompletion(
-                        Date.getTime(),
-                        task.currentEventTime,
-                        task.taskId,
-                        task.metaId,
-                        task.completionId
-                    )
+                    completion
                 )
             } else {
                 db.removeCompletion(
-                    TaskCompletion(
-                        Date.getTime(),
-                        task.currentEventTime,
-                        task.taskId,
-                        task.metaId,
-                        task.completionId
-                    )
+                    completion
                 )
             }
         }

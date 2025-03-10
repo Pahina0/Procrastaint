@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -26,6 +27,7 @@ fun SettingsScreen(
     googleAuth: GoogleAuth = koinInject()
 ) {
     val context = LocalContext.current
+    val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     Scaffold(modifier = modifier) {
         Box(modifier = Modifier.padding(it)) {
@@ -36,11 +38,23 @@ fun SettingsScreen(
             ) {
                 Button(
                     onClick = {
-                        googleAuth.auth(context)
+                        if (state.googleLoggedIn) {
+                            viewModel.googleLogout()
+                        } else {
+
+                            googleAuth.auth(context)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Sign in with Google")
+
+                    if (state.googleLoggedIn) {
+                        Text("Logout of Google")
+
+                    } else {
+                        Text("Sign in with Google")
+
+                    }
                 }
             }
         }

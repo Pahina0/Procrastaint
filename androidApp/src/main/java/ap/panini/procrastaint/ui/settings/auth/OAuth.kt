@@ -10,6 +10,7 @@ interface OAuth {
     val authService: AuthorizationService
 
     fun auth(context: Context)
+
     fun preformTokenRequest(
         tokenRequest: TokenRequest,
         onSuccess: (TokenResponse) -> Unit = {},

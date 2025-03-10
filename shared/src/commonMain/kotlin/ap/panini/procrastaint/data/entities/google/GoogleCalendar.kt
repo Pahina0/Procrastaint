@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.data.entities
+package ap.panini.procrastaint.data.entities.google
 
 import kotlinx.serialization.Serializable
 
