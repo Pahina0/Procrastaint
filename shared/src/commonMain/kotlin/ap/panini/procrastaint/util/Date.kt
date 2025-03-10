@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormatBuilder
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
@@ -148,3 +149,22 @@ fun Long.hour() =
 
 fun Long.minute() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
+
+fun Long.toRFC3339() =
+    Instant.fromEpochMilliseconds(this).format(
+        DateTimeComponents.Format {
+            year()
+            char('-')
+            monthNumber()
+            char('-')
+            dayOfMonth()
+
+            char('T')
+            hour()
+            char(':')
+            minute()
+            char(':')
+            second()
+            char('Z')
+        },
+    )

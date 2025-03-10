@@ -41,19 +41,15 @@ fun SettingsScreen(
                         if (state.googleLoggedIn) {
                             viewModel.googleLogout()
                         } else {
-
                             googleAuth.auth(context)
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
                     if (state.googleLoggedIn) {
                         Text("Logout of Google")
-
                     } else {
                         Text("Sign in with Google")
-
                     }
                 }
             }

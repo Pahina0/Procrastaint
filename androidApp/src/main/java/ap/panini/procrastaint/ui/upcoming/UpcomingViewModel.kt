@@ -43,7 +43,6 @@ class UpcomingViewModel(
 
     fun checkTask(task: TaskSingle) {
         viewModelScope.launch {
-
             val completion =
                 TaskCompletion(
                     Date.getTime(),

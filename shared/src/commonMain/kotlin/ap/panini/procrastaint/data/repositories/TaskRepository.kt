@@ -3,14 +3,23 @@ package ap.panini.procrastaint.data.repositories
 import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoogleEvents
 import ap.panini.procrastaint.util.TaskGroup
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlin.math.min
 
-class TaskRepository(private val taskDao: TaskDao) {
+class TaskRepository(
+    private val taskDao: TaskDao,
+    private val calendar: CalendarRepository,
+    private val preferences: PreferenceRepository
+) {
     suspend fun insertTask(task: TaskGroup): Boolean {
         val tasks = task.toTask() ?: return false
 
@@ -18,6 +27,16 @@ class TaskRepository(private val taskDao: TaskDao) {
 
         tasks.meta.forEach {
             taskDao.insertTaskMeta(it.copy(taskId = id))
+        }
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val updatedTask = taskDao.getTask(id)
+                println(updatedTask)
+                getGoogleEvents(updatedTask, preferences).forEach {
+                    calendar.googleCreateEvent(it)
+                }
+            }
         }
 
         return true

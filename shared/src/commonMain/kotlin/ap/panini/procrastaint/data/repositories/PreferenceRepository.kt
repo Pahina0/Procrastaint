@@ -5,7 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class PreferenceRepository(
     private val dataStore: DataStore<Preferences>
@@ -26,9 +30,25 @@ class PreferenceRepository(
         val stringPreference = mapOf(
             GOOGLE_REFRESH_TOKEN to "",
             GOOGLE_ACCESS_TOKEN to "",
-            GOOGLE_CALENDAR_ID to ""
+            GOOGLE_CALENDAR_ID to "",
         )
     }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun getUuid(): String =
+        runBlocking {
+            val id = dataStore.data.map {
+                it[stringPreferencesKey("UUID")]
+            }.first()
+
+            if (id != null) return@runBlocking id
+
+            // generated a new uuid if there isn't one already
+            val generatedId = Uuid.random().toHexString()
+            dataStore.edit { it[stringPreferencesKey("UUID")] = generatedId }
+
+            generatedId
+        }
 
     fun getString(key: String): Flow<String> = dataStore.data.map {
         it[stringPreferencesKey(key)] ?: stringPreference[key]!!
