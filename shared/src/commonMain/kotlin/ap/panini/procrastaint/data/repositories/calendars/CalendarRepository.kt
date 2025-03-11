@@ -13,4 +13,10 @@ interface CalendarRepository {
         completion: TaskCompletion,
         onFailure: (ex: Throwable) -> Unit = {}
     )
+
+    suspend fun removeCompletion(
+        task: Task,
+        completion: TaskCompletion,
+        onFailure: (ex: Throwable) -> Unit = {}
+    )
 }

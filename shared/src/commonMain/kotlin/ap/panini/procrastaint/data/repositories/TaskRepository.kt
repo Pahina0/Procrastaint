@@ -4,10 +4,10 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.TaskGroup
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
@@ -27,10 +27,8 @@ class TaskRepository(
             taskDao.insertTaskMeta(it.copy(taskId = id))
         }
 
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                calendar.createEvent(taskDao.getTask(id))
-            }
+        CoroutineScope(Dispatchers.IO).launch {
+            calendar.createEvent(taskDao.getTask(id))
         }
 
         return true
@@ -41,18 +39,23 @@ class TaskRepository(
             taskCompletion
         )
 
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                val task = taskDao.getTask(taskCompletion.taskId)
-                calendar.addCompletion(task, taskCompletion)
-            }
+        CoroutineScope(Dispatchers.IO).launch {
+            val task = taskDao.getTask(taskCompletion.taskId)
+            calendar.addCompletion(task, taskCompletion)
         }
     }
 
-    suspend fun removeCompletion(taskCompletion: TaskCompletion) =
+    suspend fun removeCompletion(taskCompletion: TaskCompletion) {
         taskDao.deleteTaskCompletion(
             taskCompletion
         )
+
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val task = taskDao.getTask(taskCompletion.taskId)
+            calendar.removeCompletion(task, taskCompletion)
+        }
+    }
 
     fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
         taskDao.getTasksBetween(from, to)
@@ -105,9 +108,9 @@ class TaskRepository(
         while (curTime <= toTime && timesDuped <= maxRepetition) {
             val isCompleted =
                 curTime.toEpochMilliseconds() in (
-                    completed[taskId]?.keys
-                        ?: emptySet()
-                    )
+                        completed[taskId]?.keys
+                            ?: emptySet()
+                        )
             items += copy(
                 currentEventTime = curTime.toEpochMilliseconds(),
                 completed = if (isCompleted) {

@@ -20,14 +20,18 @@ class NetworkCalendarRepository(
      * this is called only once when logging into google
      */
     suspend fun googleCreateCalendar() {
-        googleCalendarRepository.createCalendar()
+        googleCalendarRepository.createCalendar() { println(it) }
     }
 
     suspend fun createEvent(task: Task) {
-        googleCalendarRepository.createEvent(task, onFailure = {println(it)})
+        googleCalendarRepository.createEvent(task) { println(it) }
     }
 
     suspend fun addCompletion(task: Task, completion: TaskCompletion) {
-        googleCalendarRepository.addCompletion(task, completion)
+        googleCalendarRepository.addCompletion(task, completion) { println(it) }
+    }
+
+    suspend fun removeCompletion(task: Task, completion: TaskCompletion) {
+        googleCalendarRepository.removeCompletion(task, completion) { println(it) }
     }
 }

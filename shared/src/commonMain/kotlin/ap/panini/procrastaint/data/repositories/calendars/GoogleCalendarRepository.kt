@@ -38,7 +38,7 @@ class GoogleCalendarRepository(
             gcApi.createEvent(
                 it,
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first()
-            ).catch { ex -> onFailure(ex) }
+            ).catch { ex -> onFailure(ex); println("ERROR: $ex") }.firstOrNull()
         }
     }
 
@@ -47,6 +47,31 @@ class GoogleCalendarRepository(
         completion: TaskCompletion,
         onFailure: (ex: Throwable) -> Unit
     ) {
+        updateCompletion(
+            task,
+            completion,
+            onFailure
+        ) { "✓ $it" }
+    }
+
+    override suspend fun removeCompletion(
+        task: Task,
+        completion: TaskCompletion,
+        onFailure: (ex: Throwable) -> Unit
+    ) {
+        updateCompletion(
+            task,
+            completion,
+            onFailure
+        )
+    }
+
+    private suspend fun updateCompletion(
+        task: Task,
+        completion: TaskCompletion,
+        onFailure: (ex: Throwable) -> Unit,
+        updatedText: (String) -> String = { it }
+    ) {
         val recurring = task.meta.first().let { it.repeatTag != null && it.repeatOften != null }
         val event = getGoogleEvents(task, preference).firstOrNull { it.metaId == completion.metaId }
             ?: return
@@ -54,12 +79,13 @@ class GoogleCalendarRepository(
         if (!recurring) {
             gcApi.updateEvent(
                 event.copy(
-                    summary = "✓ ${event.summary}",
+                    summary = updatedText(event.summary),
                     reminders = GoogleEvent.Reminder(overrides = listOf())
                 ),
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
                 event.id
             ).catch { onFailure(it) }
+                .firstOrNull()
             return
         }
 
@@ -77,11 +103,13 @@ class GoogleCalendarRepository(
 
         gcApi.updateEvent(
             modifyEvent.copy(
-                summary = "✓ ${event.summary}",
+                summary = updatedText(event.summary),
                 reminders = GoogleEvent.Reminder(overrides = listOf())
             ),
             preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
             modifyEvent.id
         ).catch { onFailure(it) }
+            .firstOrNull()
+
     }
 }
