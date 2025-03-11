@@ -21,6 +21,16 @@ enum class Time {
         }
     }
 
+    fun toTimeRepeatString(): String = when (this) {
+        SECOND -> "SECONDLY"
+        MINUTE -> "MINUTELY"
+        HOUR -> "HOURLY"
+        DAY -> "DAILY"
+        WEEK -> "WEEKLY"
+        MONTH -> "MONTHLY"
+        YEAR -> "YEARLY"
+    }
+
     fun incrementBy(curTime: Instant, amount: Int) = when (this) {
         SECOND -> curTime.plus(
             DateTimePeriod(seconds = amount),

@@ -51,7 +51,8 @@ object Date {
     fun Long.formatMilliseconds(known: Set<Time> = emptySet(), smart: Boolean = true): String {
         val now = now()
         val time =
-            Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault())
+            Instant.fromEpochMilliseconds(this)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
 
         if (known.isEmpty()) {
             val formatter = LocalDateTime.Format {
@@ -150,20 +151,29 @@ fun Long.hour() =
 fun Long.minute() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
 
-fun Long.toRFC3339() =
+fun Long.toRFC3339(includeFiller: Boolean = true) =
     Instant.fromEpochMilliseconds(this).format(
         DateTimeComponents.Format {
             year()
-            char('-')
+
+            if (includeFiller) {
+                char('-')
+            }
             monthNumber()
-            char('-')
+            if (includeFiller) {
+                char('-')
+            }
             dayOfMonth()
 
             char('T')
             hour()
-            char(':')
+            if (includeFiller) {
+                char(':')
+            }
             minute()
-            char(':')
+            if (includeFiller) {
+                char(':')
+            }
             second()
             char('Z')
         },

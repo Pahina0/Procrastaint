@@ -9,9 +9,10 @@ import ap.panini.procrastaint.data.database.ProcrastaintDatabase
 import ap.panini.procrastaint.data.network.GoogleAuth
 import ap.panini.procrastaint.data.network.api.GoogleCalendarApi
 import ap.panini.procrastaint.data.network.api.createGoogleCalendarApi
-import ap.panini.procrastaint.data.repositories.CalendarRepository
+import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
+import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.ktorfit
 import io.ktor.client.HttpClient
@@ -36,7 +37,7 @@ val appModule = module {
     val database = getRoomDatabase(getDatabaseBuilder())
     single { database.getTaskDao() }
     single { createDataStore() }
-    single { TaskRepository(get(), get(), get()) }
+    single { TaskRepository(get(), get()) }
     single { PreferenceRepository(get()) }
 
     single {
@@ -50,7 +51,8 @@ val appModule = module {
             .createGoogleCalendarApi()
     }
 
-    single { CalendarRepository(get(), get()) }
+    single { GoogleCalendarRepository(get(), get()) }
+    single { NetworkCalendarRepository(get()) }
 }
 
 fun getKtor(
@@ -85,7 +87,6 @@ fun getKtor(
                             encodeDefaults = true
                             isLenient = true
                             ignoreUnknownKeys = true
-                            explicitNulls = false
                         }
                     )
                 }

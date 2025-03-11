@@ -3,7 +3,6 @@ package ap.panini.procrastaint.data.repositories
 import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoogleEvents
 import ap.panini.procrastaint.util.TaskGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,8 +16,7 @@ import kotlin.math.min
 
 class TaskRepository(
     private val taskDao: TaskDao,
-    private val calendar: CalendarRepository,
-    private val preferences: PreferenceRepository
+    private val calendar: NetworkCalendarRepository
 ) {
     suspend fun insertTask(task: TaskGroup): Boolean {
         val tasks = task.toTask() ?: return false
@@ -31,21 +29,25 @@ class TaskRepository(
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val updatedTask = taskDao.getTask(id)
-                println(updatedTask)
-                getGoogleEvents(updatedTask, preferences).forEach {
-                    calendar.googleCreateEvent(it)
-                }
+                calendar.createEvent(taskDao.getTask(id))
             }
         }
 
         return true
     }
 
-    suspend fun addCompletion(taskCompletion: TaskCompletion) =
+    suspend fun addCompletion(taskCompletion: TaskCompletion) {
         taskDao.insertTaskCompletion(
             taskCompletion
         )
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val task = taskDao.getTask(taskCompletion.taskId)
+                calendar.addCompletion(task, taskCompletion)
+            }
+        }
+    }
 
     suspend fun removeCompletion(taskCompletion: TaskCompletion) =
         taskDao.deleteTaskCompletion(

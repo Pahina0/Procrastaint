@@ -64,7 +64,7 @@ object GoogleAuth {
                     ) { markAsRefreshTokenRequest() }.body()
 
                 val access = refreshTokenInfo.accessToken
-                val refresh = refreshTokenInfo.refreshToken!!
+                val refresh = oldTokens?.refreshToken!!
 
                 preferenceRepository.setString(PreferenceRepository.GOOGLE_ACCESS_TOKEN, access)
                 preferenceRepository.setString(PreferenceRepository.GOOGLE_REFRESH_TOKEN, refresh)

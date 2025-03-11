@@ -12,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import ap.panini.procrastaint.data.repositories.CalendarRepository
+import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.ui.MainActivity
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
@@ -48,7 +48,7 @@ class AuthActivity : ComponentActivity() {
             }
         }
 
-        val calendarRepository: CalendarRepository = get()
+        val calendarRepository: NetworkCalendarRepository = get()
         val googleAuth: GoogleAuth = get()
         googleAuth.preformTokenRequest(
             resp.createTokenExchangeRequest(),
