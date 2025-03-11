@@ -17,6 +17,7 @@ ksp = "2.1.0-1.0.29"
 ktorClientAuth = "3.1.1"
 ktorClientContentNegotiation = "3.1.1"
 ktorClientLogging = "3.1.1"
+ktorfitConvertersFlow = "2.4.0"
 ktorfitLib = "2.4.0"
 ktorSerializationKotlinxJson = "3.1.1"
 kwhen = "0.1.0-SNAPSHOT"
@@ -64,6 +65,7 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktorCli
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
+ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow", version.ref = "ktorfitConvertersFlow" }
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfitLib" }
 kwhen = { module = "io.github.pahinaa.kwhen:kwhen", version.ref = "kwhen" }
 

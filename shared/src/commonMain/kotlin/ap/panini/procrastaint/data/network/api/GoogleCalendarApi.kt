@@ -10,6 +10,7 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
+import kotlinx.coroutines.flow.Flow
 
 interface GoogleCalendarApi {
 
@@ -18,31 +19,31 @@ interface GoogleCalendarApi {
     }
 
     @POST("calendars")
-    suspend fun createCalendar(
+    fun createCalendar(
         @Body calendar: GoogleCalendar,
-    ): GoogleCalendar
+    ): Flow<GoogleCalendar>
 
     @GET("users/me/calendarList")
-    suspend fun getCalendars(): GoogleCalendarList
+    fun getCalendars(): Flow<GoogleCalendarList>
 
     @POST("calendars/{calendarId}/events")
-    suspend fun createEvent(
+    fun createEvent(
         @Body event: GoogleEvent,
         @Path calendarId: String,
-    ): GoogleEvent
+    ): Flow<GoogleEvent>
 
     @PUT("calendars/{calendarId}/events/{eventId}")
-    suspend fun updateEvent(
+    fun updateEvent(
         @Body event: GoogleEvent,
         @Path calendarId: String,
         @Path eventId: String
-    )
+    ): Flow<GoogleEvent>
 
     @GET("calendars/{calendarId}/events/{eventId}/instances")
-    suspend fun getInstances(
+    fun getInstances(
         @Path calendarId: String,
         @Path eventId: String,
         @Query timeMax: String, // exclusive
         @Query timeMin: String // inclusive
-    ): GoogleEventInstances
+    ): Flow<GoogleEventInstances>
 }

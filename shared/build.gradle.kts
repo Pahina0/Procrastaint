@@ -49,12 +49,13 @@ kotlin {
             implementation(libs.androidx.datastore)
 
             implementation(libs.ktorfit.lib)
+            implementation(libs.ktorfit.converters.flow)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
-
             implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

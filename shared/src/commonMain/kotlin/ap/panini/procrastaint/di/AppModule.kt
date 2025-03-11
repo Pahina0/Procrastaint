@@ -14,6 +14,7 @@ import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import de.jensklingenberg.ktorfit.Ktorfit
+import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
 import de.jensklingenberg.ktorfit.ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -60,6 +61,7 @@ fun getKtor(
     authConfig: AuthConfig.() -> Unit = {}
 ): Ktorfit {
     return ktorfit {
+        converterFactories(FlowConverterFactory())
         baseUrl(url)
         httpClient(
             HttpClient {

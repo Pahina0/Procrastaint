@@ -24,7 +24,7 @@ class NetworkCalendarRepository(
     }
 
     suspend fun createEvent(task: Task) {
-        googleCalendarRepository.createEvent(task)
+        googleCalendarRepository.createEvent(task, onFailure = {println(it)})
     }
 
     suspend fun addCompletion(task: Task, completion: TaskCompletion) {

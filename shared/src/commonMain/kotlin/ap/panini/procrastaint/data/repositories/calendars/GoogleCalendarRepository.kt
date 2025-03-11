@@ -8,45 +8,43 @@ import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoog
 import ap.panini.procrastaint.data.network.api.GoogleCalendarApi
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.util.toRFC3339
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlin.time.Duration.Companion.minutes
 
 class GoogleCalendarRepository(
     private val preference: PreferenceRepository,
     private val gcApi: GoogleCalendarApi
 ) : CalendarRepository {
-    override suspend fun createCalendar(onSuccess: () -> Unit, onFailure: (ex: Throwable) -> Unit) {
-        val existingCalendars = gcApi.getCalendars()
-
+    override suspend fun createCalendar(onFailure: (ex: Throwable) -> Unit) {
         // creates a new calendar if only one doesn't exist already
-        val possibleCalendar = existingCalendars.items.firstOrNull { it.summary == "Procrastaint" }
+        val possibleCalendar = gcApi.getCalendars().catch { onFailure(it) }
+            .firstOrNull()?.items?.firstOrNull { it.summary == "Procrastaint" }
 
         preference.setString(
             PreferenceRepository.GOOGLE_CALENDAR_ID,
             possibleCalendar?.id
                 ?: gcApi.createCalendar(GoogleCalendar("Procrastaint"))
-                    .id!!
+                    .catch { onFailure(it) }
+                    .firstOrNull()
+                    ?.id!!
 
         )
     }
 
-    override suspend fun createEvent(
-        task: Task,
-        onSuccess: () -> Unit,
-        onFailure: (ex: Throwable) -> Unit
-    ) {
+    override suspend fun createEvent(task: Task, onFailure: (ex: Throwable) -> Unit) {
         getGoogleEvents(task, preference).forEach {
             gcApi.createEvent(
                 it,
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first()
-            )
+            ).catch { ex -> onFailure(ex) }
         }
     }
 
     override suspend fun addCompletion(
         task: Task,
         completion: TaskCompletion,
-        onSuccess: () -> Unit,
         onFailure: (ex: Throwable) -> Unit
     ) {
         val recurring = task.meta.first().let { it.repeatTag != null && it.repeatOften != null }
@@ -61,7 +59,7 @@ class GoogleCalendarRepository(
                 ),
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
                 event.id
-            )
+            ).catch { onFailure(it) }
             return
         }
 
@@ -70,7 +68,8 @@ class GoogleCalendarRepository(
             event.id,
             (completion.forTime + 1.minutes.inWholeMilliseconds).toRFC3339(),
             (completion.forTime - 1.minutes.inWholeMilliseconds).toRFC3339(),
-        )
+        ).catch { onFailure(it) }
+            .firstOrNull() ?: return
 
         val modifyEvent =
             events.items.firstOrNull { it.start.dateTime == completion.forTime.toRFC3339() }
@@ -83,6 +82,6 @@ class GoogleCalendarRepository(
             ),
             preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
             modifyEvent.id
-        )
+        ).catch { onFailure(it) }
     }
 }
