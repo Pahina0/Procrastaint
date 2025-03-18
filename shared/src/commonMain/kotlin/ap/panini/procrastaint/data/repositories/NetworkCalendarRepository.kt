@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -27,56 +28,63 @@ class NetworkCalendarRepository(
 ) {
     fun getNetworkSyncItems(): Flow<List<NetworkSyncItem>> = nsDao.getSyncItems()
 
-    suspend fun executeNetworkSyncItem(item: NetworkSyncItem) {
+    suspend fun trySync() {
+        var errors = 0
+        val items = getNetworkSyncItems().first()
+
+        for (item in items) {
+            executeNetworkSyncItem(item)
+        }
+    }
+
+    private suspend fun executeNetworkSyncItem(item: NetworkSyncItem): CalendarRepository.Response {
         val repo: CalendarRepository = when (item.location) {
             NetworkSyncItem.SyncData.GOOGLE -> googleCalendarRepository
         }
 
-        fun onSuccess() {
+        // if a id doesn't exist anymore can prob skip it, like trying to
+        val response = when (item.action) {
+            NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar(
+            )
+
+            NetworkSyncItem.SyncAction.CREATE_EVENT -> repo.createEvent(
+                taskDao.getTask(
+                    item.taskId ?: return CalendarRepository.Response.Success
+                ),
+            )
+
+            NetworkSyncItem.SyncAction.CHECK ->
+                repo.addCompletion(
+                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success),
+                    TaskCompletion(
+                        0,
+                        item.time,
+                        item.taskId,
+                        item.metaId!!,
+                        item.completionId!!
+                    ),
+                )
+
+            NetworkSyncItem.SyncAction.UNCHECK ->
+                repo.removeCompletion(
+                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success),
+                    TaskCompletion(
+                        0,
+                        item.time,
+                        item.taskId,
+                        item.metaId!!,
+                        item.completionId!!
+                    ),
+                )
+        }
+
+        if (response is CalendarRepository.Response.Success) {
             CoroutineScope(Dispatchers.IO).launch {
                 nsDao.deleteSyncItem(item)
             }
         }
 
-        // if a id doesn't exist anymore can prob skip it, like trying to
-        when (item.action) {
-            NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar(
-                onSuccess = { onSuccess() }
-            )
-
-            NetworkSyncItem.SyncAction.CREATE_EVENT -> repo.createEvent(
-                taskDao.getTask(
-                    item.taskId ?: return
-                ),
-                onSuccess = { onSuccess() }
-            )
-
-            NetworkSyncItem.SyncAction.CHECK ->
-                repo.addCompletion(
-                    taskDao.getTask(item.taskId ?: return),
-                    TaskCompletion(
-                        0,
-                        item.time,
-                        item.taskId,
-                        item.metaId!!,
-                        item.completionId!!
-                    ),
-                    onSuccess = { onSuccess() }
-                )
-
-            NetworkSyncItem.SyncAction.UNCHECK ->
-                repo.removeCompletion(
-                    taskDao.getTask(item.taskId ?: return),
-                    TaskCompletion(
-                        0,
-                        item.time,
-                        item.taskId,
-                        item.metaId!!,
-                        item.completionId!!
-                    ),
-                    onSuccess = { onSuccess() }
-                )
-        }
+        return response
     }
 
     private val calendars = mapOf(
@@ -90,7 +98,9 @@ class NetworkCalendarRepository(
      * this is called only once when logging into google
      */
     suspend fun googleCreateCalendar() {
-        googleCalendarRepository.createCalendar {
+        val response = googleCalendarRepository.createCalendar()
+
+        if (response is CalendarRepository.Response.Error) {
             CoroutineScope(Dispatchers.IO).launch {
                 nsDao.insertNetworkSyncItem(
                     NetworkSyncItem(
@@ -107,7 +117,9 @@ class NetworkCalendarRepository(
         val now = Clock.System.now().toEpochMilliseconds()
 
         calendars.forEach { (calendar, loc) ->
-            calendar.createEvent(task) {
+            val response = calendar.createEvent(task)
+
+            if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(
@@ -127,7 +139,9 @@ class NetworkCalendarRepository(
         nsDao.deleteUnchecked(task.taskInfo.taskId, completion.metaId, now)
 
         calendars.forEach { (calendar, loc) ->
-            calendar.addCompletion(task, completion) {
+            val response = calendar.addCompletion(task, completion)
+
+            if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(
@@ -149,7 +163,9 @@ class NetworkCalendarRepository(
         nsDao.deleteChecked(task.taskInfo.taskId, completion.metaId, now)
 
         calendars.forEach { (calendar, loc) ->
-            calendar.removeCompletion(task, completion) {
+            val response = calendar.removeCompletion(task, completion)
+
+            if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(

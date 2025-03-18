@@ -4,28 +4,28 @@ import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 
 interface CalendarRepository {
+
+    sealed interface Response {
+        data object Success : Response
+        class Error(ex: List<Throwable>) : Response {
+            constructor(ex: Throwable) : this(listOf(ex))
+        }
+    }
+
     suspend fun createCalendar(
-        onSuccess: () -> Unit = {},
-        onFailure: (ex: Throwable) -> Unit = {}
-    )
+    ): Response
 
     suspend fun createEvent(
         task: Task,
-        onSuccess: () -> Unit = {},
-        onFailure: (ex: Throwable) -> Unit = {}
-    )
+    ): Response
 
     suspend fun addCompletion(
         task: Task,
         completion: TaskCompletion,
-        onSuccess: () -> Unit = {},
-        onFailure: (ex: Throwable) -> Unit = {}
-    )
+    ): Response
 
     suspend fun removeCompletion(
         task: Task,
         completion: TaskCompletion,
-        onSuccess: () -> Unit = {},
-        onFailure: (ex: Throwable) -> Unit = {}
-    )
+    ): Response
 }

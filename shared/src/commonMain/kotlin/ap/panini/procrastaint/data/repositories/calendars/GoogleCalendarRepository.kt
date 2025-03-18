@@ -17,83 +17,81 @@ class GoogleCalendarRepository(
     private val preference: PreferenceRepository,
     private val gcApi: GoogleCalendarApi
 ) : CalendarRepository {
-    override suspend fun createCalendar(onSuccess: () -> Unit, onFailure: (ex: Throwable) -> Unit) {
+    override suspend fun createCalendar(
+    ): CalendarRepository.Response {
+        var error = Throwable()
         // creates a new calendar if only one doesn't exist already
         val possibleCalendar = gcApi.getCalendars()
             .firstOrNull()?.items?.firstOrNull { it.summary == "Procrastaint" }
 
+        if (possibleCalendar?.id == null) {
+            val create = gcApi.createCalendar(GoogleCalendar("Procrastaint"))
+                .catch { error = it }
+                .firstOrNull()
+                ?.id ?: return CalendarRepository.Response.Error(error)
+
+            preference.setString(
+                PreferenceRepository.GOOGLE_CALENDAR_ID,
+                create
+            )
+        }
         preference.setString(
             PreferenceRepository.GOOGLE_CALENDAR_ID,
-            possibleCalendar?.id
-                ?: gcApi.createCalendar(GoogleCalendar("Procrastaint"))
-                    .catch { onFailure(it) }
-                    .firstOrNull()
-                    ?.id!!
-
+            possibleCalendar?.id!!
         )
 
-        onSuccess()
+        return CalendarRepository.Response.Success
     }
 
     override suspend fun createEvent(
         task: Task,
-        onSuccess: () -> Unit,
-        onFailure: (ex: Throwable) -> Unit
-    ) {
+    ): CalendarRepository.Response {
+        var error = Throwable()
         getGoogleEvents(task, preference).forEach {
             val success = gcApi.createEvent(
                 it,
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first()
-            ).catch { err -> onFailure(err) }.firstOrNull()
+            ).catch { err -> error = err }.firstOrNull()
 
-            success ?: return
+            success ?: return CalendarRepository.Response.Error(error)
         }
 
-        onSuccess()
+        return CalendarRepository.Response.Success
     }
 
     override suspend fun addCompletion(
         task: Task,
         completion: TaskCompletion,
-        onSuccess: () -> Unit,
-        onFailure: (ex: Throwable) -> Unit
-    ) {
-        updateCompletion(
+    ): CalendarRepository.Response {
+        return updateCompletion(
             task,
             completion,
-            onSuccess,
-            onFailure
         ) { "✓ $it" }
     }
 
     override suspend fun removeCompletion(
         task: Task,
-        completion: TaskCompletion,
-        onSuccess: () -> Unit,
-        onFailure: (ex: Throwable) -> Unit
-    ) {
-        updateCompletion(
+        completion: TaskCompletion
+    ): CalendarRepository.Response {
+        return updateCompletion(
             task,
             completion,
-            onSuccess,
-            onFailure
         )
     }
 
     private suspend fun updateCompletion(
         task: Task,
         completion: TaskCompletion,
-        onSuccess: () -> Unit,
-        onFailure: (ex: Throwable) -> Unit,
         updatedText: (String) -> String = { it }
-    ) {
+    ): CalendarRepository.Response {
+        var error = Throwable()
+
         val recurring = task.meta.first().let { it.repeatTag != null && it.repeatOften != null }
         val event = getGoogleEvents(task, preference).firstOrNull { it.metaId == completion.metaId }
 
         if (event == null) {
             // prob something wrong with my db if anything
-            onSuccess()
-            return
+            return CalendarRepository.Response.Success
         }
 
         if (!recurring) {
@@ -104,11 +102,10 @@ class GoogleCalendarRepository(
                 ),
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
                 event.id
-            ).catch { onFailure(it) }
+            ).catch { error = it }
                 .firstOrNull()
 
-            onSuccess()
-            return
+            return CalendarRepository.Response.Success
         }
 
         val events = gcApi.getInstances(
@@ -116,16 +113,15 @@ class GoogleCalendarRepository(
             event.id,
             (completion.forTime + 1.minutes.inWholeMilliseconds).toRFC3339(),
             (completion.forTime - 1.minutes.inWholeMilliseconds).toRFC3339(),
-        ).catch { onFailure(it) }
-            .firstOrNull() ?: return
+        ).catch { error = it }
+            .firstOrNull() ?: return CalendarRepository.Response.Error(error)
 
         val modifyEvent =
             events.items.firstOrNull { it.start.dateTime == completion.forTime.toRFC3339() }
 
         // they dont have it in the calendar anymore, most likely user delete, ignore
         if (modifyEvent == null) {
-            onSuccess()
-            return
+            return CalendarRepository.Response.Success
         }
 
         gcApi.updateEvent(
@@ -135,10 +131,9 @@ class GoogleCalendarRepository(
             ),
             preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
             modifyEvent.id
-        ).catch { onFailure(it) }
-            .firstOrNull() ?: return
+        ).catch { error = it }
+            .firstOrNull() ?: return CalendarRepository.Response.Error(error)
 
-        onSuccess()
-
+        return CalendarRepository.Response.Success
     }
 }
