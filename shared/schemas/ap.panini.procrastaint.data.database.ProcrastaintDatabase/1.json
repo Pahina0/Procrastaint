@@ -196,14 +196,8 @@
       },
       {
         "tableName": "NetworkSyncItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "time",
             "columnName": "time",
@@ -236,6 +230,12 @@
             "fieldPath": "completionId",
             "columnName": "completionId",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {

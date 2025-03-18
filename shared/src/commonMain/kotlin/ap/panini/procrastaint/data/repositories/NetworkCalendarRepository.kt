@@ -94,7 +94,7 @@ class NetworkCalendarRepository(
             CoroutineScope(Dispatchers.IO).launch {
                 nsDao.insertNetworkSyncItem(
                     NetworkSyncItem(
-                        time = Clock.System.now().toEpochMilliseconds(),
+                        time = 0,
                         location = NetworkSyncItem.SyncData.GOOGLE,
                         action = NetworkSyncItem.SyncAction.CREATE_CALENDAR
                     )
@@ -104,14 +104,16 @@ class NetworkCalendarRepository(
     }
 
     suspend fun createEvent(task: Task) {
+        val now = Clock.System.now().toEpochMilliseconds()
+
         calendars.forEach { (calendar, loc) ->
             calendar.createEvent(task) {
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(
-                            time = Clock.System.now().toEpochMilliseconds(),
+                            time = now,
                             location = loc,
-                            action = NetworkSyncItem.SyncAction.CREATE_CALENDAR,
+                            action = NetworkSyncItem.SyncAction.CREATE_EVENT,
                             taskId = task.taskInfo.taskId
                         )
                     )
@@ -121,6 +123,9 @@ class NetworkCalendarRepository(
     }
 
     suspend fun addCompletion(task: Task, completion: TaskCompletion) {
+        val now = Clock.System.now().toEpochMilliseconds()
+        nsDao.deleteUnchecked(task.taskInfo.taskId, completion.metaId, now)
+
         calendars.forEach { (calendar, loc) ->
             calendar.addCompletion(task, completion) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -128,7 +133,7 @@ class NetworkCalendarRepository(
                         NetworkSyncItem(
                             time = Clock.System.now().toEpochMilliseconds(),
                             location = loc,
-                            action = NetworkSyncItem.SyncAction.CREATE_CALENDAR,
+                            action = NetworkSyncItem.SyncAction.CHECK,
                             taskId = task.taskInfo.taskId,
                             metaId = completion.metaId,
                             completionId = completion.completionId
@@ -140,14 +145,17 @@ class NetworkCalendarRepository(
     }
 
     suspend fun removeCompletion(task: Task, completion: TaskCompletion) {
+        val now = Clock.System.now().toEpochMilliseconds()
+        nsDao.deleteChecked(task.taskInfo.taskId, completion.metaId, now)
+
         calendars.forEach { (calendar, loc) ->
             calendar.removeCompletion(task, completion) {
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(
-                            time = Clock.System.now().toEpochMilliseconds(),
+                            time = now,
                             location = loc,
-                            action = NetworkSyncItem.SyncAction.CREATE_CALENDAR,
+                            action = NetworkSyncItem.SyncAction.UNCHECK,
                             taskId = task.taskInfo.taskId,
                             metaId = completion.metaId,
                             completionId = completion.completionId

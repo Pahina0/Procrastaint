@@ -16,12 +16,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SyncScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>
 @Composable
 fun SettingsScreen(
+    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
     googleAuth: GoogleAuth = koinInject()
@@ -51,6 +54,12 @@ fun SettingsScreen(
                     } else {
                         Text("Sign in with Google")
                     }
+                }
+
+                Button(
+                    onClick = {navigator.navigate(SyncScreenDestination)}
+                ) {
+                    Text("View Sync Queue")
                 }
             }
         }

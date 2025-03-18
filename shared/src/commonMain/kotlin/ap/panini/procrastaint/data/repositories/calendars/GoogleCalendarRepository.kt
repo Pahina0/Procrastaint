@@ -19,10 +19,8 @@ class GoogleCalendarRepository(
 ) : CalendarRepository {
     override suspend fun createCalendar(onSuccess: () -> Unit, onFailure: (ex: Throwable) -> Unit) {
         // creates a new calendar if only one doesn't exist already
-        val possibleCalendarCall = gcApi.getCalendars().catch { onFailure(it) }
-            .firstOrNull()?: return
-
-        val possibleCalendar = possibleCalendarCall.items.firstOrNull { it.summary == "Procrastaint" }
+        val possibleCalendar = gcApi.getCalendars()
+            .firstOrNull()?.items?.firstOrNull { it.summary == "Procrastaint" }
 
         preference.setString(
             PreferenceRepository.GOOGLE_CALENDAR_ID,
@@ -124,7 +122,7 @@ class GoogleCalendarRepository(
         val modifyEvent =
             events.items.firstOrNull { it.start.dateTime == completion.forTime.toRFC3339() }
 
-       // they dont have it in the calendar anymore, most likely user delete, ignore
+        // they dont have it in the calendar anymore, most likely user delete, ignore
         if (modifyEvent == null) {
             onSuccess()
             return
