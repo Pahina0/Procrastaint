@@ -12,7 +12,7 @@ import org.koin.dsl.module
 val androidModule = module {
     viewModel { MainActivityViewModel(get()) }
     viewModel { UpcomingViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get()) }
     viewModel { params -> CalendarViewModel(time = params.get(), get()) }
 
     single { GoogleAuth(androidApplication()) }

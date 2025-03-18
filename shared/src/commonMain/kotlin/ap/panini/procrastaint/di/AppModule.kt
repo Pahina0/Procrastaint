@@ -37,6 +37,7 @@ import org.koin.dsl.module
 val appModule = module {
     val database = getRoomDatabase(getDatabaseBuilder())
     single { database.getTaskDao() }
+    single { database.getNetworkSyncDao() }
     single { createDataStore() }
     single { TaskRepository(get(), get()) }
     single { PreferenceRepository(get()) }
@@ -53,7 +54,7 @@ val appModule = module {
     }
 
     single { GoogleCalendarRepository(get(), get()) }
-    single { NetworkCalendarRepository(get()) }
+    single { NetworkCalendarRepository(get(), get(), get()) }
 }
 
 fun getKtor(

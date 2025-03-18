@@ -28,6 +28,9 @@ interface TaskDao {
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
     fun getTask(id: Long): Task
 
+    @Query("""SELECT * FROM TaskCompletion WHERE completionId = :id""")
+    fun getCompletion(id: Long): TaskCompletion
+
     @Query(
         """
         SELECT ti.taskId,

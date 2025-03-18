@@ -3,6 +3,8 @@ package ap.panini.procrastaint.ui.settings
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ap.panini.procrastaint.data.database.dao.NetworkSyncDao
+import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val preferences: PreferenceRepository
+    private val preferences: PreferenceRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
