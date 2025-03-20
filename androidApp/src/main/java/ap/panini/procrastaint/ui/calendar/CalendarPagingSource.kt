@@ -15,6 +15,9 @@ class CalendarPagingSource(
 ) : PagingSource<Long, Pair<Long, Flow<List<TaskSingle>>>>(), KoinComponent {
     private val db: TaskRepository by inject()
 
+    override val jumpingSupported: Boolean
+        get() = true
+
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Pair<Long, Flow<List<TaskSingle>>>> {
         val from = params.key ?: from
         return Page(

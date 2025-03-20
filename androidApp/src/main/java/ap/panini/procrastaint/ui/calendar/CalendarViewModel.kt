@@ -10,23 +10,31 @@ import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Date
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.hours
 
 class CalendarViewModel(
-    private val time: Long,
+    time: Long,
     private val db: TaskRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CalendarUiState())
+    private val _uiState = MutableStateFlow(CalendarUiState(time))
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+
+    val currentEventsState = Pager(
+        PagingConfig(
+            initialLoadSize = 3,
+            enablePlaceholders = false,
+            pageSize = 3
+        )
+    ) {
+        CalendarPagingSource(time)
+    }.flow
+        .cachedIn(viewModelScope)
+
 
     val selectableDatesState = Pager(
         PagingConfig(
@@ -39,49 +47,49 @@ class CalendarViewModel(
     }.flow
         .cachedIn(viewModelScope)
 
-    init {
-        viewModelScope.launch {
-            _uiState.collectLatest {
-                getAllTasks()
-            }
-        }
+    fun setSelectedTime(time: Long) {
+        _uiState.update { it.copy(selectedTime = time) }
     }
 
-    private fun getAllTasks() {
-        viewModelScope.launch {
-            db.getTasksBetween(
-                time,
-                time + 24.hours.inWholeMilliseconds
-            ).flowOn(Dispatchers.IO)
-                .collectLatest { tasks: List<TaskSingle> ->
-                    _uiState.update {
-                        it.copy(taskInfos = tasks)
-                    }
-                }
-        }
-    }
+//    init {
+//        viewModelScope.launch {
+//            _uiState.collectLatest {
+//                getAllTasks()
+//            }
+//        }
+//    }
+//
+//    private fun getAllTasks() {
+//        viewModelScope.launch {
+//            db.getTasksBetween(
+//                time,
+//                time + 24.hours.inWholeMilliseconds
+//            ).flowOn(Dispatchers.IO)
+//                .collectLatest { tasks: List<TaskSingle> ->
+//                    _uiState.update {
+//                        it.copy(taskInfos = tasks)
+//                    }
+//                }
+//        }
+//    }
 
     fun checkTask(task: TaskSingle) {
+        val completion =
+            TaskCompletion(
+                Date.getTime(),
+                task.currentEventTime,
+                task.taskId,
+                task.metaId,
+                task.completionId
+            )
         viewModelScope.launch {
             if (task.completed == null) {
                 db.addCompletion(
-                    TaskCompletion(
-                        Date.getTime(),
-                        task.currentEventTime,
-                        task.taskId,
-                        task.metaId,
-                        task.completionId
-                    )
+                    completion
                 )
             } else {
                 db.removeCompletion(
-                    TaskCompletion(
-                        Date.getTime(),
-                        task.currentEventTime,
-                        task.taskId,
-                        task.metaId,
-                        task.completionId
-                    )
+                    completion
                 )
             }
         }
@@ -89,6 +97,6 @@ class CalendarViewModel(
 
     @Immutable
     data class CalendarUiState(
-        val taskInfos: List<TaskSingle> = listOf(),
+        val selectedTime: Long
     )
 }

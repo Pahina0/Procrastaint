@@ -47,8 +47,13 @@ object Date {
     /**
      * @param known The known values from the time to display
      * @param smart If true, displays more information based on mismatched month, day, or year
+     * @param useAbbreviated whether or not to use abbreviated text for month
      */
-    fun Long.formatMilliseconds(known: Set<Time> = emptySet(), smart: Boolean = true): String {
+    fun Long.formatMilliseconds(
+        known: Set<Time> = emptySet(),
+        smart: Boolean = true,
+        useAbbreviated: Boolean = false
+    ): String {
         val now = now()
         val time =
             Instant.fromEpochMilliseconds(this)
@@ -72,7 +77,7 @@ object Date {
         val minute = known.contains(Time.MINUTE)
 
         val formatter = LocalDateTime.Format {
-            formatDate(year, month, week, day)
+            formatDate(year, month, week, day, useAbbreviated)
 
             val showDate = month || day || year || week
             val showTime = hour || minute
@@ -92,17 +97,21 @@ object Date {
         month: Boolean,
         week: Boolean,
         day: Boolean,
+        useAbbreviated: Boolean = false
     ) {
+        val monthFormat =
+            with(MonthNames) { if (useAbbreviated) ENGLISH_ABBREVIATED else ENGLISH_FULL }
+
         if (day) {
             if (year) {
                 date(LocalDate.Formats.ISO)
             } else {
-                monthName(MonthNames.ENGLISH_ABBREVIATED)
+                monthName(monthFormat)
                 char(' ')
                 dayOfMonth(padding = Padding.NONE)
             }
         } else if (month) {
-            monthName(MonthNames.ENGLISH_ABBREVIATED)
+            monthName(monthFormat)
             if (year) {
                 char(' ')
                 year()
@@ -111,7 +120,7 @@ object Date {
             // has year only
             year()
         } else if (week) {
-            monthName(MonthNames.ENGLISH_ABBREVIATED)
+            monthName(monthFormat)
             char(' ')
             dayOfMonth(padding = Padding.NONE)
         }

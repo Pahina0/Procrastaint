@@ -73,7 +73,8 @@ fun TaskView(
                 Text(
                     task.currentEventTime.formatMilliseconds(
                         setOf(Time.HOUR, Time.MINUTE),
-                        smart = false
+                        smart = false,
+                        useAbbreviated = true
                     )
                 )
             }
