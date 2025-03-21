@@ -1,9 +1,33 @@
 package ap.panini.procrastaint.data.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            TaskInfo::class,
+            childColumns = ["taskId"],
+            parentColumns = ["taskId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+
+        ForeignKey(
+            TaskMeta::class,
+            childColumns = ["metaId"],
+            parentColumns = ["metaId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+
+        ForeignKey(
+            TaskCompletion::class,
+            childColumns = ["completionId"],
+            parentColumns = ["completionId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class NetworkSyncItem(
     val time: Long,
 

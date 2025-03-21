@@ -20,7 +20,7 @@ interface TaskDao {
     suspend fun insertTaskMeta(taskMeta: TaskMeta): Long
 
     @Insert
-    suspend fun insertTaskCompletion(taskCompletion: TaskCompletion)
+    suspend fun insertTaskCompletion(taskCompletion: TaskCompletion): Long
 
     @Delete
     suspend fun deleteTaskCompletion(taskCompletion: TaskCompletion)

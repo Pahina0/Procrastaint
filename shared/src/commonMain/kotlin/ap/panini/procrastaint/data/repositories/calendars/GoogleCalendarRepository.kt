@@ -79,6 +79,17 @@ class GoogleCalendarRepository(
         )
     }
 
+    /**
+     * Update completion
+     *
+     *
+     *
+     * @param task
+     * @param completion **taskId** is completely irrelevant
+     * @param updatedText
+     * @receiver
+     * @return
+     */
     private suspend fun updateCompletion(
         task: Task,
         completion: TaskCompletion,
@@ -103,7 +114,7 @@ class GoogleCalendarRepository(
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
                 event.id
             ).catch { error = it }
-                .firstOrNull()
+                .firstOrNull() ?: return CalendarRepository.Response.Error(error)
 
             return CalendarRepository.Response.Success
         }

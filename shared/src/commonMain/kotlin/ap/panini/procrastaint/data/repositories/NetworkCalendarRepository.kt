@@ -73,7 +73,6 @@ class NetworkCalendarRepository(
                         item.time,
                         item.taskId,
                         item.metaId!!,
-                        item.completionId!!
                     ),
                 )
         }
@@ -140,12 +139,14 @@ class NetworkCalendarRepository(
 
         calendars.forEach { (calendar, loc) ->
             val response = calendar.addCompletion(task, completion)
+            println(response)
 
             if (response is CalendarRepository.Response.Error) {
+                println("${task.taskInfo} $completion")
                 CoroutineScope(Dispatchers.IO).launch {
                     nsDao.insertNetworkSyncItem(
                         NetworkSyncItem(
-                            time = Clock.System.now().toEpochMilliseconds(),
+                            time = now,
                             location = loc,
                             action = NetworkSyncItem.SyncAction.CHECK,
                             taskId = task.taskInfo.taskId,
@@ -164,6 +165,8 @@ class NetworkCalendarRepository(
 
         calendars.forEach { (calendar, loc) ->
             val response = calendar.removeCompletion(task, completion)
+            println(response)
+            println(response is CalendarRepository.Response.Error)
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -174,7 +177,6 @@ class NetworkCalendarRepository(
                             action = NetworkSyncItem.SyncAction.UNCHECK,
                             taskId = task.taskInfo.taskId,
                             metaId = completion.metaId,
-                            completionId = completion.completionId
                         )
                     )
                 }

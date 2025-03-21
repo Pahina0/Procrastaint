@@ -35,13 +35,14 @@ class TaskRepository(
     }
 
     suspend fun addCompletion(taskCompletion: TaskCompletion) {
-        taskDao.insertTaskCompletion(
+        val id = taskDao.insertTaskCompletion(
             taskCompletion
         )
 
+
         CoroutineScope(Dispatchers.IO).launch {
-            val task = taskDao.getTask(taskCompletion.taskId)
-            calendar.addCompletion(task, taskCompletion)
+            val task = taskDao.getTask(taskCompletion.taskId).also { println(it) }
+            calendar.addCompletion(task, taskCompletion.copy(completionId = id))
         }
     }
 

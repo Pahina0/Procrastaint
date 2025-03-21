@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1a7ff4ca12bdbb9f0b2fbc18a64619d6",
+    "identityHash": "200d06a1946d414a1a33358e63d07c94",
     "entities": [
       {
         "tableName": "TaskInfo",
@@ -196,7 +196,7 @@
       },
       {
         "tableName": "NetworkSyncItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`completionId`) REFERENCES `TaskCompletion`(`completionId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "time",
@@ -243,12 +243,47 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "foreignKeys": [
+          {
+            "table": "TaskInfo",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "taskId"
+            ],
+            "referencedColumns": [
+              "taskId"
+            ]
+          },
+          {
+            "table": "TaskMeta",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "metaId"
+            ],
+            "referencedColumns": [
+              "metaId"
+            ]
+          },
+          {
+            "table": "TaskCompletion",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "completionId"
+            ],
+            "referencedColumns": [
+              "completionId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1a7ff4ca12bdbb9f0b2fbc18a64619d6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '200d06a1946d414a1a33358e63d07c94')"
     ]
   }
 }
