@@ -28,13 +28,16 @@ class NetworkCalendarRepository(
 ) {
     fun getNetworkSyncItems(): Flow<List<NetworkSyncItem>> = nsDao.getSyncItems()
 
-    suspend fun trySync() {
-        var errors = 0
+    suspend fun trySync(): CalendarRepository.Response {
         val items = getNetworkSyncItems().first()
 
         for (item in items) {
-            executeNetworkSyncItem(item)
+            val response = executeNetworkSyncItem(item)
+
+            if (response is CalendarRepository.Response.Error) return response
         }
+
+        return CalendarRepository.Response.Success
     }
 
     private suspend fun executeNetworkSyncItem(item: NetworkSyncItem): CalendarRepository.Response {
@@ -44,8 +47,7 @@ class NetworkCalendarRepository(
 
         // if a id doesn't exist anymore can prob skip it, like trying to
         val response = when (item.action) {
-            NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar(
-            )
+            NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar()
 
             NetworkSyncItem.SyncAction.CREATE_EVENT -> repo.createEvent(
                 taskDao.getTask(
@@ -80,6 +82,10 @@ class NetworkCalendarRepository(
         if (response is CalendarRepository.Response.Success) {
             CoroutineScope(Dispatchers.IO).launch {
                 nsDao.deleteSyncItem(item)
+            }
+        } else {
+            CoroutineScope(Dispatchers.IO).launch {
+                nsDao.updateSyncItem(item.copy(failCount = item.failCount + 1))
             }
         }
 
@@ -144,16 +150,19 @@ class NetworkCalendarRepository(
             if (response is CalendarRepository.Response.Error) {
                 println("${task.taskInfo} $completion")
                 CoroutineScope(Dispatchers.IO).launch {
-                    nsDao.insertNetworkSyncItem(
-                        NetworkSyncItem(
-                            time = now,
-                            location = loc,
-                            action = NetworkSyncItem.SyncAction.CHECK,
-                            taskId = task.taskInfo.taskId,
-                            metaId = completion.metaId,
-                            completionId = completion.completionId
+                    try {
+                        nsDao.insertNetworkSyncItem(
+                            NetworkSyncItem(
+                                time = now,
+                                location = loc,
+                                action = NetworkSyncItem.SyncAction.CHECK,
+                                taskId = task.taskInfo.taskId,
+                                metaId = completion.metaId,
+                                completionId = completion.completionId
+                            )
                         )
-                    )
+                    } catch (_: Exception) {
+                    }
                 }
             }
         }
@@ -165,20 +174,21 @@ class NetworkCalendarRepository(
 
         calendars.forEach { (calendar, loc) ->
             val response = calendar.removeCompletion(task, completion)
-            println(response)
-            println(response is CalendarRepository.Response.Error)
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    nsDao.insertNetworkSyncItem(
-                        NetworkSyncItem(
-                            time = now,
-                            location = loc,
-                            action = NetworkSyncItem.SyncAction.UNCHECK,
-                            taskId = task.taskInfo.taskId,
-                            metaId = completion.metaId,
+                    try {
+                        nsDao.insertNetworkSyncItem(
+                            NetworkSyncItem(
+                                time = now,
+                                location = loc,
+                                action = NetworkSyncItem.SyncAction.UNCHECK,
+                                taskId = task.taskInfo.taskId,
+                                metaId = completion.metaId,
+                            )
                         )
-                    )
+                    } catch (_: Exception) {
+                    }
                 }
             }
         }

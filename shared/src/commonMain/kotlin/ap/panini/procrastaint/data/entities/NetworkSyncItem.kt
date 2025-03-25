@@ -41,6 +41,8 @@ data class NetworkSyncItem(
 
     val completionId: Long? = null,
 
+    val failCount: Int = 0,
+
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 ) {

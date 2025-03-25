@@ -23,7 +23,7 @@ data class GoogleEvent(
 
     val start: Time = Time(startTime.toRFC3339()),
 
-    val end: Time = Time((startTime + 10.minutes.inWholeMilliseconds).toRFC3339()),
+    val end: Time = Time((startTime + 30.minutes.inWholeMilliseconds).toRFC3339()),
 
     val description: String = "",
 

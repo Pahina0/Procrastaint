@@ -12,8 +12,7 @@ interface CalendarRepository {
         }
     }
 
-    suspend fun createCalendar(
-    ): Response
+    suspend fun createCalendar(): Response
 
     suspend fun createEvent(
         task: Task,

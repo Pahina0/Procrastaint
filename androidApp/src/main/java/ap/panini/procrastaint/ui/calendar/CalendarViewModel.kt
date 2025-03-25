@@ -35,7 +35,6 @@ class CalendarViewModel(
     }.flow
         .cachedIn(viewModelScope)
 
-
     val selectableDatesState = Pager(
         PagingConfig(
             initialLoadSize = 10,

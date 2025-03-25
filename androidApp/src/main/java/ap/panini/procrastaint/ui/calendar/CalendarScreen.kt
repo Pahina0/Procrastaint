@@ -1,7 +1,5 @@
 package ap.panini.procrastaint.ui.calendar
 
-import android.view.View
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -67,7 +64,6 @@ fun CalendarScreen(
     val selectableListState = rememberLazyListState()
     val pagerState = rememberPagerState { currentEventState.itemCount }
 
-
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collect { page ->
@@ -77,7 +73,6 @@ fun CalendarScreen(
                     }
 //                    selectableListState.animateScrollToItem(dateState.)
                 }
-
             }
     }
 
@@ -137,9 +132,10 @@ fun CalendarScreen(
 
                 HorizontalPager(
                     state = pagerState,
-                    key = currentEventState.itemKey { it.first }) { i ->
+                    key = currentEventState.itemKey { it.first }
+                ) { i ->
 
-                    val (time, item) = currentEventState[i]!!
+                    val (_, item) = currentEventState[i]!!
                     val itemState = item.collectAsStateWithLifecycle(listOf()).value
 
                     DayView(

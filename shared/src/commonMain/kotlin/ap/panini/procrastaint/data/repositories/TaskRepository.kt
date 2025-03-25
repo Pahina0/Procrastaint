@@ -39,7 +39,6 @@ class TaskRepository(
             taskCompletion
         )
 
-
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId).also { println(it) }
             calendar.addCompletion(task, taskCompletion.copy(completionId = id))
@@ -50,7 +49,6 @@ class TaskRepository(
         taskDao.deleteTaskCompletion(
             taskCompletion
         )
-
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
@@ -109,9 +107,9 @@ class TaskRepository(
         while (curTime <= toTime && timesDuped <= maxRepetition) {
             val isCompleted =
                 curTime.toEpochMilliseconds() in (
-                        completed[taskId]?.keys
-                            ?: emptySet()
-                        )
+                    completed[taskId]?.keys
+                        ?: emptySet()
+                    )
             items += copy(
                 currentEventTime = curTime.toEpochMilliseconds(),
                 completed = if (isCompleted) {

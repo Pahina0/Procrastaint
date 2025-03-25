@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "200d06a1946d414a1a33358e63d07c94",
+    "identityHash": "83eff11dcf5c19a95d88d07020f1e3e8",
     "entities": [
       {
         "tableName": "TaskInfo",
@@ -196,7 +196,7 @@
       },
       {
         "tableName": "NetworkSyncItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`completionId`) REFERENCES `TaskCompletion`(`completionId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `failCount` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`completionId`) REFERENCES `TaskCompletion`(`completionId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "time",
@@ -230,6 +230,12 @@
             "fieldPath": "completionId",
             "columnName": "completionId",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "failCount",
+            "columnName": "failCount",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "id",
@@ -283,7 +289,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '200d06a1946d414a1a33358e63d07c94')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '83eff11dcf5c19a95d88d07020f1e3e8')"
     ]
   }
 }

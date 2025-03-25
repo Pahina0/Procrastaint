@@ -65,4 +65,7 @@ dependencies {
     implementation(libs.androidx.paging.compose)
 
     implementation(libs.appauth)
+
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.insert.koin.koin.androidx.workmanager)
 }

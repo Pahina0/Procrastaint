@@ -1,12 +1,12 @@
 package ap.panini.procrastaint.ui.settings.sync
 
-import android.content.ContentResolver
-import android.os.Bundle
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 class SyncViewModel(
     private val nsRepository: NetworkCalendarRepository
 ) : ViewModel() {
-
 
     private val _uiState = MutableStateFlow(SyncUiState())
     val uiState: StateFlow<SyncUiState> = _uiState.asStateFlow()
@@ -30,12 +29,11 @@ class SyncViewModel(
         }
     }
 
-
     fun sync() {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             _uiState.update { it.copy(isRefreshing = true) }
 
-            // TODO: do sync here
+            nsRepository.trySync()
 
             _uiState.update { it.copy(isRefreshing = false) }
         }

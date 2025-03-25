@@ -17,9 +17,9 @@ class GoogleCalendarRepository(
     private val preference: PreferenceRepository,
     private val gcApi: GoogleCalendarApi
 ) : CalendarRepository {
-    override suspend fun createCalendar(
-    ): CalendarRepository.Response {
-        var error = Throwable()
+
+    override suspend fun createCalendar(): CalendarRepository.Response {
+        var error = Throwable("Unknown error occurred")
         // creates a new calendar if only one doesn't exist already
         val possibleCalendar = gcApi.getCalendars()
             .firstOrNull()?.items?.firstOrNull { it.summary == "Procrastaint" }
@@ -34,10 +34,13 @@ class GoogleCalendarRepository(
                 PreferenceRepository.GOOGLE_CALENDAR_ID,
                 create
             )
+
+            return CalendarRepository.Response.Success
         }
+
         preference.setString(
             PreferenceRepository.GOOGLE_CALENDAR_ID,
-            possibleCalendar?.id!!
+            possibleCalendar.id
         )
 
         return CalendarRepository.Response.Success
@@ -46,7 +49,7 @@ class GoogleCalendarRepository(
     override suspend fun createEvent(
         task: Task,
     ): CalendarRepository.Response {
-        var error = Throwable()
+        var error = Throwable("Unknown error occurred")
         getGoogleEvents(task, preference).forEach {
             val success = gcApi.createEvent(
                 it,
@@ -95,7 +98,7 @@ class GoogleCalendarRepository(
         completion: TaskCompletion,
         updatedText: (String) -> String = { it }
     ): CalendarRepository.Response {
-        var error = Throwable()
+        var error = Throwable("Unknown error occurred")
 
         val recurring = task.meta.first().let { it.repeatTag != null && it.repeatOften != null }
         val event = getGoogleEvents(task, preference).firstOrNull { it.metaId == completion.metaId }
@@ -130,7 +133,7 @@ class GoogleCalendarRepository(
         val modifyEvent =
             events.items.firstOrNull { it.start.dateTime == completion.forTime.toRFC3339() }
 
-        // they dont have it in the calendar anymore, most likely user delete, ignore
+        // they don't have it in the calendar anymore, most likely user delete, ignore
         if (modifyEvent == null) {
             return CalendarRepository.Response.Success
         }

@@ -33,7 +33,7 @@ fun SyncScreen(
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    Scaffold(modifier = modifier) { padding ->
+    Scaffold(modifier = modifier.fillMaxSize()) { padding ->
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.sync() },
@@ -42,7 +42,8 @@ fun SyncScreen(
                 .fillMaxSize()
         ) {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
                 items(state.syncList) {
                     SyncItem(it)
@@ -52,7 +53,6 @@ fun SyncScreen(
     }
 }
 
-
 @Composable
 private fun SyncItem(item: NetworkSyncItem) {
     Column {
@@ -60,6 +60,7 @@ private fun SyncItem(item: NetworkSyncItem) {
             Text("TaskId: ${item.taskId}")
             Text("MetaId: ${item.metaId}")
             Text("CompletionId: ${item.completionId}")
+            Text("Runs: ${item.failCount}")
         }
 
         Text("Location: ${item.location}")
