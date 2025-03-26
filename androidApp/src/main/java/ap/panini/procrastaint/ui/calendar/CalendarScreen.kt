@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,10 +36,8 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.CalendarScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(
@@ -47,31 +46,35 @@ import org.koin.core.parameter.parametersOf
 )
 @Composable
 fun CalendarScreen(
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    startTime: Long = Date.getTodayStart(),
-    viewModel: CalendarViewModel = koinViewModel(parameters = { parametersOf(startTime) }),
+    viewModel: CalendarViewModel = koinViewModel(),
 ) {
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    val dateState = viewModel.selectableDatesState.collectAsLazyPagingItems()
-    val currentEventState = viewModel.currentEventsState.collectAsLazyPagingItems()
+    val dateState = viewModel.dateState.collectAsLazyPagingItems()
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
+
     val selectableListState = rememberLazyListState()
-    val pagerState = rememberPagerState { currentEventState.itemCount }
+    val pagerState = rememberPagerState { dateState.itemCount }
+
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collect { page ->
-                if (currentEventState.itemCount != 0) {
-                    currentEventState[page]?.first?.let {
-                        viewModel.setSelectedTime(it)
+                if (dateState.itemCount != 0) {
+                    dateState[page]?.first?.let { time ->
+                        coroutineScope.launch {
+                            viewModel.setSelectedTime(time)
+
+                            selectableListState.animateScrollToItem(page)
+                        }
                     }
-//                    selectableListState.animateScrollToItem(dateState.)
+
                 }
             }
     }
@@ -103,7 +106,9 @@ fun CalendarScreen(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     state = selectableListState
                 ) {
-                    items(count = dateState.itemCount, key = dateState.itemKey { it.first }) { i ->
+                    items(
+                        count = dateState.itemCount,
+                        key = dateState.itemKey { it.first }) { i ->
                         val (time, item) = dateState[i]!!
                         val itemState = item.collectAsStateWithLifecycle(listOf()).value
                         TasksMiniPreview(
@@ -111,19 +116,16 @@ fun CalendarScreen(
                             itemState,
                             currentDateColor = with(MaterialTheme.colorScheme) {
                                 when (time) {
-                                    state.selectedTime -> tertiary
+                                    state.selectedTime -> primary
                                     today -> primary
                                     else -> onSurface
                                 }
                             },
 
                             onClick = {
-                                navigator.navigate(
-                                    CalendarScreenDestination(startTime = time),
-                                ) {
-                                    popUpTo(CalendarScreenDestination) {
-                                        inclusive = true
-                                    }
+                                coroutineScope.launch {
+                                    viewModel.setSelectedTime(time)
+                                    pagerState.scrollToPage(i)
                                 }
                             }
                         )
@@ -132,10 +134,10 @@ fun CalendarScreen(
 
                 HorizontalPager(
                     state = pagerState,
-                    key = currentEventState.itemKey { it.first }
+                    key = dateState.itemKey { it.first }
                 ) { i ->
 
-                    val (_, item) = currentEventState[i]!!
+                    val (_, item) = dateState[i]!!
                     val itemState = item.collectAsStateWithLifecycle(listOf()).value
 
                     DayView(
@@ -144,25 +146,6 @@ fun CalendarScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-//                LazyRow(
-//                    modifier = Modifier.fillMaxSize().wrapContentSize(),
-//                    flingBehavior = rememberSnapFlingBehavior(lazyListState = state)
-//                ) {
-//                    items(
-//                        count = currentEventState.itemCount,
-//                        key = currentEventState.itemKey { it.first }) { i ->
-//                        val (time, item) = currentEventState[i]!!
-//                        val itemState = item.collectAsStateWithLifecycle(listOf()).value
-//
-//                        DayView(
-//                            itemState,
-//                            viewModel::checkTask,
-//                            modifier = Modifier.fillMaxSize()
-//                        )
-//
-//                    }
-
-//                }
             }
         }
     }

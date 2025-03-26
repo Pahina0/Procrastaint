@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
         @StringRes val label: Int
     ) {
         Calendar(
-            CalendarScreenDestination(),
+            CalendarScreenDestination,
             Icons.Default.CalendarMonth,
             Icons.Outlined.CalendarMonth,
             R.string.calendar

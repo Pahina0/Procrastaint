@@ -17,7 +17,7 @@ val androidModule = module {
     viewModel { UpcomingViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
-    viewModel { params -> CalendarViewModel(time = params.get(), get()) }
+    viewModel { CalendarViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }
 

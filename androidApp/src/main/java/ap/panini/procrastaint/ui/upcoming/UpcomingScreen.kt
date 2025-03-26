@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.components.DateText
+import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -54,21 +56,7 @@ fun UpcomingScreen(
         }
     ) { padding ->
         if (state.taskInfos.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.Default.Checklist,
-                    contentDescription = null,
-                    modifier = Modifier.size(100.dp)
-                )
-                Text("You have no upcoming tasks!")
-                Text("Press + to start adding")
-            }
+            EmptyPage(Icons.Default.Checklist, "You have no upcoming tasks!\nPress + to start adding", Modifier.padding(padding))
         }
 
         Tasks(state.taskInfos, viewModel::checkTask, modifier = Modifier.padding(padding))
