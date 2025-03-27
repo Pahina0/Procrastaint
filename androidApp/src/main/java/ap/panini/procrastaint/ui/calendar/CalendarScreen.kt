@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.calendar
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,12 +40,14 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(
-    style = CalendarTransitions::class,
     start = true
 )
 @Composable
@@ -70,20 +73,26 @@ fun CalendarScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .collect { page ->
-                if (dateState.itemCount != 0) {
-                    dateState[page]?.first?.let { time ->
-                        coroutineScope.launch {
-                            viewModel.setSelectedTime(time)
+    LaunchedEffect(state.selectedTime) {
 
-                            selectableListState.animateScrollToItem(page)
-                        }
-                    }
+        coroutineScope.launch {
+            val index = dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }
+            if (index == -1) return@launch
 
-                }
-            }
+            selectableListState.animateScrollToItem(index)
+            pagerState.scrollToPage(index)
+        }
+
+    }
+
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (dateState.itemCount == 0) return@LaunchedEffect
+        if (pagerState.isScrollInProgress) {
+            println(dateState[pagerState.currentPage]?.first)
+            viewModel.setSelectedTime(
+                dateState[pagerState.currentPage]?.first ?: return@LaunchedEffect
+            )
+        }
     }
 
     ScreenScaffold(
@@ -132,7 +141,6 @@ fun CalendarScreen(
                             onClick = {
                                 coroutineScope.launch {
                                     viewModel.setSelectedTime(time)
-                                    pagerState.scrollToPage(i)
                                 }
                             }
                         )
