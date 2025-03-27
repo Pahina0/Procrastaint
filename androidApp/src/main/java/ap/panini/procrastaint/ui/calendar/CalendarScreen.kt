@@ -2,7 +2,6 @@ package ap.panini.procrastaint.ui.calendar
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -40,9 +38,6 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -67,14 +62,12 @@ fun CalendarScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-
     val selectableListState = rememberLazyListState()
     val pagerState = rememberPagerState { dateState.itemCount }
 
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(state.selectedTime) {
-
         coroutineScope.launch {
             val index = dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }
             if (index == -1) return@launch
@@ -82,7 +75,6 @@ fun CalendarScreen(
             selectableListState.animateScrollToItem(index)
             pagerState.scrollToPage(index)
         }
-
     }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
@@ -124,7 +116,8 @@ fun CalendarScreen(
                 ) {
                     items(
                         count = dateState.itemCount,
-                        key = dateState.itemKey { it.first }) { i ->
+                        key = dateState.itemKey { it.first }
+                    ) { i ->
                         val (time, item) = dateState[i]!!
                         val itemState = item.collectAsStateWithLifecycle(listOf()).value
                         TasksMiniPreview(

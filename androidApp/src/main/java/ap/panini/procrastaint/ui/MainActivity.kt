@@ -23,18 +23,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import ap.panini.procrastaint.R
+import ap.panini.procrastaint.crash.GlobalExceptionHandler
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -48,13 +43,9 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
-
-
-//    private val viewModel: MainActivityViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +53,8 @@ class MainActivity : ComponentActivity() {
         val viewModel by viewModel<MainActivityViewModel>()
 
         enableEdgeToEdge()
+
+        Thread.setDefaultUncaughtExceptionHandler(GlobalExceptionHandler(this))
 
         setContent {
             ProcrastaintTheme {
@@ -91,7 +84,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             if (state.visible) {
                 TaskBottomSheet(
                     state,

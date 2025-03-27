@@ -5,7 +5,10 @@ naming:
   TopLevelPropertyNaming:
     constantPattern: '[A-Z][A-Za-z0-9]*'
 
+
 complexity:
+  TooManyFunctions:
+    thresholdInClasses: 15
   LongMethod:
     ignoreAnnotated: [ 'Composable' ]
   LongParameterList:
@@ -21,6 +24,7 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
   ReturnCount:
     excludeGuardClauses: true
+    max: 8
   SerialVersionUIDInSerializableClass:
     active: false
   UnusedPrivateMember:

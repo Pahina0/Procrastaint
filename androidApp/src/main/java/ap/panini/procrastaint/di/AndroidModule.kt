@@ -21,5 +21,5 @@ val androidModule = module {
 
     single { GoogleAuth(androidApplication()) }
 
-    worker { SyncWorker(get(), get(), get()) }
+    worker { SyncWorker(get(), get(), it.get()) }
 }

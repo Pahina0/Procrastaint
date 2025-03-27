@@ -43,4 +43,13 @@ class App : Application() {
                 work
             )
     }
+
+//    fun Application.setupWorkManagerFactory(
+//        // no vararg for WorkerFactory
+//    ) {
+//        getKoin().getAll<WorkerFactory>()
+//            .forEach {
+//                delegatingWorkerFactory.addFactory(it)
+//            }
+//    }
 }

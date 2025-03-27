@@ -35,11 +35,9 @@ class CalendarViewModel(
     }.flow
         .cachedIn(viewModelScope)
 
-
     fun setSelectedTime(time: Long) {
         _uiState.update { it.copy(selectedTime = time) }
     }
-
 
     fun checkTask(task: TaskSingle) {
         val completion =

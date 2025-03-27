@@ -5,6 +5,7 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import kotlinx.coroutines.CoroutineScope
@@ -56,9 +57,13 @@ class NetworkCalendarRepository(
             )
 
             NetworkSyncItem.SyncAction.DELETE_TASK -> repo.deleteTask(
-                taskDao.getTask(
-                    item.taskId ?: return CalendarRepository.Response.Success
-                ),
+                Task(
+                    TaskInfo(
+                        taskId = item.taskId ?: return CalendarRepository.Response.Success,
+                        title = ""
+                    ),
+                    meta = listOf()
+                )
             )
 
             NetworkSyncItem.SyncAction.CHECK ->

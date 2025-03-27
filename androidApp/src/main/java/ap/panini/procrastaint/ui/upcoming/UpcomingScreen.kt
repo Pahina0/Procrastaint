@@ -63,7 +63,12 @@ fun UpcomingScreen(
             )
         }
 
-        Tasks(state.taskInfos, viewModel::checkTask, activityViewModel::editCreatedTask, modifier = Modifier.padding(padding))
+        Tasks(
+            state.taskInfos,
+            viewModel::checkTask,
+            activityViewModel::editCreatedTask,
+            modifier = Modifier.padding(padding)
+        )
     }
 }
 

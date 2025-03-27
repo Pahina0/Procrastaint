@@ -15,12 +15,11 @@ import kotlinx.datetime.Instant
 import kotlin.math.min
 
 class TaskRepository(
-    private val taskDao: TaskDao, private val calendar: NetworkCalendarRepository
+    private val taskDao: TaskDao,
+    private val calendar: NetworkCalendarRepository
 ) {
 
-
-     suspend fun insertTask(tasks: Task): Boolean {
-
+    suspend fun insertTask(tasks: Task): Boolean {
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
         tasks.meta.forEach {
@@ -79,7 +78,8 @@ class TaskRepository(
         )
 
     fun getTasksFrom(from: Long): Flow<List<TaskSingle>> = taskDao.getAllTasks(from).organize(
-        from = from, maxRepetition = 5
+        from = from,
+        maxRepetition = 5
     )
 
     /**
@@ -92,7 +92,10 @@ class TaskRepository(
      * @return the list of all tasks that can be generated from that 1 task
      */
     private fun TaskSingle.getAllTasks(
-        from: Long, to: Long, maxRepetition: Long, completed: Map<Long, MutableMap<Long, Long>>
+        from: Long,
+        to: Long,
+        maxRepetition: Long,
+        completed: Map<Long, MutableMap<Long, Long>>
     ): List<TaskSingle> {
         if (repeatOften == null || repeatTag == null || startTime == null) {
             return listOf(
@@ -117,12 +120,14 @@ class TaskRepository(
             val isCompleted =
                 curTime.toEpochMilliseconds() in (completed[taskId]?.keys ?: emptySet())
             items += copy(
-                currentEventTime = curTime.toEpochMilliseconds(), completed = if (isCompleted) {
+                currentEventTime = curTime.toEpochMilliseconds(),
+                completed = if (isCompleted) {
                     curTime.toEpochMilliseconds()
                 } else {
                     ++timesDuped
                     null
-                }, completionId = completed[taskId]?.get(curTime.toEpochMilliseconds()) ?: 0
+                },
+                completionId = completed[taskId]?.get(curTime.toEpochMilliseconds()) ?: 0
             )
 
             curTime = repeatTag.incrementBy(curTime, repeatOften)
@@ -140,7 +145,9 @@ class TaskRepository(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun Flow<List<TaskSingle>>.organize(
-        from: Long, to: Long = Long.MAX_VALUE, maxRepetition: Long = Long.MAX_VALUE
+        from: Long,
+        to: Long = Long.MAX_VALUE,
+        maxRepetition: Long = Long.MAX_VALUE
     ) = this.mapLatest { list ->
         val filteredList = mutableListOf<TaskSingle>()
 

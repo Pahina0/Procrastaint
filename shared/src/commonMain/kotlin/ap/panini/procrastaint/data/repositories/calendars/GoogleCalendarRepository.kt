@@ -96,7 +96,6 @@ class GoogleCalendarRepository(
         )
     }
 
-
     /**
      * Update completion
      *

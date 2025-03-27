@@ -12,7 +12,6 @@ import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -65,7 +64,6 @@ class MainActivityViewModel(
                     mode = MainUiState.Mode.Edit(task)
                 )
             }
-
         }
     }
 
@@ -128,8 +126,6 @@ class MainActivityViewModel(
                     db.editTask((uiState.value.mode as MainUiState.Mode.Edit).task, task)
                 }
             }
-
-
         }
 
         onHide()
