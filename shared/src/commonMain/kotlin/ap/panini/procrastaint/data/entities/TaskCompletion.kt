@@ -10,12 +10,14 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = TaskInfo::class,
             childColumns = ["taskId"],
-            parentColumns = ["taskId"]
+            parentColumns = ["taskId"],
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = TaskMeta::class,
             childColumns = ["metaId"],
-            parentColumns = ["metaId"]
+            parentColumns = ["metaId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )

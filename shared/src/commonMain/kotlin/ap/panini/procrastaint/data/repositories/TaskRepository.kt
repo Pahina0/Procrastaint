@@ -1,9 +1,9 @@
 package ap.panini.procrastaint.data.repositories
 
 import ap.panini.procrastaint.data.database.dao.TaskDao
+import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.util.TaskGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,11 +15,11 @@ import kotlinx.datetime.Instant
 import kotlin.math.min
 
 class TaskRepository(
-    private val taskDao: TaskDao,
-    private val calendar: NetworkCalendarRepository
+    private val taskDao: TaskDao, private val calendar: NetworkCalendarRepository
 ) {
-    suspend fun insertTask(task: TaskGroup): Boolean {
-        val tasks = task.toTask() ?: return false
+
+
+     suspend fun insertTask(tasks: Task): Boolean {
 
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
@@ -28,10 +28,26 @@ class TaskRepository(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            calendar.createEvent(taskDao.getTask(id))
+            calendar.createTask(taskDao.getTask(id))
         }
 
         return true
+    }
+
+    suspend fun getTask(id: Long): Task = taskDao.getTask(id)
+
+    suspend fun editTask(oldTask: Task, newTask: Task) {
+        deleteTask(oldTask)
+
+        insertTask(newTask)
+    }
+
+    suspend fun deleteTask(task: Task) {
+        taskDao.deleteTask(task.taskInfo)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            calendar.deleteTask(task)
+        }
     }
 
     suspend fun addCompletion(taskCompletion: TaskCompletion) {
@@ -40,7 +56,7 @@ class TaskRepository(
         )
 
         CoroutineScope(Dispatchers.IO).launch {
-            val task = taskDao.getTask(taskCompletion.taskId).also { println(it) }
+            val task = taskDao.getTask(taskCompletion.taskId)
             calendar.addCompletion(task, taskCompletion.copy(completionId = id))
         }
     }
@@ -57,18 +73,14 @@ class TaskRepository(
     }
 
     fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetween(from, to)
-            .organize(
-                from = from,
-                to = to,
-            )
+        taskDao.getTasksBetween(from, to).organize(
+            from = from,
+            to = to,
+        )
 
-    fun getTasksFrom(from: Long): Flow<List<TaskSingle>> =
-        taskDao.getAllTasks(from)
-            .organize(
-                from = from,
-                maxRepetition = 5
-            )
+    fun getTasksFrom(from: Long): Flow<List<TaskSingle>> = taskDao.getAllTasks(from).organize(
+        from = from, maxRepetition = 5
+    )
 
     /**
      * Get all repetitions in a tasks given a single task
@@ -80,10 +92,7 @@ class TaskRepository(
      * @return the list of all tasks that can be generated from that 1 task
      */
     private fun TaskSingle.getAllTasks(
-        from: Long,
-        to: Long,
-        maxRepetition: Long,
-        completed: Map<Long, MutableMap<Long, Long>>
+        from: Long, to: Long, maxRepetition: Long, completed: Map<Long, MutableMap<Long, Long>>
     ): List<TaskSingle> {
         if (repeatOften == null || repeatTag == null || startTime == null) {
             return listOf(
@@ -106,20 +115,14 @@ class TaskRepository(
 
         while (curTime <= toTime && timesDuped <= maxRepetition) {
             val isCompleted =
-                curTime.toEpochMilliseconds() in (
-                    completed[taskId]?.keys
-                        ?: emptySet()
-                    )
+                curTime.toEpochMilliseconds() in (completed[taskId]?.keys ?: emptySet())
             items += copy(
-                currentEventTime = curTime.toEpochMilliseconds(),
-                completed = if (isCompleted) {
+                currentEventTime = curTime.toEpochMilliseconds(), completed = if (isCompleted) {
                     curTime.toEpochMilliseconds()
                 } else {
                     ++timesDuped
                     null
-                },
-                completionId = completed[taskId]?.get(curTime.toEpochMilliseconds())
-                    ?: 0
+                }, completionId = completed[taskId]?.get(curTime.toEpochMilliseconds()) ?: 0
             )
 
             curTime = repeatTag.incrementBy(curTime, repeatOften)
@@ -137,9 +140,7 @@ class TaskRepository(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     fun Flow<List<TaskSingle>>.organize(
-        from: Long,
-        to: Long = Long.MAX_VALUE,
-        maxRepetition: Long = Long.MAX_VALUE
+        from: Long, to: Long = Long.MAX_VALUE, maxRepetition: Long = Long.MAX_VALUE
     ) = this.mapLatest { list ->
         val filteredList = mutableListOf<TaskSingle>()
 
@@ -160,7 +161,6 @@ class TaskRepository(
 
         filteredList.map { task ->
             task.getAllTasks(from, to, maxRepetition, completed)
-        }.flatten()
-            .sortedBy { it.currentEventTime }
+        }.flatten().sortedBy { it.currentEventTime }
     }
 }

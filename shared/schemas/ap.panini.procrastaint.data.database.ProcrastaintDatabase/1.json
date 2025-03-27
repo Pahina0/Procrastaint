@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "83eff11dcf5c19a95d88d07020f1e3e8",
+    "identityHash": "632db86f3704811efbf58e75d3f55ece",
     "entities": [
       {
         "tableName": "TaskInfo",
@@ -36,7 +36,7 @@
       },
       {
         "tableName": "TaskMeta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `allDay` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `allDay` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "startTime",
@@ -97,7 +97,7 @@
         "foreignKeys": [
           {
             "table": "TaskInfo",
-            "onDelete": "NO ACTION",
+            "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "taskId"
@@ -110,7 +110,7 @@
       },
       {
         "tableName": "TaskCompletion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`completionTime` INTEGER NOT NULL, `forTime` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`completionTime` INTEGER NOT NULL, `forTime` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER NOT NULL, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "completionTime",
@@ -172,7 +172,7 @@
         "foreignKeys": [
           {
             "table": "TaskInfo",
-            "onDelete": "NO ACTION",
+            "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "taskId"
@@ -183,7 +183,7 @@
           },
           {
             "table": "TaskMeta",
-            "onDelete": "NO ACTION",
+            "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
               "metaId"
@@ -196,7 +196,7 @@
       },
       {
         "tableName": "NetworkSyncItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `failCount` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`completionId`) REFERENCES `TaskCompletion`(`completionId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `location` TEXT NOT NULL, `action` TEXT NOT NULL, `metaId` INTEGER, `taskId` INTEGER, `completionId` INTEGER, `failCount` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "time",
@@ -249,47 +249,12 @@
           "columnNames": [
             "id"
           ]
-        },
-        "foreignKeys": [
-          {
-            "table": "TaskInfo",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "taskId"
-            ],
-            "referencedColumns": [
-              "taskId"
-            ]
-          },
-          {
-            "table": "TaskMeta",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "metaId"
-            ],
-            "referencedColumns": [
-              "metaId"
-            ]
-          },
-          {
-            "table": "TaskCompletion",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "completionId"
-            ],
-            "referencedColumns": [
-              "completionId"
-            ]
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '83eff11dcf5c19a95d88d07020f1e3e8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '632db86f3704811efbf58e75d3f55ece')"
     ]
   }
 }

@@ -3,6 +3,7 @@ package ap.panini.procrastaint.ui
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Parser
@@ -11,6 +12,7 @@ import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -32,11 +34,67 @@ class MainActivityViewModel(
         val repeatTag: Time? = null,
         val viewing: Int = -1,
         val autoParsed: List<Parsed> = emptyList(),
-    )
+        val visible: Boolean = false,
+
+        val mode: Mode = Mode.Create
+    ) {
+        sealed interface Mode {
+            data object Create : Mode
+            class Edit(val task: Task) : Mode
+        }
+    }
+
+    /**
+     * Edit created task launches the bottom sheet and puts you in the state to edit a task
+     *
+     * @param taskId
+     */
+    fun editCreatedTask(taskId: Long) {
+        viewModelScope.launch {
+            onShow()
+            val task = db.getTask(taskId)
+
+            _uiState.update {
+                uiState.value.copy(
+                    task = task.taskInfo.title,
+                    description = task.taskInfo.description,
+                    manualStartTimes = task.meta.mapNotNull { it.startTime }.toSet(),
+                    endTime = task.meta.mapNotNull { it.endTime }.maxOrNull(),
+                    repeatInterval = task.meta.firstOrNull()?.repeatOften,
+                    repeatTag = task.meta.firstOrNull()?.repeatTag,
+                    mode = MainUiState.Mode.Edit(task)
+                )
+            }
+
+        }
+    }
+
+    fun deleteEditTask() {
+        if (uiState.value.mode !is MainUiState.Mode.Edit) return
+
+        viewModelScope.launch {
+            db.deleteTask((uiState.value.mode as MainUiState.Mode.Edit).task)
+        }
+        onHide()
+    }
+
+    fun onShow() {
+        _uiState.update { uiState.value.copy(visible = true) }
+    }
+
+    fun onHide() {
+        _uiState.update {
+            if (_uiState.value.mode is MainUiState.Mode.Edit) {
+                MainUiState()
+            } else {
+                uiState.value.copy(visible = false)
+            }
+        }
+    }
 
     fun save() {
         viewModelScope.launch {
-            val success = db.insertTask(
+            val task =
                 uiState.value.run {
                     val curParsed = autoParsed.getOrNull(viewing)
                     TaskGroup(
@@ -53,13 +111,28 @@ class MainActivityViewModel(
                         repeatTag = repeatTag ?: curParsed?.repeatTag,
                         repeatOften = repeatInterval ?: curParsed?.repeatOften ?: 0
                     )
-                }
-            )
+                }.toTask()
 
-            if (success) {
-                _uiState.update { MainUiState() }
+            if (task == null) return@launch
+
+            when (uiState.value.mode) {
+                is MainUiState.Mode.Create -> {
+                    val success = db.insertTask(task)
+
+                    if (success) {
+                        _uiState.update { MainUiState() }
+                    }
+                }
+
+                is MainUiState.Mode.Edit -> {
+                    db.editTask((uiState.value.mode as MainUiState.Mode.Edit).task, task)
+                }
             }
+
+
         }
+
+        onHide()
     }
 
     fun setRepeatTag(tag: Time?) {

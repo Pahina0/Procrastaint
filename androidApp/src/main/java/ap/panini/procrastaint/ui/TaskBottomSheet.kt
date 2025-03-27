@@ -11,12 +11,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
@@ -32,6 +34,7 @@ import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -90,6 +93,7 @@ fun TaskBottomSheet(
     setRepeatTag: (Time?) -> Unit,
     setRepeatOften: (Int?) -> Unit,
     saveTask: () -> Unit,
+    deleteTask: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
@@ -139,10 +143,21 @@ fun TaskBottomSheet(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 trailingIcon = {
                     IconButton(onClick = { saveTask() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.TaskAlt,
-                            contentDescription = "Save task"
-                        )
+                        when (state.mode) {
+                            is MainActivityViewModel.MainUiState.Mode.Create -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.TaskAlt,
+                                    contentDescription = "Save task"
+                                )
+                            }
+
+                            is MainActivityViewModel.MainUiState.Mode.Edit -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "Edit task"
+                                )
+                            }
+                        }
                     }
                 }
             )
@@ -189,6 +204,20 @@ fun TaskBottomSheet(
                 label = { Text(text = "Description") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
+
+            if (state.mode is MainActivityViewModel.MainUiState.Mode.Edit) {
+                OutlinedButton(
+                    onClick = {
+                        deleteTask()
+                    },
+                    colors = ButtonDefaults.outlinedButtonColors().copy(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Delete task")
+                }
+            }
         }
     }
 }
@@ -297,7 +326,7 @@ private fun ActionDisplay(
             ACTION_ADD_START -> Date.getTime()
             ACTION_ADD_END ->
                 manualEnd ?: parsedEnd
-                    ?: Date.getTime()
+                ?: Date.getTime()
 
             else -> Date.getTime()
         },

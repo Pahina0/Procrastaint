@@ -4,30 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            TaskInfo::class,
-            childColumns = ["taskId"],
-            parentColumns = ["taskId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-
-        ForeignKey(
-            TaskMeta::class,
-            childColumns = ["metaId"],
-            parentColumns = ["metaId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-
-        ForeignKey(
-            TaskCompletion::class,
-            childColumns = ["completionId"],
-            parentColumns = ["completionId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
+@Entity
 data class NetworkSyncItem(
     val time: Long,
 
@@ -51,7 +28,8 @@ data class NetworkSyncItem(
         CREATE_CALENDAR,
         CHECK,
         UNCHECK,
-        CREATE_EVENT
+        CREATE_TASK,
+        DELETE_TASK
     }
 
     enum class SyncData {

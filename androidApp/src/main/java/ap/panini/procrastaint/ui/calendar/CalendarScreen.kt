@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.ui.calendar
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.components.DayView
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TasksMiniPreview
@@ -49,6 +52,10 @@ fun CalendarScreen(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = koinViewModel(),
 ) {
+    val activityViewModel = koinViewModel<MainActivityViewModel>(
+        viewModelStoreOwner = LocalActivity.current as ComponentActivity
+    )
+
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -143,6 +150,7 @@ fun CalendarScreen(
                     DayView(
                         itemState,
                         viewModel::checkTask,
+                        onEdit = activityViewModel::editCreatedTask,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

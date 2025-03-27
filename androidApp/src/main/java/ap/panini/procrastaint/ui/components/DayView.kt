@@ -37,6 +37,7 @@ private const val HOURS = 24
 fun DayView(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
+    onEdit: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -68,7 +69,7 @@ fun DayView(
 
             // displays all tasks under x hour
             items(items = usingItems) {
-                TaskView(it, onCheck)
+                TaskView(it, onCheck, onEdit)
             }
 
             if (usingItems.isEmpty()) {
@@ -92,7 +93,7 @@ fun DayView(
 
         // displays all tasks under x hour
         items(items = remainingItems) {
-            TaskView(it, onCheck)
+            TaskView(it, onCheck, onEdit)
         }
         if (remainingItems.isEmpty()) {
             item { Spacer(modifier = Modifier.height(50.dp)) }
@@ -148,6 +149,7 @@ private fun DayViewPreview() {
                 8.hours.inWholeMilliseconds
             )
         ),
+        {},
         {},
         modifier = Modifier.fillMaxSize()
     )

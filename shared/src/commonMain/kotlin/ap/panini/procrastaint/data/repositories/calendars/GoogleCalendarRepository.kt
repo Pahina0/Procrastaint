@@ -46,7 +46,7 @@ class GoogleCalendarRepository(
         return CalendarRepository.Response.Success
     }
 
-    override suspend fun createEvent(
+    override suspend fun createTask(
         task: Task,
     ): CalendarRepository.Response {
         var error = Throwable("Unknown error occurred")
@@ -54,6 +54,20 @@ class GoogleCalendarRepository(
             val success = gcApi.createEvent(
                 it,
                 preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first()
+            ).catch { err -> error = err }.firstOrNull()
+
+            success ?: return CalendarRepository.Response.Error(error)
+        }
+
+        return CalendarRepository.Response.Success
+    }
+
+    override suspend fun deleteTask(task: Task): CalendarRepository.Response {
+        var error = Throwable("Unknown error occurred")
+        getGoogleEvents(task, preference).forEach {
+            val success = gcApi.deleteEvent(
+                preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
+                it.id
             ).catch { err -> error = err }.firstOrNull()
 
             success ?: return CalendarRepository.Response.Error(error)
@@ -81,6 +95,7 @@ class GoogleCalendarRepository(
             completion,
         )
     }
+
 
     /**
      * Update completion

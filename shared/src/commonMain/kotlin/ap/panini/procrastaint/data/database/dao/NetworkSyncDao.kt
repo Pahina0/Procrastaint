@@ -45,6 +45,14 @@ interface NetworkSyncDao {
 
     @Query(
         """
+            DELETE FROM networkSyncItem
+            WHERE taskId = :taskId
+        """
+    )
+    suspend fun deleteTask(taskId: Long)
+
+    @Query(
+        """
             SELECT * FROM
             networkSyncItem
             ORDER BY time

@@ -5,6 +5,7 @@ import ap.panini.procrastaint.data.entities.google.GoogleCalendarList
 import ap.panini.procrastaint.data.entities.google.GoogleEvent
 import ap.panini.procrastaint.data.entities.google.GoogleEventInstances
 import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.PUT
@@ -31,6 +32,12 @@ interface GoogleCalendarApi {
         @Body event: GoogleEvent,
         @Path calendarId: String,
     ): Flow<GoogleEvent>
+
+    @DELETE("calendars/{calendarId}/events/{eventId}")
+    fun deleteEvent(
+        @Path calendarId: String,
+        @Path eventId: String
+    ): Flow<String>
 
     @PUT("calendars/{calendarId}/events/{eventId}")
     fun updateEvent(

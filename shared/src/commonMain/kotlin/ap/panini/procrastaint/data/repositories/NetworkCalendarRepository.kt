@@ -49,7 +49,13 @@ class NetworkCalendarRepository(
         val response = when (item.action) {
             NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar()
 
-            NetworkSyncItem.SyncAction.CREATE_EVENT -> repo.createEvent(
+            NetworkSyncItem.SyncAction.CREATE_TASK -> repo.createTask(
+                taskDao.getTask(
+                    item.taskId ?: return CalendarRepository.Response.Success
+                ),
+            )
+
+            NetworkSyncItem.SyncAction.DELETE_TASK -> repo.deleteTask(
                 taskDao.getTask(
                     item.taskId ?: return CalendarRepository.Response.Success
                 ),
@@ -118,11 +124,11 @@ class NetworkCalendarRepository(
         }
     }
 
-    suspend fun createEvent(task: Task) {
+    suspend fun createTask(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
 
         calendars.forEach { (calendar, loc) ->
-            val response = calendar.createEvent(task)
+            val response = calendar.createTask(task)
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -130,7 +136,29 @@ class NetworkCalendarRepository(
                         NetworkSyncItem(
                             time = now,
                             location = loc,
-                            action = NetworkSyncItem.SyncAction.CREATE_EVENT,
+                            action = NetworkSyncItem.SyncAction.CREATE_TASK,
+                            taskId = task.taskInfo.taskId
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun deleteTask(task: Task) {
+        val now = Clock.System.now().toEpochMilliseconds()
+        nsDao.deleteTask(task.taskInfo.taskId)
+
+        calendars.forEach { (calendar, loc) ->
+            val response = calendar.deleteTask(task)
+
+            if (response is CalendarRepository.Response.Error) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    nsDao.insertNetworkSyncItem(
+                        NetworkSyncItem(
+                            time = now,
+                            location = loc,
+                            action = NetworkSyncItem.SyncAction.DELETE_TASK,
                             taskId = task.taskInfo.taskId
                         )
                     )

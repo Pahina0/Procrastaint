@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
@@ -25,8 +26,11 @@ interface TaskDao {
     @Delete
     suspend fun deleteTaskCompletion(taskCompletion: TaskCompletion)
 
+    @Delete
+    suspend fun deleteTask(task: TaskInfo)
+
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
-    fun getTask(id: Long): Task
+    suspend fun getTask(id: Long): Task
 
     @Query("""SELECT * FROM TaskCompletion WHERE completionId = :id""")
     fun getCompletion(id: Long): TaskCompletion

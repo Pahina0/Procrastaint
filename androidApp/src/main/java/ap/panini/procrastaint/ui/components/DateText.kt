@@ -13,7 +13,7 @@ fun DateText(
     modifier: Modifier = Modifier
 ) {
     Text(
-        date?.formatMilliseconds(setOf(Time.DAY, Time.MONTH)) ?: "Unknown",
+        date?.takeUnless { it == 0L }?.formatMilliseconds(setOf(Time.DAY, Time.MONTH))?: "Unknown",
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier
     )

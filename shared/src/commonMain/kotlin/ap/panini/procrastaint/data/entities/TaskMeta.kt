@@ -11,7 +11,8 @@ import ap.panini.procrastaint.util.Time
         ForeignKey(
             entity = TaskInfo::class,
             childColumns = ["taskId"],
-            parentColumns = ["taskId"]
+            parentColumns = ["taskId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )

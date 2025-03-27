@@ -29,7 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import ap.panini.procrastaint.R
@@ -46,32 +48,36 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainActivityViewModel by inject()
+
+//    private val viewModel: MainActivityViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val viewModel by viewModel<MainActivityViewModel>()
 
         enableEdgeToEdge()
 
         setContent {
             ProcrastaintTheme {
-                MainContent()
+                MainContent(viewModel)
             }
         }
     }
 
     @Composable
-    private fun MainContent() {
-        var showBottomSheet by remember { mutableStateOf(false) }
+    private fun MainContent(viewModel: MainActivityViewModel) {
         val navController = rememberNavController()
 
         val curDestination = navController.currentDestinationAsState().value
             ?: NavGraphs.root.startDestination
 
+        val state = viewModel.uiState.collectAsStateWithLifecycle().value
         Scaffold(
             bottomBar = {
                 BottomBar(navController.rememberDestinationsNavigator(), curDestination)
@@ -79,25 +85,26 @@ class MainActivity : ComponentActivity() {
 
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    showBottomSheet = true
+                    viewModel.onShow()
                 }) {
                     Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
                 }
             },
 
-        ) {
-            if (showBottomSheet) {
+            ) {
+            if (state.visible) {
                 TaskBottomSheet(
-                    viewModel.uiState.collectAsStateWithLifecycle().value,
+                    state,
                     viewModel::updateTask,
                     viewModel::updateDescription,
                     viewModel::viewNextParsed,
-                    onDismissRequest = { showBottomSheet = false },
+                    viewModel::onHide,
                     viewModel::editManualStartTime,
                     viewModel::editEndTime,
                     viewModel::setRepeatTag,
                     viewModel::setRepeatInterval,
-                    viewModel::save
+                    viewModel::save,
+                    viewModel::deleteEditTask
                 )
             }
 

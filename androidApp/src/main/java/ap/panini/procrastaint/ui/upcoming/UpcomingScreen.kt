@@ -1,29 +1,25 @@
 package ap.panini.procrastaint.ui.upcoming
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.components.DateText
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
@@ -41,6 +37,10 @@ fun UpcomingScreen(
     modifier: Modifier = Modifier,
     viewModel: UpcomingViewModel = koinViewModel()
 ) {
+    val activityViewModel = koinViewModel<MainActivityViewModel>(
+        viewModelStoreOwner = LocalActivity.current as ComponentActivity
+    )
+
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     val scrollBehavior =
@@ -56,10 +56,14 @@ fun UpcomingScreen(
         }
     ) { padding ->
         if (state.taskInfos.isEmpty()) {
-            EmptyPage(Icons.Default.Checklist, "You have no upcoming tasks!\nPress + to start adding", Modifier.padding(padding))
+            EmptyPage(
+                Icons.Default.Checklist,
+                "You have no upcoming tasks!\nPress + to start adding",
+                Modifier.padding(padding)
+            )
         }
 
-        Tasks(state.taskInfos, viewModel::checkTask, modifier = Modifier.padding(padding))
+        Tasks(state.taskInfos, viewModel::checkTask, activityViewModel::editCreatedTask, modifier = Modifier.padding(padding))
     }
 }
 
@@ -67,6 +71,7 @@ fun UpcomingScreen(
 private fun Tasks(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
+    onEdit: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.padding(10.dp)) {
@@ -93,7 +98,8 @@ private fun Tasks(
             TaskView(
                 task = task,
                 modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
-                onCheck = onCheck
+                onCheck = onCheck,
+                onEdit = onEdit
             )
         }
     }
