@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,6 +32,7 @@ import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.components.DayView
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TasksMiniPreview
+import ap.panini.procrastaint.ui.components.ViewingType
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
@@ -123,11 +123,16 @@ fun CalendarScreen(
                         TasksMiniPreview(
                             time,
                             itemState,
-                            currentDateColor = with(MaterialTheme.colorScheme) {
-                                when (time) {
-                                    state.selectedTime -> primary
-                                    today -> primary
-                                    else -> onSurface
+                            dateType =
+                            when (time) {
+                                state.selectedTime -> ViewingType.Selected
+                                today -> ViewingType.Today
+                                else -> {
+                                    if (time < today) {
+                                        ViewingType.Past
+                                    } else {
+                                        ViewingType.Future
+                                    }
                                 }
                             },
 

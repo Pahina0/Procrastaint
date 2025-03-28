@@ -17,6 +17,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 object Date {
+    private const val ROUND_NUMBER = 100000
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     fun getTime(
@@ -43,6 +44,7 @@ object Date {
             .minus(now().hour.hours)
             .minus(now().minute.minutes)
             .toEpochMilliseconds()
+            .let { (it / ROUND_NUMBER) * ROUND_NUMBER }
 
     /**
      * @param known The known values from the time to display
