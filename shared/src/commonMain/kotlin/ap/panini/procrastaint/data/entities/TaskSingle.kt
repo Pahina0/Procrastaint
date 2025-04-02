@@ -19,7 +19,5 @@ data class TaskSingle(
     val repeatTag: Time?,
     val repeatOften: Int?,
 
-    val allDay: Boolean,
-
     val currentEventTime: Long, // make sure not -1 when accessing
 )

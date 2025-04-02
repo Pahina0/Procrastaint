@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "632db86f3704811efbf58e75d3f55ece",
+    "identityHash": "6f0316785a0095c86b05c473b577c5b5",
     "entities": [
       {
         "tableName": "TaskInfo",
@@ -36,7 +36,7 @@
       },
       {
         "tableName": "TaskMeta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `allDay` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`startTime` INTEGER, `endTime` INTEGER, `repeatTag` TEXT, `repeatOften` INTEGER, `taskId` INTEGER NOT NULL, `metaId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "startTime",
@@ -57,12 +57,6 @@
             "fieldPath": "repeatOften",
             "columnName": "repeatOften",
             "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "allDay",
-            "columnName": "allDay",
-            "affinity": "INTEGER",
-            "notNull": true
           },
           {
             "fieldPath": "taskId",
@@ -254,7 +248,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '632db86f3704811efbf58e75d3f55ece')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6f0316785a0095c86b05c473b577c5b5')"
     ]
   }
 }

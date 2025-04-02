@@ -13,6 +13,7 @@ import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
+import ap.panini.procrastaint.notifications.NotificationManager
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
 import de.jensklingenberg.ktorfit.ktorfit
@@ -21,9 +22,6 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.AuthConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -39,7 +37,9 @@ val appModule = module {
     single { database.getTaskDao() }
     single { database.getNetworkSyncDao() }
     single { createDataStore() }
-    single { TaskRepository(get(), get()) }
+
+    single { NotificationManager() }
+    single { TaskRepository(get(), get(), get()) }
     single { PreferenceRepository(get()) }
 
     single {
@@ -70,14 +70,14 @@ fun getKtor(
                     authConfig()
                 }
 
-                install(Logging) {
-                    logger = object : Logger {
-                        override fun log(message: String) {
-                            println(message)
-                        }
-                    }
-                    level = LogLevel.ALL
-                }
+//                install(Logging) {
+//                    logger = object : Logger {
+//                        override fun log(message: String) {
+//                            println(message)
+//                        }
+//                    }
+//                    level = LogLevel.ALL
+//                }
 
                 install(DefaultRequest) {
                     header(HttpHeaders.ContentType, ContentType.Application.Json)

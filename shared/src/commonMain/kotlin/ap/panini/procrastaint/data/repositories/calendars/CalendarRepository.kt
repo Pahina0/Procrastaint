@@ -2,6 +2,7 @@ package ap.panini.procrastaint.data.repositories.calendars
 
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
+import kotlinx.coroutines.flow.Flow
 
 interface CalendarRepository {
 
@@ -11,6 +12,8 @@ interface CalendarRepository {
             constructor(ex: Throwable) : this(listOf(ex))
         }
     }
+
+    fun isLoggedIn(): Flow<Boolean>
 
     suspend fun createCalendar(): Response
 

@@ -22,8 +22,6 @@ data class TaskMeta(
     val repeatTag: Time? = null,
     val repeatOften: Int? = null,
 
-    val allDay: Boolean = false,
-
     @ColumnInfo(index = true)
     val taskId: Long = 0,
 

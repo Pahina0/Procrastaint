@@ -130,7 +130,6 @@ private fun DayViewPreview() {
                 null,
                 null,
                 null,
-                true,
                 4.3.hours.inWholeMilliseconds
             ),
 
@@ -145,7 +144,6 @@ private fun DayViewPreview() {
                 null,
                 null,
                 null,
-                true,
                 8.hours.inWholeMilliseconds
             )
         ),

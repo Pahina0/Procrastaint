@@ -4,11 +4,13 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -16,7 +18,8 @@ import kotlin.math.min
 
 class TaskRepository(
     private val taskDao: TaskDao,
-    private val calendar: NetworkCalendarRepository
+    private val calendar: NetworkCalendarRepository,
+    private val notificationManager: NotificationManager
 ) {
 
     suspend fun insertTask(tasks: Task): Boolean {
@@ -27,7 +30,9 @@ class TaskRepository(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            calendar.createTask(taskDao.getTask(id))
+            val updatedTask = taskDao.getTask(id)
+            notificationManager.create(updatedTask)
+            calendar.createTask(updatedTask)
         }
 
         return true
@@ -45,6 +50,7 @@ class TaskRepository(
         taskDao.deleteTask(task.taskInfo)
 
         CoroutineScope(Dispatchers.IO).launch {
+            notificationManager.delete(task)
             calendar.deleteTask(task)
         }
     }
@@ -54,8 +60,16 @@ class TaskRepository(
             taskCompletion
         )
 
+
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
+            notificationManager.delete(
+                getTasksBetweenFiltered(
+                    taskCompletion.forTime,
+                    taskCompletion.forTime,
+                    taskCompletion.taskId
+                ).first().first()
+            )
             calendar.addCompletion(task, taskCompletion.copy(completionId = id))
         }
     }
@@ -67,12 +81,25 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
+            notificationManager.create(
+                getTasksBetweenFiltered(
+                    taskCompletion.forTime,
+                    taskCompletion.forTime,
+                    taskCompletion.taskId
+                ).first().first()
+            )
             calendar.removeCompletion(task, taskCompletion)
         }
     }
 
     fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
         taskDao.getTasksBetween(from, to).organize(
+            from = from,
+            to = to,
+        )
+
+    fun getTasksBetweenFiltered(from: Long, to: Long, taskId: Long): Flow<List<TaskSingle>> =
+        taskDao.getTasksBetweenFiltered(from, to, taskId).organize(
             from = from,
             to = to,
         )

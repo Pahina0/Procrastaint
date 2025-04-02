@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:name=".App"
@@ -21,6 +24,7 @@
 
 
         </activity>
+
 
         <activity
             android:name=".ui.settings.auth.AuthActivity"
@@ -45,5 +49,18 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <!--    recievers    -->
+        <receiver android:name=".notification.NotificationAlarmReceiver" />
+
+        <receiver android:name=".notification.NotificationReceiver" />
+
+        <receiver
+            android:name=".services.BootBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

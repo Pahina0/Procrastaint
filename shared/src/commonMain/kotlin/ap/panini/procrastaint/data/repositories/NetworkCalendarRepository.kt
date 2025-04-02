@@ -46,6 +46,10 @@ class NetworkCalendarRepository(
             NetworkSyncItem.SyncData.GOOGLE -> googleCalendarRepository
         }
 
+        if (!repo.isLoggedIn()
+                .first()
+        ) return CalendarRepository.Response.Error(Throwable("Not logged in"))
+
         // if a id doesn't exist anymore can prob skip it, like trying to
         val response = when (item.action) {
             NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar()
@@ -133,7 +137,13 @@ class NetworkCalendarRepository(
         val now = Clock.System.now().toEpochMilliseconds()
 
         calendars.forEach { (calendar, loc) ->
-            val response = calendar.createTask(task)
+            val response = if (!calendar.isLoggedIn().first()) {
+                CalendarRepository.Response.Error(
+                    Throwable("Not logged in")
+                )
+            } else {
+                calendar.createTask(task)
+            }
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -155,7 +165,13 @@ class NetworkCalendarRepository(
         nsDao.deleteTask(task.taskInfo.taskId)
 
         calendars.forEach { (calendar, loc) ->
-            val response = calendar.deleteTask(task)
+            val response = if (!calendar.isLoggedIn().first()) {
+                CalendarRepository.Response.Error(
+                    Throwable("Not logged in")
+                )
+            } else {
+                calendar.deleteTask(task)
+            }
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -177,8 +193,13 @@ class NetworkCalendarRepository(
         nsDao.deleteUnchecked(task.taskInfo.taskId, completion.metaId, now)
 
         calendars.forEach { (calendar, loc) ->
-            val response = calendar.addCompletion(task, completion)
-            println(response)
+            val response = if (!calendar.isLoggedIn().first()) {
+                CalendarRepository.Response.Error(
+                    Throwable("Not logged in")
+                )
+            } else {
+                calendar.addCompletion(task, completion)
+            }
 
             if (response is CalendarRepository.Response.Error) {
                 println("${task.taskInfo} $completion")
@@ -206,7 +227,13 @@ class NetworkCalendarRepository(
         nsDao.deleteChecked(task.taskInfo.taskId, completion.metaId, now)
 
         calendars.forEach { (calendar, loc) ->
-            val response = calendar.removeCompletion(task, completion)
+            val response = if (!calendar.isLoggedIn().first()) {
+                CalendarRepository.Response.Error(
+                    Throwable("Not logged in")
+                )
+            } else {
+                calendar.removeCompletion(task, completion)
+            }
 
             if (response is CalendarRepository.Response.Error) {
                 CoroutineScope(Dispatchers.IO).launch {

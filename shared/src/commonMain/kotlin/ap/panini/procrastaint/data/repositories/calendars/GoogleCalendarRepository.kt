@@ -8,7 +8,9 @@ import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoog
 import ap.panini.procrastaint.data.network.api.GoogleCalendarApi
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.util.toRFC3339
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlin.time.Duration.Companion.minutes
@@ -17,6 +19,15 @@ class GoogleCalendarRepository(
     private val preference: PreferenceRepository,
     private val gcApi: GoogleCalendarApi
 ) : CalendarRepository {
+    override fun isLoggedIn(): Flow<Boolean> {
+        return combine(
+            preference.getString(PreferenceRepository.GOOGLE_REFRESH_TOKEN),
+            preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID),
+            preference.getString(PreferenceRepository.GOOGLE_REFRESH_TOKEN)
+        ) { token, id, refresh ->
+            token.isNotBlank() && id.isNotBlank() && refresh.isNotBlank()
+        }
+    }
 
     override suspend fun createCalendar(): CalendarRepository.Response {
         var error = Throwable("Unknown error occurred")

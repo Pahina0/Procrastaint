@@ -48,7 +48,46 @@ interface TaskDao {
             tm.endTime,
             tm.repeatTag,
             tm.repeatOften,
-            tm.allDay,
+            COALESCE(tc.forTime, - 1) AS currentEventTime
+        FROM TaskInfo ti
+        LEFT JOIN TaskMeta tm
+            ON ti.taskId = tm.taskId
+        LEFT JOIN TaskCompletion tc
+            ON ti.taskId = tc.taskId
+                AND tm.metaId = tc.metaId
+        WHERE (tm.startTime IS NOT NULL
+            AND (
+                tm.startTime >= :from
+                OR (
+                    (
+                        tm.repeatTag IS NOT NULL
+                        AND tm.repeatOften IS NOT NULL
+                        )
+                    AND (
+                        tm.endTime IS NULL
+                        OR tm.endTime >= :from
+                        )
+                    )
+                )
+            AND tm.startTime <= :to)
+            AND ti.taskId = :taskId
+        ORDER BY tm.startTime
+    """
+    )
+    fun getTasksBetweenFiltered(from: Long, to: Long, taskId: Long): Flow<List<TaskSingle>>
+
+    @Query(
+        """
+        SELECT ti.taskId,
+            tm.metaId,
+            tc.completionId,
+            ti.title,
+            ti.description,
+            tc.completionTime AS completed,
+            tm.startTime,
+            tm.endTime,
+            tm.repeatTag,
+            tm.repeatOften,
             COALESCE(tc.forTime, - 1) AS currentEventTime
         FROM TaskInfo ti
         LEFT JOIN TaskMeta tm
@@ -88,7 +127,6 @@ interface TaskDao {
             tm.endTime,
             tm.repeatTag,
             tm.repeatOften,
-            tm.allDay,
             COALESCE(tc.forTime, - 1) AS currentEventTime
         FROM TaskInfo ti
         LEFT JOIN TaskMeta tm
