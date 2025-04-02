@@ -3,6 +3,7 @@ package ap.panini.procrastaint.data.entities.google
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.toRFC3339
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
@@ -49,7 +50,7 @@ data class GoogleEvent(
     }
 
     companion object {
-        fun TaskMeta.getGoogleId(preferences: PreferenceRepository) =
+        private fun TaskMeta.getGoogleId(preferences: PreferenceRepository) =
             "$taskId${preferences.getUuid()}$metaId"
 
         fun getGoogleEvents(task: Task, preferences: PreferenceRepository): List<GoogleEvent> {
@@ -67,7 +68,13 @@ data class GoogleEvent(
                 }
             }
 
-            return task.meta.map { meta ->
+            return task.meta.mapNotNull { meta ->
+                // google calendar doesn't support these
+                if (meta.repeatTag == ap.panini.procrastaint.util.Time.HOUR
+                    || meta.repeatTag == ap.panini.procrastaint.util.Time.MINUTE
+                    || meta.repeatTag == ap.panini.procrastaint.util.Time.SECOND
+                ) return@mapNotNull null
+
                 val recurs = buildString {
                     append("RRULE:FREQ=${meta.repeatTag!!.toTimeRepeatString()}")
                     meta.endTime?.let {

@@ -77,6 +77,10 @@ class MainActivityViewModel(
     }
 
     fun onShow() {
+        if (_uiState.value.task.isBlank()) {
+            parser = Parser() // resets the time to now
+        }
+
         _uiState.update { uiState.value.copy(visible = true) }
     }
 

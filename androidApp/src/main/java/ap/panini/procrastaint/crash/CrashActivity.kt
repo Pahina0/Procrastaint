@@ -57,8 +57,6 @@ class CrashActivity : ComponentActivity() {
 
     @Composable
     fun CrashScreen(exception: String, modifier: Modifier = Modifier) {
-        val clipboardManager = LocalClipboardManager.current
-        val uriHandler = LocalUriHandler.current
 
         Column(
             modifier
@@ -78,50 +76,60 @@ class CrashActivity : ComponentActivity() {
                 style = MaterialTheme.typography.headlineLarge,
             )
 
+            CrashActions(exception)
+
             Card(modifier = Modifier.fillMaxWidth()) {
                 Text(exception, modifier = Modifier.padding(10.dp))
             }
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(onClick = {
-                    clipboardManager.setText(buildAnnotatedString { append(exception) })
-                    uriHandler.openUri(
-                        "https://github.com/Pahina0/Procrastaint/issues/new?title=Android+uncaught+exception&body=${
-                            URLEncoder.encode(
-                                exception,
-                                java.nio.charset.StandardCharsets.UTF_8.toString()
-                            )
-                        }"
-                    )
-                }) {
-                    Icon(
-                        Icons.Default.BugReport,
-                        contentDescription = "Report",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text("Report")
+            CrashActions(exception)
+        }
+    }
+
+    @Composable
+    private fun CrashActions(exception: String) {
+        val clipboardManager = LocalClipboardManager.current
+        val uriHandler = LocalUriHandler.current
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(onClick = {
+                clipboardManager.setText(buildAnnotatedString { append(exception) })
+                uriHandler.openUri(
+                    "https://github.com/Pahina0/Procrastaint/issues/new?title=Android+uncaught+exception&body=${
+                        URLEncoder.encode(
+                            exception,
+                            java.nio.charset.StandardCharsets.UTF_8.toString()
+                        )
+                    }"
+                )
+            }) {
+                Icon(
+                    Icons.Default.BugReport,
+                    contentDescription = "Report",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Report")
+            }
+
+            Button(onClick = {
+                val intent = Intent(applicationContext, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
 
-                Button(onClick = {
-                    val intent = Intent(applicationContext, MainActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    }
-
-                    startActivity(intent)
-                }) {
-                    Icon(
-                        Icons.Default.Replay,
-                        contentDescription = "Restart",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text("Restart")
-                }
+                startActivity(intent)
+            }) {
+                Icon(
+                    Icons.Default.Replay,
+                    contentDescription = "Restart",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Restart")
             }
         }
     }

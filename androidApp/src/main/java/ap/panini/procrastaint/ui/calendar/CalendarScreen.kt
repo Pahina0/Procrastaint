@@ -150,13 +150,14 @@ fun CalendarScreen(
                     key = dateState.itemKey { it.first }
                 ) { i ->
 
-                    val (_, item) = dateState[i]!!
+                    val (time, item) = dateState[i]!!
                     val itemState = item.collectAsStateWithLifecycle(listOf()).value
 
                     DayView(
                         itemState,
                         viewModel::checkTask,
                         onEdit = activityViewModel::editCreatedTask,
+                        isToday = time == today,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

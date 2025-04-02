@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.ui.components
 
+import androidx.collection.mutableLongSetOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +23,9 @@ import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.hour
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
 private const val HOURS = 24
 
@@ -38,11 +41,14 @@ fun DayView(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
     onEdit: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    isToday: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     var amt = 0
     var firstTask by remember { mutableIntStateOf(-1) }
+
+    val curHour by remember { mutableIntStateOf(Date.getTime().hour()) }
 
     var remainingItems = tasks
     LazyColumn(
@@ -53,7 +59,8 @@ fun DayView(
         item {
             DividerText(
                 Date.getTodayStart()
-                    .formatMilliseconds(setOf(Time.HOUR, Time.MINUTE), smart = false)
+                    .formatMilliseconds(setOf(Time.HOUR, Time.MINUTE), smart = false),
+                highlight = isToday && curHour == 0
             )
         }
 
@@ -86,7 +93,8 @@ fun DayView(
                     (Date.getTodayStart() + hour.hours.inWholeMilliseconds).formatMilliseconds(
                         setOf(Time.HOUR, Time.MINUTE),
                         smart = false
-                    )
+                    ),
+                    highlight = isToday && hour == curHour
                 )
             }
         }
@@ -104,6 +112,8 @@ fun DayView(
 
     LaunchedEffect(true) {
         // scrolls to current time
+        if (!isToday) return@LaunchedEffect
+
         listState.animateScrollToItem(
             if (firstTask == -1) {
                 Date.getTime().hour() * 2 // have to account for spacing
@@ -113,6 +123,7 @@ fun DayView(
         )
     }
 }
+
 
 @Preview
 @Composable
@@ -149,6 +160,7 @@ private fun DayViewPreview() {
         ),
         {},
         {},
+        false,
         modifier = Modifier.fillMaxSize()
     )
 }
