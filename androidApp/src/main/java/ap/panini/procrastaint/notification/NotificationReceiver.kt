@@ -32,7 +32,6 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager = NotificationManagerCompat.from(context)
         when (intent.action!!) {
-
             // sets completion
             ACTION_COMPLETE_TASK -> {
                 val taskId = intent.getLongExtra(TASK_ID, -1)
@@ -62,13 +61,13 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
                         taskId,
                         metaId,
                         taskTime
-                    ), context,
+                    ),
+                    context,
                     Clock.System.now().toEpochMilliseconds() + 15.minutes.inWholeMilliseconds
                 )
 
                 notificationManager.cancel(uuid)
             }
-
         }
     }
 

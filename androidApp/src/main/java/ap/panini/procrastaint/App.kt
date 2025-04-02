@@ -19,7 +19,6 @@ import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import java.util.concurrent.TimeUnit
 
-
 class App : Application() {
 
     override fun onCreate() {
@@ -38,10 +37,7 @@ class App : Application() {
         notificationManager.callback = { NotificationAlarmReceiver.notificationCallback(it, this) }
     }
 
-
     private fun setupWorkers() {
-
-
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork(
                 "sync_calendar",

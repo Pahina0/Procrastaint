@@ -30,6 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.crash.GlobalExceptionHandler
+import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -43,6 +45,9 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +56,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel by viewModel<MainActivityViewModel>()
+        val preferences by inject<PreferenceRepository>()
 
         enableEdgeToEdge()
 
@@ -58,7 +64,20 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProcrastaintTheme {
-                MainContent(viewModel)
+                // determine which page to go to
+                val onBoardComplete =
+                    preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
+                        .collectAsStateWithLifecycle(
+                            runBlocking {
+                                preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE).first()
+                            }
+                        ).value
+
+                if (!onBoardComplete) {
+                    OnBoardingScreen()
+                } else {
+                    MainContent(viewModel)
+                }
             }
         }
     }

@@ -68,7 +68,9 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
                 context,
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
-        ) return
+        ) {
+            return
+        }
 
         NotificationManagerCompat.from(context).notify(taskUuid, notification)
     }
@@ -124,5 +126,4 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
             }
         }
     }
-
 }

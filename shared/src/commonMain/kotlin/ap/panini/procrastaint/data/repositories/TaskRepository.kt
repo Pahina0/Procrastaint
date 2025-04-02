@@ -60,7 +60,6 @@ class TaskRepository(
             taskCompletion
         )
 
-
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
             notificationManager.delete(

@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.37.2"
 agp = "8.9.1"
 appauth = "0.11.1"
 core = "2.1.0"
@@ -28,6 +29,7 @@ sqliteBundledAndroid = "2.5.0-rc03"
 workRuntimeKtx = "2.10.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }

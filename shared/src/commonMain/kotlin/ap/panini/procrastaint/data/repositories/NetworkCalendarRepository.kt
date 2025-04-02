@@ -48,7 +48,9 @@ class NetworkCalendarRepository(
 
         if (!repo.isLoggedIn()
                 .first()
-        ) return CalendarRepository.Response.Error(Throwable("Not logged in"))
+        ) {
+            return CalendarRepository.Response.Error(Throwable("Not logged in"))
+        }
 
         // if a id doesn't exist anymore can prob skip it, like trying to
         val response = when (item.action) {

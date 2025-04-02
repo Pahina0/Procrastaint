@@ -43,7 +43,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(
-    start = true
+    start = true,
 )
 @Composable
 fun CalendarScreen(

@@ -15,7 +15,6 @@ import kotlinx.datetime.toLocalDateTime
 import org.koin.mp.KoinPlatform.getKoin
 import kotlin.time.Duration.Companion.hours
 
-
 class NotificationManager {
     companion object {
         private const val HOURS_AHEAD = 32
@@ -87,7 +86,6 @@ class NotificationManager {
         tasks.forEach {
             create(it)
         }
-
     }
 
     /**
@@ -110,18 +108,19 @@ class NotificationManager {
         }
     }
 
-
     private fun TaskMeta.generateUuid(eventTime: Long): Int {
         val time =
             buildString {
                 append(
                     Instant.fromEpochMilliseconds(eventTime).toLocalDateTime(TimeZone.UTC)
-                        .format(LocalDateTime.Format {
-                            dayOfMonth()
-                            hour()
-                            minute()
-                            second()
-                        })
+                        .format(
+                            LocalDateTime.Format {
+                                dayOfMonth()
+                                hour()
+                                minute()
+                                second()
+                            }
+                        )
                 )
                 append(taskId)
             }
@@ -161,7 +160,6 @@ class NotificationManager {
                 )
             }
         }
-
     }
 
     abstract class CallbackBundle(
@@ -185,4 +183,3 @@ class NotificationManager {
         ) : CallbackBundle(uuid, taskId, metaId, scheduledTime)
     }
 }
-

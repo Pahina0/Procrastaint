@@ -11,7 +11,6 @@ object Notifications {
     private const val GROUP_TASK = "group_task"
     const val CHANNEL_TASK_DUE = "channel_task_due"
 
-
     fun createChannels(context: Context) {
         val notificationManager = NotificationManagerCompat.from(context)
 

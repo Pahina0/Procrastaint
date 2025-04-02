@@ -24,5 +24,4 @@ val androidModule = module {
 
     worker { SyncWorker(get(), get(), it.get()) }
     worker { NotificationWorker(get(), get(), it.get()) }
-
 }

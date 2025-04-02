@@ -68,4 +68,6 @@ dependencies {
 
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.insert.koin.koin.androidx.workmanager)
+
+    implementation(libs.accompanist.permissions)
 }
