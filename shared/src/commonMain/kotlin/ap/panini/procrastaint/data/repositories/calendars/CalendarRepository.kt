@@ -15,6 +15,20 @@ interface CalendarRepository {
 
     fun isLoggedIn(): Flow<Boolean>
 
+    /**
+     * Logout of the account
+     *
+     */
+    suspend fun logout()
+
+    /**
+     * Login and create a calendar
+     *
+     * @param accessToken
+     * @param refreshToken
+     */
+    suspend fun login(accessToken: String?, refreshToken: String?)
+
     suspend fun createCalendar(): Response
 
     suspend fun createTask(

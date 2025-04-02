@@ -12,17 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import ap.panini.procrastaint.data.repositories.NetworkCalendarRepository
-import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import ap.panini.procrastaint.ui.MainActivity
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationResponse
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
 
 class AuthActivity : ComponentActivity() {
-    private val preference: PreferenceRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,22 +45,13 @@ class AuthActivity : ComponentActivity() {
             }
         }
 
-        val calendarRepository: NetworkCalendarRepository = get()
+        val googleCalendarRepository: GoogleCalendarRepository = get()
         val googleAuth: GoogleAuth = get()
         googleAuth.preformTokenRequest(
             resp.createTokenExchangeRequest(),
             onSuccess = {
                 lifecycleScope.launch {
-                    preference.setString(
-                        PreferenceRepository.GOOGLE_ACCESS_TOKEN,
-                        it.accessToken!!
-                    )
-                    preference.setString(
-                        PreferenceRepository.GOOGLE_REFRESH_TOKEN,
-                        it.refreshToken!!
-                    )
-
-                    calendarRepository.googleCreateCalendar()
+                    googleCalendarRepository.login(it.accessToken, it.refreshToken)
                     returnToSettings()
                 }
             },

@@ -29,6 +29,25 @@ class GoogleCalendarRepository(
         }
     }
 
+    override suspend fun logout() {
+        preference.setString(PreferenceRepository.GOOGLE_ACCESS_TOKEN)
+        preference.setString(PreferenceRepository.GOOGLE_CALENDAR_ID)
+        preference.setString(PreferenceRepository.GOOGLE_REFRESH_TOKEN)
+    }
+
+    override suspend fun login(accessToken: String?, refreshToken: String?) {
+        preference.setString(
+            PreferenceRepository.GOOGLE_ACCESS_TOKEN,
+            accessToken!!
+        )
+        preference.setString(
+            PreferenceRepository.GOOGLE_REFRESH_TOKEN,
+            refreshToken!!
+        )
+
+        createCalendar()
+    }
+
     override suspend fun createCalendar(): CalendarRepository.Response {
         var error = Throwable("Unknown error occurred")
         // creates a new calendar if only one doesn't exist already

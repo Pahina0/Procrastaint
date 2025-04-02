@@ -3,17 +3,15 @@ package ap.panini.procrastaint.ui.settings
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val preferences: PreferenceRepository,
+    private val googleCalendarRepository: GoogleCalendarRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -21,13 +19,7 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            combine(
-                preferences.getString(PreferenceRepository.GOOGLE_REFRESH_TOKEN),
-                preferences.getString(PreferenceRepository.GOOGLE_CALENDAR_ID),
-                preferences.getString(PreferenceRepository.GOOGLE_REFRESH_TOKEN)
-            ) { token, id, refresh ->
-                token.isNotBlank() && id.isNotBlank() && refresh.isNotBlank()
-            }.collectLatest { loggedIn ->
+            googleCalendarRepository.isLoggedIn().collect { loggedIn ->
                 _uiState.update { it.copy(googleLoggedIn = loggedIn) }
             }
         }
@@ -35,9 +27,7 @@ class SettingsViewModel(
 
     fun googleLogout() {
         viewModelScope.launch {
-            preferences.setString(PreferenceRepository.GOOGLE_ACCESS_TOKEN)
-            preferences.setString(PreferenceRepository.GOOGLE_CALENDAR_ID)
-            preferences.setString(PreferenceRepository.GOOGLE_REFRESH_TOKEN)
+            googleCalendarRepository.logout()
         }
     }
 
