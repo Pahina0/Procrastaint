@@ -95,9 +95,8 @@ fun CalendarScreen(
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (dateState.itemCount == 0) return@LaunchedEffect
         if (pagerState.isScrollInProgress) {
-            pagerState.targetPage
             viewModel.setSelectedTime(
-                dateState[pagerState.currentPage]?.first ?: return@LaunchedEffect
+                dateState[pagerState.targetPage]?.first ?: return@LaunchedEffect
             )
         }
     }
