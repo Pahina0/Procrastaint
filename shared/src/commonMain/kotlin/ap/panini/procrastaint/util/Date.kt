@@ -8,9 +8,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormatBuilder
+import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.hours
@@ -45,6 +47,15 @@ object Date {
             .minus(now().minute.minutes)
             .toEpochMilliseconds()
             .let { (it / ROUND_NUMBER) * ROUND_NUMBER }
+
+    fun Long.toDayOfWeek(): String {
+        val time =
+            Instant.fromEpochMilliseconds(this)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+        return time.format(LocalDateTime.Format {
+            dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
+        })
+    }
 
     /**
      * @param known The known values from the time to display
@@ -161,6 +172,9 @@ fun Long.hour() =
 
 fun Long.minute() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
+
+fun Long.dayOfWeek() =
+    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek.isoDayNumber
 
 fun Long.toRFC3339(includeFiller: Boolean = true) =
     Instant.fromEpochMilliseconds(this).format(

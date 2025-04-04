@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -62,13 +62,13 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
-            notificationManager.delete(
-                getTasksBetweenFiltered(
-                    taskCompletion.forTime,
-                    taskCompletion.forTime,
-                    taskCompletion.taskId
-                ).first().first()
-            )
+            getTasksBetweenFiltered(
+                taskCompletion.forTime,
+                taskCompletion.forTime,
+                taskCompletion.taskId
+            ).firstOrNull()?.firstOrNull()?.let {
+                notificationManager.delete(it)
+            }
             calendar.addCompletion(task, taskCompletion.copy(completionId = id))
         }
     }
@@ -80,13 +80,13 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = taskDao.getTask(taskCompletion.taskId)
-            notificationManager.create(
-                getTasksBetweenFiltered(
-                    taskCompletion.forTime,
-                    taskCompletion.forTime,
-                    taskCompletion.taskId
-                ).first().first()
-            )
+            getTasksBetweenFiltered(
+                taskCompletion.forTime,
+                taskCompletion.forTime,
+                taskCompletion.taskId
+            ).firstOrNull()?.firstOrNull()?.let {
+                notificationManager.create(it)
+            }
             calendar.removeCompletion(task, taskCompletion)
         }
     }

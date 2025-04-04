@@ -1,9 +1,8 @@
 package ap.panini.procrastaint.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
@@ -13,10 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
+import ap.panini.procrastaint.util.Date.toDayOfWeek
 import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.dayOfWeek
 
 @Composable
 fun TasksMiniPreview(
@@ -28,34 +30,45 @@ fun TasksMiniPreview(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier
-            .height(50.dp),
-        shape = RoundedCornerShape(50.dp),
+        modifier = modifier,
+        shape = RoundedCornerShape(10.dp),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                date.formatMilliseconds(setOf(Time.DAY), useAbbreviated = true),
-                color = dateType.getTextColor()
-            )
-            val remaining = tasks.filter { it.completed == null }.size
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    date.formatMilliseconds(setOf(Time.DAY), useAbbreviated = true),
+                    color = dateType.getTextColor()
+                )
+                val remaining = tasks.filter { it.completed == null }.size
 
-            if (remaining > 0) {
-                Badge(
-                    containerColor = dateType.getBadgeColor()
-                ) {
-                    Text(
-                        remaining.toString(),
-                        color = dateType.getBadgeContentColor()
-                    )
+                if (remaining > 0) {
+                    Badge(
+                        containerColor = dateType.getBadgeColor()
+                    ) {
+                        Text(
+                            remaining.toString(),
+                            color = dateType.getBadgeContentColor()
+                        )
+                    }
                 }
             }
+
+            Text(
+                date.toDayOfWeek(),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (date.dayOfWeek() == 6 || date.dayOfWeek() == 7) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    Color.Unspecified
+                }
+            )
         }
     }
 }

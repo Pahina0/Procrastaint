@@ -26,9 +26,9 @@ class CalendarViewModel(
 
     val dateState = Pager(
         PagingConfig(
-            initialLoadSize = 1,
+            initialLoadSize = 10,
             enablePlaceholders = false,
-            pageSize = 10,
+            pageSize = 2,
         )
     ) {
         CalendarPagingSource(today)

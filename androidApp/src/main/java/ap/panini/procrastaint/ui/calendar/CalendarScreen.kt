@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -38,8 +39,10 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>(
@@ -66,21 +69,33 @@ fun CalendarScreen(
     val pagerState = rememberPagerState { dateState.itemCount }
 
     val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(dateState) {
+        snapshotFlow { dateState.itemSnapshotList }
+            .map { it.items }
+            .collect { list ->
+                if (list.isNotEmpty()) {
+                    dateState.peek(0) // prevents glitchy loading
+                }
+            }
+    }
 
     LaunchedEffect(state.selectedTime) {
-        coroutineScope.launch {
-            val index = dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }
-            if (index == -1) return@launch
 
-            selectableListState.animateScrollToItem(index)
-            pagerState.scrollToPage(index)
+        coroutineScope.launch {
+            var index = max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
+            pagerState.animateScrollToPage(index)
+            selectableListState.animateScrollToItem(max(index - 1, 0))
+
+            index = max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
+            pagerState.animateScrollToPage(index)
+            selectableListState.animateScrollToItem(max(index - 1, 0))
         }
     }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (dateState.itemCount == 0) return@LaunchedEffect
         if (pagerState.isScrollInProgress) {
-            println(dateState[pagerState.currentPage]?.first)
+            pagerState.targetPage
             viewModel.setSelectedTime(
                 dateState[pagerState.currentPage]?.first ?: return@LaunchedEffect
             )
@@ -124,17 +139,17 @@ fun CalendarScreen(
                             time,
                             itemState,
                             dateType =
-                            when (time) {
-                                state.selectedTime -> ViewingType.Selected
-                                today -> ViewingType.Today
-                                else -> {
-                                    if (time < today) {
-                                        ViewingType.Past
-                                    } else {
-                                        ViewingType.Future
+                                when (time) {
+                                    state.selectedTime -> ViewingType.Selected
+                                    today -> ViewingType.Today
+                                    else -> {
+                                        if (time < today) {
+                                            ViewingType.Past
+                                        } else {
+                                            ViewingType.Future
+                                        }
                                     }
-                                }
-                            },
+                                },
 
                             onClick = {
                                 coroutineScope.launch {
