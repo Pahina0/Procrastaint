@@ -176,7 +176,8 @@ fun Long.minute() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
 
 fun Long.dayOfWeek() =
-    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek.isoDayNumber
+    Instant.fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek.isoDayNumber
 
 fun Long.toRFC3339(includeFiller: Boolean = true) =
     Instant.fromEpochMilliseconds(this).format(

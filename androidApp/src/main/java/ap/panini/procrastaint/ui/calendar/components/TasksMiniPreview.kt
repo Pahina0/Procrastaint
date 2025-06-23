@@ -95,7 +95,7 @@ private fun ViewingType.getBadgeColor() =
         when (this@getBadgeColor) {
             is ViewingType.Past -> secondaryContainer
             is ViewingType.Future -> primaryContainer
-            is ViewingType.Today -> error
+            is ViewingType.Today -> errorContainer
             is ViewingType.Selected -> tertiaryContainer
         }
     }
@@ -106,7 +106,7 @@ private fun ViewingType.getBadgeContentColor() =
         when (this@getBadgeContentColor) {
             is ViewingType.Past -> onSecondaryContainer
             is ViewingType.Future -> onPrimaryContainer
-            is ViewingType.Today -> onError
+            is ViewingType.Today -> onErrorContainer
             is ViewingType.Selected -> onTertiaryContainer
         }
     }

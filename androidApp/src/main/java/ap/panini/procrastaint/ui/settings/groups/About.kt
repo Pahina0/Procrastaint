@@ -1,7 +1,6 @@
-package ap.panini.procrastaint.ui.settings.components.groups
+package ap.panini.procrastaint.ui.settings.groups
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.outlined.Attribution
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Code
@@ -23,14 +22,14 @@ fun About(navigator: DestinationsNavigator) {
         SettingsItem(
             Icons.Outlined.Code,
             "Source code",
-            subtext = "Help by contributing",
+            subtext = "Help contribute",
             onClick = {
-                uriHandler.openUri("https://github.com/Pahina0/Procrastaint/issues/new")
+                uriHandler.openUri("https://github.com/Pahina0/Procrastaint")
             }
         )
 
         SettingsItem(Icons.Outlined.BugReport, "Issues", subtext = "Report a bug", onClick = {
-            uriHandler.openUri("https://github.com/Pahina0/Procrastaint")
+            uriHandler.openUri("https://github.com/Pahina0/Procrastaint/issues/new")
         })
 
         SettingsItem(Icons.Outlined.Attribution, "Open source libraries", onClick = {

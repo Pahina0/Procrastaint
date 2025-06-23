@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.ui.settings.components.groups
+package ap.panini.procrastaint.ui.settings.groups
 
 import android.content.Context
 import androidx.compose.material.icons.Icons
