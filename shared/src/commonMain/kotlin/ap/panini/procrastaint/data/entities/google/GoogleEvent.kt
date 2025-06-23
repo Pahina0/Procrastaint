@@ -70,10 +70,12 @@ data class GoogleEvent(
 
             return task.meta.mapNotNull { meta ->
                 // google calendar doesn't support these
-                if (meta.repeatTag == ap.panini.procrastaint.util.Time.HOUR
-                    || meta.repeatTag == ap.panini.procrastaint.util.Time.MINUTE
-                    || meta.repeatTag == ap.panini.procrastaint.util.Time.SECOND
-                ) return@mapNotNull null
+                if (meta.repeatTag == ap.panini.procrastaint.util.Time.HOUR ||
+                    meta.repeatTag == ap.panini.procrastaint.util.Time.MINUTE ||
+                    meta.repeatTag == ap.panini.procrastaint.util.Time.SECOND
+                ) {
+                    return@mapNotNull null
+                }
 
                 val recurs = buildString {
                     append("RRULE:FREQ=${meta.repeatTag!!.toTimeRepeatString()}")

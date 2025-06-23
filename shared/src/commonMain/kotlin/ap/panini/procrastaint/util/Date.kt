@@ -52,9 +52,11 @@ object Date {
         val time =
             Instant.fromEpochMilliseconds(this)
                 .toLocalDateTime(TimeZone.currentSystemDefault())
-        return time.format(LocalDateTime.Format {
-            dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
-        })
+        return time.format(
+            LocalDateTime.Format {
+                dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
+            }
+        )
     }
 
     /**

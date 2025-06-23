@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import ap.panini.procrastaint.ui.settings.components.Section
 import ap.panini.procrastaint.ui.settings.components.SettingsItem
@@ -17,18 +18,18 @@ fun Sync(
     navigator: DestinationsNavigator,
     isLoggedInGoogle: Boolean,
     logoutGoogle: () -> Unit,
-    loginGoogle: (Context) -> Unit
+    loginGoogle: (Context) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    Section("Sync") {
-
+    Section("Sync", modifier = modifier) {
         SettingsItem(
             Icons.Outlined.Autorenew,
             "Google",
             "Sync to Google calendar",
-            { navigator.navigate(SyncScreenDestination) }) {
-
+            { navigator.navigate(SyncScreenDestination) }
+        ) {
             Button(
                 onClick = {
                     if (isLoggedInGoogle) {

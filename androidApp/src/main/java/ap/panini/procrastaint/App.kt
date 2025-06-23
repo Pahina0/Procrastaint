@@ -37,6 +37,10 @@ class App : Application() {
         notificationManager.callback = { NotificationAlarmReceiver.notificationCallback(it, this) }
     }
 
+    companion object {
+        private const val DAY = 24L
+    }
+
     private fun setupWorkers() {
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork(
@@ -55,7 +59,7 @@ class App : Application() {
             .enqueueUniquePeriodicWork(
                 "update_notifications",
                 ExistingPeriodicWorkPolicy.KEEP,
-                PeriodicWorkRequestBuilder<NotificationWorker>(24, TimeUnit.HOURS)
+                PeriodicWorkRequestBuilder<NotificationWorker>(DAY, TimeUnit.HOURS)
                     .build()
             )
     }

@@ -327,7 +327,7 @@ private fun ActionDisplay(
             ACTION_ADD_START -> Date.getTime()
             ACTION_ADD_END ->
                 manualEnd ?: parsedEnd
-                ?: Date.getTime()
+                    ?: Date.getTime()
 
             else -> Date.getTime()
         },

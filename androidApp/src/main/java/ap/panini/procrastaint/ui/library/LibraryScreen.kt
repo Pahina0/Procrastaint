@@ -13,5 +13,9 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 fun LibraryScreen(
     modifier: Modifier = Modifier
 ) {
-    EmptyPage(Icons.Default.PregnantWoman, "I told myself i would finish this this sem\nbut i got lazy")
+    EmptyPage(
+        Icons.Default.PregnantWoman,
+        "I told myself i would finish this this sem\nbut i got lazy",
+        modifier = modifier
+    )
 }

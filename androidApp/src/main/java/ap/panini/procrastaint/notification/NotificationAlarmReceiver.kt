@@ -30,7 +30,9 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
         val taskUuid = intent.getIntExtra(TASK_UUID, -1)
         val taskMetaId = intent.getLongExtra(TASK_META_ID, -1)
 
-        if (taskId == -1L || taskUuid == -1 || taskTime == -1L || taskMetaId == -1L) return
+        val failed = taskId == -1L || taskUuid == -1 || taskTime == -1L || taskMetaId == -1L
+
+        if (failed) return
 
         val task = runBlocking { taskRepo.getTask(taskId) }
 

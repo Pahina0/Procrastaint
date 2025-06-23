@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.ui.components
 
-import androidx.collection.mutableLongSetOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,9 +22,7 @@ import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.hour
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.ExperimentalTime
 
 private const val HOURS = 24
 
@@ -123,7 +120,6 @@ fun DayView(
         )
     }
 }
-
 
 @Preview
 @Composable

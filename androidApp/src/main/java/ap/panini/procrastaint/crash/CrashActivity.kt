@@ -57,7 +57,6 @@ class CrashActivity : ComponentActivity() {
 
     @Composable
     fun CrashScreen(exception: String, modifier: Modifier = Modifier) {
-
         Column(
             modifier
                 .padding(10.dp)

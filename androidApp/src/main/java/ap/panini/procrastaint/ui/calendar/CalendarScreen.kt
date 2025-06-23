@@ -80,7 +80,6 @@ fun CalendarScreen(
     }
 
     LaunchedEffect(state.selectedTime) {
-
         coroutineScope.launch {
             var index = max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
             pagerState.animateScrollToPage(index)
@@ -138,17 +137,17 @@ fun CalendarScreen(
                             time,
                             itemState,
                             dateType =
-                                when (time) {
-                                    state.selectedTime -> ViewingType.Selected
-                                    today -> ViewingType.Today
-                                    else -> {
-                                        if (time < today) {
-                                            ViewingType.Past
-                                        } else {
-                                            ViewingType.Future
-                                        }
+                            when (time) {
+                                state.selectedTime -> ViewingType.Selected
+                                today -> ViewingType.Today
+                                else -> {
+                                    if (time < today) {
+                                        ViewingType.Past
+                                    } else {
+                                        ViewingType.Future
                                     }
-                                },
+                                }
+                            },
 
                             onClick = {
                                 coroutineScope.launch {

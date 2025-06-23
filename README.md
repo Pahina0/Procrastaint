@@ -4,6 +4,8 @@ This is a todo list made using Kotlin Multiplatform which includes a natural lan
 
 This is still WIP
 
+to format android:  
+`./gradlew detektall`  
 
 Building android 
 Create a xml file in shared/src/main/res/values/android_client_id.xml

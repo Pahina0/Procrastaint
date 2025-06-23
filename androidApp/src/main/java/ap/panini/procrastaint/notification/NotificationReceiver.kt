@@ -39,7 +39,9 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
                 val taskTime = intent.getLongExtra(TASK_TIME, -1)
                 val uuid = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
 
-                if (taskId == -1L || taskTime == -1L || metaId == -1L || uuid == -1) return
+                val failed = taskId == -1L || taskTime == -1L || metaId == -1L || uuid == -1
+
+                if (failed) return
                 goAsync {
                     taskRepo.addCompletion(TaskCompletion(Date.getTime(), taskTime, taskId, metaId))
                 }
@@ -54,7 +56,9 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
                 val taskTime = intent.getLongExtra(TASK_TIME, -1)
                 val uuid = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
 
-                if (taskId == -1L || taskTime == -1L || metaId == -1L || uuid == -1) return
+                val failed = taskId == -1L || taskTime == -1L || metaId == -1L || uuid == -1
+
+                if (failed) return
                 NotificationAlarmReceiver.notificationCallback(
                     NotificationManager.CallbackBundle.Create(
                         uuid,

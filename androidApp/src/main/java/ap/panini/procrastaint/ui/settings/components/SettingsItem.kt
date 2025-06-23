@@ -22,13 +22,13 @@ import androidx.compose.ui.unit.dp
 fun SettingsItem(
     icon: ImageVector,
     text: String,
+    modifier: Modifier = Modifier,
     subtext: String? = null,
     onClick: (() -> Unit)? = null,
     trailingItem: (@Composable () -> Unit)? = null,
 ) {
-
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { onClick?.invoke() },
         verticalAlignment = Alignment.CenterVertically,
@@ -60,7 +60,7 @@ private fun SettingsTextPreview() {
     SettingsItem(
         Icons.Outlined.Cake,
         "Major text that is super duppper long and long and goes on forever",
-        "minor text that is super duppper long and long and goes on forever",
+        subtext = "minor text that is super duppper long and long and goes on forever",
     ) {
         Switch(checked = false, onCheckedChange = {})
     }
