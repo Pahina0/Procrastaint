@@ -39,7 +39,6 @@ fun SettingsScreen(
         Box(modifier = Modifier.padding(it)) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)
                     .fillMaxSize()
             ) {
                 Sync(

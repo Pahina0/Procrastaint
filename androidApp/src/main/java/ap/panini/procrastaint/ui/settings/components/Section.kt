@@ -16,10 +16,7 @@ fun Section(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .padding(10.dp)
-    ) {
+    Column(modifier = modifier) {
         SectionHeader(header)
         Column(
             modifier = Modifier
