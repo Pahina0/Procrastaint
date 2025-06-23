@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material.icons.outlined.Sync
@@ -326,7 +327,7 @@ private fun ActionDisplay(
             ACTION_ADD_START -> Date.getTime()
             ACTION_ADD_END ->
                 manualEnd ?: parsedEnd
-                    ?: Date.getTime()
+                ?: Date.getTime()
 
             else -> Date.getTime()
         },
@@ -434,7 +435,7 @@ private fun TimeChips(
             InputChip(
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = Icons.Outlined.Close,
                         contentDescription = "Remove start time"
                     )
                 },
@@ -451,7 +452,7 @@ private fun TimeChips(
             InputChip(
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = Icons.Outlined.Close,
                         contentDescription = "Remove end time"
                     )
                 },

@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -73,7 +73,7 @@ fun TaskView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Default.Repeat,
+                            Icons.Outlined.Repeat,
                             null,
                             modifier = Modifier.height(15.dp)
                         )

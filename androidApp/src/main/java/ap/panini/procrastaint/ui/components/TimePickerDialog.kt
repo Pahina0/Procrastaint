@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.KeyboardAlt
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.KeyboardAlt
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -107,7 +107,7 @@ private fun DisplayModeToggleButton(
             onClick = { changeDisplayMode(DisplayMode.Input) },
         ) {
             Icon(
-                imageVector = Icons.Default.AccessTime,
+                imageVector = Icons.Outlined.AccessTime,
                 contentDescription = "time_picker_button_select_input_mode"
             )
         }
@@ -117,7 +117,7 @@ private fun DisplayModeToggleButton(
             onClick = { changeDisplayMode(DisplayMode.Picker) },
         ) {
             Icon(
-                imageVector = Icons.Default.KeyboardAlt,
+                imageVector = Icons.Outlined.KeyboardAlt,
                 contentDescription = "time_picker_button_select_picker_mode"
             )
         }

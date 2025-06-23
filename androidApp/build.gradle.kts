@@ -16,6 +16,7 @@ android {
         versionName = "RCOS Expo S25"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     packaging {

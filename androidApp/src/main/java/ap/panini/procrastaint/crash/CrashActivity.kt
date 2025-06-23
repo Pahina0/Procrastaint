@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -66,7 +66,7 @@ class CrashActivity : ComponentActivity() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Icon(
-                Icons.Default.BugReport,
+                Icons.Outlined.BugReport,
                 contentDescription = "Bug",
                 modifier = Modifier.size(80.dp)
             )
@@ -107,7 +107,7 @@ class CrashActivity : ComponentActivity() {
                 )
             }) {
                 Icon(
-                    Icons.Default.BugReport,
+                    Icons.Outlined.BugReport,
                     contentDescription = "Report",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
@@ -124,7 +124,7 @@ class CrashActivity : ComponentActivity() {
                 startActivity(intent)
             }) {
                 Icon(
-                    Icons.Default.Replay,
+                    Icons.Outlined.Replay,
                     contentDescription = "Restart",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
