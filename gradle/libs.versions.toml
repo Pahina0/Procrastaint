@@ -1,6 +1,6 @@
 [versions]
 accompanistPermissions = "0.37.2"
-agp = "8.9.1"
+agp = "8.10.1"
 appauth = "0.11.1"
 core = "2.1.0"
 datastorePreferences = "1.1.4"
