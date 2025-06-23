@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ktorfit)
 
     kotlin("plugin.serialization")
+    alias(libs.plugins.aboutLibraries)
 }
 
 kotlin {

@@ -71,4 +71,7 @@ dependencies {
     implementation(libs.insert.koin.koin.androidx.workmanager)
 
     implementation(libs.accompanist.permissions)
+
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.m3)
 }
