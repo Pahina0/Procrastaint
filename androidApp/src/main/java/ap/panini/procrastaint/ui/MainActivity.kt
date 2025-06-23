@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -47,7 +48,6 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
-import kotlinx.collections.immutable.immutableListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
@@ -109,7 +109,10 @@ class MainActivity : ComponentActivity() {
             },
 
             floatingActionButton = {
-                if (mainDestinationSelected) {
+                AnimatedVisibility(
+                    mainDestinationSelected &&
+                            curDestination != BottomBarDestination.Settings.direction
+                ) {
                     FloatingActionButton(onClick = {
                         viewModel.onShow()
                     }) {
@@ -118,7 +121,8 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+            )
+        {
             if (state.visible) {
                 TaskBottomSheet(
                     state,
