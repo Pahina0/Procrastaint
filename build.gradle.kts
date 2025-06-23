@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.serialization).apply(false)
     alias(libs.plugins.detekt)
     alias(libs.plugins.aboutLibraries).apply(false)
+    alias(libs.plugins.google.services).apply(false)
+    alias(libs.plugins.crashalytics).apply(false)
 }
 
 dependencies {

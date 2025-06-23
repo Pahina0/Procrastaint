@@ -4,10 +4,14 @@ This is a todo list made using Kotlin Multiplatform which includes a natural lan
 
 This is still WIP
 
+## Setup
+
+### Formatting
 to format android:  
 `./gradlew detektall`  
 
-Building android 
+### OAuth
+Android Only  
 Create a xml file in shared/src/main/res/values/android_client_id.xml
 Get an android client key from https://console.cloud.google.com OAuth 2.0 Client IDs in the Credentials page  
 
@@ -20,3 +24,8 @@ Replace the client ID in the following in your created xml file with the below t
     </string>
 </resources>
 ```
+
+### Firebase
+Android only  
+Go to firebase console  
+create a new project with `ap.panini.procrastaint` and follow the steps to get `google-services.json` into /androidApp

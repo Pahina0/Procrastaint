@@ -10,3 +10,4 @@ local.properties
 xcuserdata
 .kotlin
 shared/src/main/res/values/android_client_id.xml
+androidApp/google-services.json

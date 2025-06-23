@@ -6,6 +6,7 @@ core = "2.2.0"
 datastorePreferences = "1.1.7"
 detekt = "1.23.7"
 detektRules = "0.4.4"
+firebaseBom = "33.15.0"
 koin = "4.1.0"
 kotlin = "2.1.0"
 compose = "1.8.3"
@@ -30,6 +31,8 @@ workRuntimeKtx = "2.10.2"
 materialicons = "1.7.8"
 aboutLibraries = "12.2.3"
 serialization = "2.1.0"
+google-services = "4.4.2"
+crashalytics = "3.0.4"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -46,6 +49,9 @@ destinations-bottom-sheet = { module = "io.github.raamcosta.compose-destinations
 destinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
 detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRules" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 insert-koin-koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin" }
 insert-koin-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
@@ -86,3 +92,5 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfitLib" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+crashalytics = { id = "com.google.firebase.crashlytics", version.ref = "crashalytics" }
