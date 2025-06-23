@@ -27,8 +27,8 @@ fun Sync(
         SettingsItem(
             Icons.Outlined.Autorenew,
             "Google",
-            "Sync to Google calendar",
-            { navigator.navigate(SyncScreenDestination) }
+            subtext = "Sync to Google calendar",
+            onClick = { navigator.navigate(SyncScreenDestination) }
         ) {
             Button(
                 onClick = {

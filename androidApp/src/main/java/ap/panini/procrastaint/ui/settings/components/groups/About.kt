@@ -10,6 +10,6 @@ import ap.panini.procrastaint.ui.settings.components.SettingsItem
 @Composable
 fun About() {
     Section("About") {
-        SettingsItem(Icons.Outlined.Info, "Version", BuildConfig.VERSION_NAME)
+        SettingsItem(Icons.Outlined.Info, "Version", subtext = BuildConfig.VERSION_NAME)
     }
 }
