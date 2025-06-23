@@ -1,180 +1,88 @@
 package ap.panini.procrastaint.ui.onboarding
 
-import android.content.Intent
-import android.provider.Settings
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
-import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
-import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
-import ap.panini.procrastaint.ui.onboarding.components.OnBoardingItem
-import ap.panini.procrastaint.ui.onboarding.components.OnBoardingScaffold
-import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
-import ap.panini.procrastaint.ui.settings.auth.OAuth
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
-import kotlinx.coroutines.flow.first
+import ap.panini.procrastaint.ui.components.ScreenScaffold
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingScreen(
     modifier: Modifier = Modifier,
-    googleAuth: GoogleAuth = koinInject(),
-    googleCalendarRepository: GoogleCalendarRepository = koinInject()
 ) {
+    val pages = OnBoardingPage.entries.toList()
+
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+    val coroutineScope = rememberCoroutineScope()
+
     val preferenceRepository: PreferenceRepository = koinInject()
 
 
-    val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    OnBoardingScaffold(
-        "Setup", modifier = modifier,
-        completeText = "Complete",
-        onComplete = {
-            coroutineScope.launch {
-                preferenceRepository.putBoolean(
-                    PreferenceRepository.ON_BOARDING_COMPLETE,
-                    true
-                )
-            }
-        }) {
-        Card {
-            Column {
-                SectionDivider("Permissions")
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                    PermissionRequester(
-                        android.Manifest.permission.POST_NOTIFICATIONS,
-                        "Notifications",
-                        "Get notified when tasks are due",
-                        Intent(
-                            Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                        ).apply {
-                            putExtra(
-                                Settings.EXTRA_APP_PACKAGE,
-                                context.packageName
-                            )
-                        }
-                    )
+    ScreenScaffold {
+        HorizontalPager(pagerState) { pageNum ->
+            Scaffold(
+                modifier = modifier.fillMaxSize(),
+                topBar = {
+                    TopAppBar(title = { Text(pages[pageNum].topBarText) })
                 }
-
-                Spacer(modifier = Modifier.padding(10.dp))
-
-                SectionDivider("Services")
-
-                CalendarSyncRequester(
-                    "Google",
-                    googleCalendarRepository,
-                    googleAuth
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ColumnScope.SectionDivider(sectionTitle: String) {
-    Text(
-        sectionTitle,
-        modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(top = 10.dp),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-    HorizontalDivider(modifier = Modifier.padding(top = 10.dp))
-}
-
-@Composable
-private fun CalendarSyncRequester(
-    serviceName: String,
-    calendarRepo: CalendarRepository,
-    auth: OAuth
-) {
-    val context = LocalContext.current
-    val googleLoggedIn =
-        calendarRepo.isLoggedIn().collectAsStateWithLifecycle(
-            runBlocking {
-                calendarRepo.isLoggedIn().first()
-            }
-        ).value
-
-    OnBoardingItem(serviceName, "Sync tasks with $serviceName calendar") {
-        Button(
-            onClick = { auth.auth(context) },
-            enabled = !googleLoggedIn
-        ) {
-            Text(
-                if (!googleLoggedIn) "Enable" else "Enabled"
-            )
-        }
-    }
-
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun PermissionRequester(
-    permission: String,
-    permName: String,
-    permReason: String,
-    settingsIntent: Intent?
-) {
-    var permissionAlreadyRequested by rememberSaveable(key = permission) {
-        mutableStateOf(false)
-    }
-
-    val permState = rememberPermissionState(permission) {
-        permissionAlreadyRequested = true
-    }
-
-    val context = LocalContext.current
-
-    OnBoardingItem(
-        text = permName,
-        subText = permReason
-    ) {
-
-        Button(
-            onClick = {
-                if ((!permissionAlreadyRequested && !permState.status.shouldShowRationale) ||
-                    permState.status.shouldShowRationale
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
                 ) {
-                    permState.launchPermissionRequest()
-                } else if (settingsIntent != null) {
-                    context.startActivity(settingsIntent)
+                    Column(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxSize()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
+                        ) {
+                            pages[pageNum].content()
+                        }
+
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+
+                                coroutineScope.launch {
+
+                                    if (pageNum == pagerState.pageCount - 1) {
+                                        preferenceRepository.putBoolean(
+                                            PreferenceRepository.ON_BOARDING_COMPLETE,
+                                            true
+                                        )
+                                    } else {
+                                        pagerState.scrollToPage(pageNum + 1)
+                                    }
+
+                                }
+                            }
+                        ) {
+                            Text(pages[pageNum].completeText)
+                        }
+                    }
                 }
-            },
-            enabled = !permState.status.isGranted
-        ) {
-            if (permState.status.isGranted) {
-                Text("Granted")
-            } else {
-                Text("Grant")
             }
         }
-
     }
 }

@@ -409,7 +409,6 @@ private fun ActionList(
 /**
  * displays all the times of the auto parsed data
  * */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TimeChips(
     currentAutoParsed: Parsed?,
