@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform).apply(false)
     alias(libs.plugins.compose.compiler).apply(false)
     alias(libs.plugins.ksp).apply(false)
-    kotlin("plugin.serialization") version "2.1.0" apply false
+    alias(libs.plugins.serialization).apply(false)
     alias(libs.plugins.detekt)
     alias(libs.plugins.aboutLibraries).apply(false)
 }
@@ -26,10 +26,10 @@ tasks.withType<Detekt>().configureEach {
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 tasks.withType<DetektCreateBaselineTask>().configureEach {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 
 val detektAll by tasks.registering(Detekt::class) {
