@@ -26,7 +26,7 @@ fun SettingsItem(
     modifier: Modifier = Modifier,
     subtext: String? = null,
     onClick: (() -> Unit)? = null,
-    trailingItem: (@Composable () -> Unit)? = null,
+    trailingItem: @Composable () -> Unit = {},
 ) {
     Row(
         modifier = modifier
