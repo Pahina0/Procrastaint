@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.ui.components
+package ap.panini.procrastaint.ui.calendar.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

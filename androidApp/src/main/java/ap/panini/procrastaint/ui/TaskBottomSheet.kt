@@ -63,6 +63,8 @@ import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_END
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_START
 import ap.panini.procrastaint.ui.Action.ACTION_NONE
+import ap.panini.procrastaint.ui.components.ParsedText
+import ap.panini.procrastaint.ui.components.TimeChips
 import ap.panini.procrastaint.ui.components.TimePickerDialog
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -119,21 +121,6 @@ fun TaskBottomSheet(
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            val task = buildAnnotatedString {
-                val range = state.autoParsed.getOrNull(state.viewing)?.extractedRange
-
-                if (range == null) {
-                    append(state.task)
-                    return@buildAnnotatedString
-                }
-
-                append(state.task.substring(0, range.first))
-                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                    append(state.task.substring(range))
-                }
-
-                append(state.task.substring(range.last + 1))
-            }
 
             // input task
             OutlinedTextField(
@@ -164,7 +151,11 @@ fun TaskBottomSheet(
             )
 
             if (state.task.isNotBlank()) {
-                Text(task, style = MaterialTheme.typography.labelSmall)
+                ParsedText(
+                    state.task,
+                    state.autoParsed.getOrNull(state.viewing)?.extractedRange,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
 
             ActionList(
@@ -185,10 +176,10 @@ fun TaskBottomSheet(
 
             TimeChips(
                 currentAutoParsed,
-                state.manualStartTimes,
-                state.endTime,
-                editManualStartTime,
-                { editEndTime(null) }
+                manualStart = state.manualStartTimes,
+                manualEnd = state.endTime,
+                removeManualStart = editManualStartTime,
+                removeManualEnd = { editEndTime(null) }
             )
 
             RepeatTime(
@@ -233,13 +224,13 @@ private fun RepeatTime(
 ) {
     var repeatTagExpanded by remember { mutableStateOf(false) }
     val timeOptions = mapOf(
-        null to "auto",
-        Time.YEAR to "year",
-        Time.MONTH to "month",
-        Time.WEEK to "week",
-        Time.DAY to "day",
-        Time.HOUR to "hour",
-        Time.MINUTE to "minute"
+        null to "Auto",
+        Time.YEAR to "Year",
+        Time.MONTH to "Month",
+        Time.WEEK to "Week",
+        Time.DAY to "Day",
+        Time.HOUR to "Hour",
+        Time.MINUTE to "Minute"
     )
 
     val pattern = remember { Regex("^\\d+\$") }
@@ -327,7 +318,7 @@ private fun ActionDisplay(
             ACTION_ADD_START -> Date.getTime()
             ACTION_ADD_END ->
                 manualEnd ?: parsedEnd
-                    ?: Date.getTime()
+                ?: Date.getTime()
 
             else -> Date.getTime()
         },
@@ -406,86 +397,6 @@ private fun ActionList(
     }
 }
 
-/**
- * displays all the times of the auto parsed data
- * */
-@Composable
-private fun TimeChips(
-    currentAutoParsed: Parsed?,
-    manualStart: Set<Long>,
-    manualEnd: Long?,
-    removeManualStart: (Long) -> Unit,
-    removeManualEnd: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier
-    ) {
-        currentAutoParsed?.startTimes?.forEach { time ->
-            InputChip(
-                selected = true,
-                onClick = { /* ignored */ },
-                label = { Text(text = time.formatMilliseconds(currentAutoParsed.tagsTimeStart)) }
-            )
-        }
-
-        manualStart.forEach { time ->
-            InputChip(
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = "Remove start time"
-                    )
-                },
-                selected = true,
-                onClick = { removeManualStart(time) },
-                label = { Text(text = time.formatMilliseconds()) },
-                colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
-            )
-        }
-
-        if (manualEnd != null) {
-            InputChip(
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = "Remove end time"
-                    )
-                },
-                selected = true,
-                onClick = { removeManualEnd() },
-                label = {
-                    Text(
-                        text = manualEnd.formatMilliseconds()
-                    )
-                },
-                colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
-                )
-            )
-        } else {
-            currentAutoParsed?.endTime?.let {
-                InputChip(
-                    selected = true,
-                    onClick = { /* ignored */ },
-                    label = {
-                        Text(
-                            text = it.formatMilliseconds(
-                                currentAutoParsed.tagsTimeEnd
-                            )
-                        )
-                    },
-                    colors = InputChipDefaults.inputChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

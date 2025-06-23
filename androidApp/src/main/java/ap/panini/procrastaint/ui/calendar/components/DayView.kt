@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.ui.components
+package ap.panini.procrastaint.ui.calendar.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time

@@ -27,7 +27,6 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskView(
     task: TaskSingle,
