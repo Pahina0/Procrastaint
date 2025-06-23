@@ -14,9 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OnBoardingItem(text: String, subText: String, trailingItem: @Composable RowScope.() -> Unit) {
+fun OnBoardingItem(
+    text: String,
+    subText: String,
+    trailingItem: @Composable RowScope.() -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -31,7 +36,5 @@ fun OnBoardingItem(text: String, subText: String, trailingItem: @Composable RowS
         }
 
         trailingItem()
-
     }
-
 }

@@ -2,7 +2,6 @@ package ap.panini.procrastaint.ui.onboarding.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +35,6 @@ fun DemoPage(modifier: Modifier = Modifier) {
         "Start cooking at 11am for 5 weeks every tuesday"
     )
 
-
     val timeOptions = mapOf(
         null to "Auto",
         Time.YEAR to "Year",
@@ -46,7 +44,6 @@ fun DemoPage(modifier: Modifier = Modifier) {
         Time.HOUR to "Hour",
         Time.MINUTE to "Minute"
     )
-
 
     LaunchedEffect(Unit) {
         simulateTyping(sentences)
@@ -84,7 +81,11 @@ fun DemoPage(modifier: Modifier = Modifier) {
     }
 }
 
-private fun simulateTyping(sentences: List<String>, delayMs: Long = 100): Flow<String> = flow {
+private fun simulateTyping(
+    sentences: List<String>,
+    delayMs: Long = 100,
+    pause: Long = 5000
+): Flow<String> = flow {
     while (true) {
         val sentence = sentences.random()
         for (i in 1..sentence.length) {
@@ -92,6 +93,6 @@ private fun simulateTyping(sentences: List<String>, delayMs: Long = 100): Flow<S
             delay(delayMs)
         }
 
-        delay(5000L)
+        delay(pause)
     }
 }

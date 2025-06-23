@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
@@ -32,7 +30,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
@@ -113,7 +110,6 @@ private fun CalendarSyncRequester(
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -138,7 +134,6 @@ private fun PermissionRequester(
         text = permName,
         subText = permReason
     ) {
-
         Button(
             onClick = {
                 if ((!permissionAlreadyRequested && !permState.status.shouldShowRationale) ||
@@ -157,6 +152,5 @@ private fun PermissionRequester(
                 Text("Grant")
             }
         }
-
     }
 }

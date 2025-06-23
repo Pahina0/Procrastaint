@@ -31,9 +31,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.calendar.components.DayView
-import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.calendar.components.TasksMiniPreview
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
+import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time

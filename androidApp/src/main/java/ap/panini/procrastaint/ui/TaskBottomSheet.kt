@@ -2,8 +2,6 @@ package ap.panini.procrastaint.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,8 +28,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
@@ -53,12 +49,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_END
 import ap.panini.procrastaint.ui.Action.ACTION_ADD_START
@@ -68,7 +61,6 @@ import ap.panini.procrastaint.ui.components.TimeChips
 import ap.panini.procrastaint.ui.components.TimePickerDialog
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
-import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.dayOfMonth
 import ap.panini.procrastaint.util.hour
@@ -121,7 +113,6 @@ fun TaskBottomSheet(
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-
             // input task
             OutlinedTextField(
                 value = state.task,
@@ -318,7 +309,7 @@ private fun ActionDisplay(
             ACTION_ADD_START -> Date.getTime()
             ACTION_ADD_END ->
                 manualEnd ?: parsedEnd
-                ?: Date.getTime()
+                    ?: Date.getTime()
 
             else -> Date.getTime()
         },
@@ -396,7 +387,6 @@ private fun ActionList(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

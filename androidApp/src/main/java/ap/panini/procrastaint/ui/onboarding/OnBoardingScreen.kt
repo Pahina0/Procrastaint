@@ -33,11 +33,10 @@ fun OnBoardingScreen(
 
     val preferenceRepository: PreferenceRepository = koinInject()
 
-
-    ScreenScaffold {
+    ScreenScaffold(modifier = modifier) {
         HorizontalPager(pagerState) { pageNum ->
             Scaffold(
-                modifier = modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(title = { Text(pages[pageNum].topBarText) })
                 }
@@ -63,9 +62,7 @@ fun OnBoardingScreen(
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-
                                 coroutineScope.launch {
-
                                     if (pageNum == pagerState.pageCount - 1) {
                                         preferenceRepository.putBoolean(
                                             PreferenceRepository.ON_BOARDING_COMPLETE,
@@ -74,7 +71,6 @@ fun OnBoardingScreen(
                                     } else {
                                         pagerState.scrollToPage(pageNum + 1)
                                     }
-
                                 }
                             }
                         ) {

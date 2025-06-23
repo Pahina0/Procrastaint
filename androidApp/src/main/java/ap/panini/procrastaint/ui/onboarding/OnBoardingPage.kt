@@ -1,9 +1,8 @@
 package ap.panini.procrastaint.ui.onboarding
 
 import androidx.compose.runtime.Composable
-import ap.panini.procrastaint.ui.onboarding.components.SetupPage
 import ap.panini.procrastaint.ui.onboarding.components.DemoPage
-
+import ap.panini.procrastaint.ui.onboarding.components.SetupPage
 
 enum class OnBoardingPage(
     val topBarText: String,
@@ -21,5 +20,4 @@ enum class OnBoardingPage(
         "Complete",
         { SetupPage() }
     )
-
 }
