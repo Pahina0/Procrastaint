@@ -21,6 +21,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -42,6 +47,7 @@ import com.ramcosta.composedestinations.spec.TypedDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.startDestination
+import kotlinx.collections.immutable.immutableListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
@@ -66,7 +72,8 @@ class MainActivity : ComponentActivity() {
                     preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
                         .collectAsStateWithLifecycle(
                             runBlocking {
-                                preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE).first()
+                                preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
+                                    .first()
                             }
                         ).value
 
@@ -82,25 +89,36 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainContent(viewModel: MainActivityViewModel) {
         val navController = rememberNavController()
+        val directions = remember { BottomBarDestination.entries.map { it.direction } }
 
         val curDestination = navController.currentDestinationAsState().value
             ?: NavGraphs.root.startDestination
 
+        var mainDestinationSelected by remember { mutableStateOf(false) }
+
+        LaunchedEffect(curDestination) {
+            mainDestinationSelected = directions.any { it == curDestination }
+        }
+
         val state = viewModel.uiState.collectAsStateWithLifecycle().value
         Scaffold(
             bottomBar = {
-                BottomBar(navController.rememberDestinationsNavigator(), curDestination)
-            },
-
-            floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    viewModel.onShow()
-                }) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
+                if (mainDestinationSelected) {
+                    BottomBar(navController.rememberDestinationsNavigator(), curDestination)
                 }
             },
 
-        ) {
+            floatingActionButton = {
+                if (mainDestinationSelected) {
+                    FloatingActionButton(onClick = {
+                        viewModel.onShow()
+                    }) {
+                        Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
+                    }
+                }
+            },
+
+            ) {
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -179,7 +197,7 @@ class MainActivity : ComponentActivity() {
             R.string.upcoming
         ),
 
-//        Library(
+        //        Library(
 //            LibraryScreenDestination,
 //            Icons.Default.LibraryAddCheck,
 //            Icons.Outlined.LibraryAddCheck,

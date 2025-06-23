@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
+import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -34,7 +35,7 @@ fun SyncScreen(
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    Scaffold(modifier = modifier.fillMaxSize()) { padding ->
+    ScreenScaffold(modifier = modifier.fillMaxSize()) { padding ->
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.sync() },

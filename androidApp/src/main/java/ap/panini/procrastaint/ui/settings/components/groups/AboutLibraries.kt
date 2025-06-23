@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import ap.panini.procrastaint.R
+import ap.panini.procrastaint.ui.components.ScreenScaffold
 import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.ramcosta.composedestinations.annotation.Destination
@@ -17,7 +18,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 fun AboutLibrariesScreen(modifier: Modifier = Modifier) {
     val libraries by rememberLibraries(R.raw.aboutlibraries)
 
-    Scaffold(modifier = modifier) {
+    ScreenScaffold(modifier = modifier) {
         LibrariesContainer(
             libraries,
             Modifier

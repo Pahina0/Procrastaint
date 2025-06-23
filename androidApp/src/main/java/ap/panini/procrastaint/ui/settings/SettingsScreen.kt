@@ -12,6 +12,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import ap.panini.procrastaint.ui.settings.components.groups.About
 import ap.panini.procrastaint.ui.settings.components.groups.Sync
@@ -32,7 +33,7 @@ fun SettingsScreen(
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    Scaffold(modifier = modifier, topBar = {
+    ScreenScaffold(modifier = modifier, topBar = {
         TopAppBar(title = { Text("Settings") })
     }) {
         Box(modifier = Modifier.padding(it)) {

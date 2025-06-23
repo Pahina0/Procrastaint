@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.settings.components.groups
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewList
+import androidx.compose.material.icons.outlined.Attribution
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
@@ -27,10 +28,12 @@ fun About(navigator: DestinationsNavigator) {
                 uriHandler.openUri("https://github.com/Pahina0/Procrastaint/issues/new")
             }
         )
+
         SettingsItem(Icons.Outlined.BugReport, "Issues", subtext = "Report a bug", onClick = {
             uriHandler.openUri("https://github.com/Pahina0/Procrastaint")
         })
-        SettingsItem(Icons.AutoMirrored.Outlined.ViewList, "Open source libraries", onClick = {
+
+        SettingsItem(Icons.Outlined.Attribution, "Open source libraries", onClick = {
             navigator.navigate(AboutLibrariesScreenDestination())
         })
     }
