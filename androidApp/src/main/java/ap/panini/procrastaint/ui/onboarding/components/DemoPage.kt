@@ -2,7 +2,13 @@ package ap.panini.procrastaint.ui.onboarding.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,15 +61,15 @@ fun DemoPage(modifier: Modifier = Modifier) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         Text(
-            "Type your task with the time and the time will automatically get extracted!",
+            "Enter a task with a time and we'll detect it automatically",
             textAlign = TextAlign.Center
         )
 
-        HorizontalDivider()
+        HorizontalDivider(modifier = Modifier.padding(15.dp))
 
         ParsedText(
             text = text,
@@ -71,11 +77,31 @@ fun DemoPage(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center
         )
 
-        TimeChips(parsed)
+        Card {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TimeChips(parsed)
 
-        parsed?.let {
-            if (it.repeatOften != 0) {
-                Text("Repeating every ${it.repeatOften} ${timeOptions[it.repeatTag]}(s)")
+                parsed?.let {
+                    if (it.repeatOften != 0) {
+                        Text("Repeating every ${it.repeatOften} ${timeOptions[it.repeatTag]}(s)")
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(30.dp))
+
+                ParsedText(
+                    text = text,
+                    range = parsed?.extractedRange,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium,
+                    show = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }

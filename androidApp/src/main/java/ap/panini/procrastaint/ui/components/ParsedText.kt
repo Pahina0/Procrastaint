@@ -49,6 +49,7 @@ fun ParsedText(
     text: String,
     range: IntRange?,
     modifier: Modifier = Modifier,
+    show: Boolean = true,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
@@ -75,8 +76,11 @@ fun ParsedText(
         }
 
         append(text.substring(0, range.first))
-        withStyle(style = SpanStyle(color = primaryColor)) {
-            append(text.substring(range))
+
+        if (show) {
+            withStyle(style = SpanStyle(color = primaryColor)) {
+                append(text.substring(range))
+            }
         }
 
         append(text.substring(range.last + 1))

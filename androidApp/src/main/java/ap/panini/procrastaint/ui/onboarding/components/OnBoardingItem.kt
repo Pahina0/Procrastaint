@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 fun OnBoardingItem(
     text: String,
     subText: String,
+    modifier: Modifier = Modifier,
     trailingItem: @Composable RowScope.() -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier

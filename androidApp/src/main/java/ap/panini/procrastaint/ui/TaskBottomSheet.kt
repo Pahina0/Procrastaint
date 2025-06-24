@@ -201,6 +201,13 @@ fun TaskBottomSheet(
                     Text("Delete task")
                 }
             }
+
+            ParsedText(
+                state.task,
+                state.autoParsed.getOrNull(state.viewing)?.extractedRange,
+                style = MaterialTheme.typography.labelSmall,
+                show = false
+            )
         }
     }
 }
