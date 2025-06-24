@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.notifications.NotificationManager
+import ap.panini.procrastaint.ui.MainActivity
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -56,6 +57,16 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
             PendingIntent.getBroadcast(context, taskUuid, it, PendingIntent.FLAG_IMMUTABLE)
         }
 
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+
         val notification =
             NotificationCompat.Builder(context, Notifications.CHANNEL_TASK_DUE).apply {
                 setContentTitle(task.taskInfo.title)
@@ -63,6 +74,8 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
                 addAction(R.drawable.baseline_check_24, "Complete", completeIntent)
                 addAction(R.drawable.baseline_snooze_24, "Snooze 15 min", snoozeIntent)
                 setSmallIcon(R.drawable.baseline_task_alt_24)
+                setContentIntent(pendingIntent)
+                setAutoCancel(true)
             }.build()
 
         // check for notification perms
