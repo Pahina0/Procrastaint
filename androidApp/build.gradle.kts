@@ -30,6 +30,10 @@ android {
         getByName("release") {
             isMinifyEnabled = false
         }
+
+        debug {
+            versionNameSuffix = " debug"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
