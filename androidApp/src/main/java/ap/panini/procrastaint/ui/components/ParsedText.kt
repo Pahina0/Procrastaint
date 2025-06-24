@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.TextUnit
  * @param text
  * @param range
  * @param modifier
+ * @param show if true, it shows the extracted text as primary color or else it removes the extracted text
  * @param color
  * @param fontSize
  * @param fontStyle
