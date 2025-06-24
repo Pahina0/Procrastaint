@@ -11,7 +11,7 @@ import kotlinx.serialization.Transient
 import kotlin.time.Duration.Companion.minutes
 
 @Serializable
-data class GoogleEvent(
+internal data class GoogleEvent(
     val summary: String,
 
     val id: String,
@@ -53,7 +53,7 @@ data class GoogleEvent(
         private fun TaskMeta.getGoogleId(preferences: PreferenceRepository) =
             "$taskId${preferences.getUuid()}$metaId"
 
-        fun getGoogleEvents(task: Task, preferences: PreferenceRepository): List<GoogleEvent> {
+        internal fun getGoogleEvents(task: Task, preferences: PreferenceRepository): List<GoogleEvent> {
             if (task.meta.isEmpty()) return emptyList()
 
             if (task.meta.first().repeatOften == null || task.meta.first().repeatTag == null) {

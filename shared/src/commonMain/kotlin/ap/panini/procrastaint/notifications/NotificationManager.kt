@@ -30,7 +30,7 @@ class NotificationManager {
      *
      * @param task
      */
-    fun create(task: TaskSingle) {
+    internal fun create(task: TaskSingle) {
         val uuid = TaskMeta(
             task.startTime,
             task.endTime,
@@ -49,7 +49,7 @@ class NotificationManager {
         )
     }
 
-    fun delete(task: TaskSingle) {
+    internal fun delete(task: TaskSingle) {
         val uuid = TaskMeta(
             task.startTime,
             task.endTime,
@@ -73,7 +73,7 @@ class NotificationManager {
      *
      * @param task the task to get from
      */
-    fun create(task: Task) {
+    internal fun create(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
             tasksRepo.getTasksBetweenFiltered(
@@ -93,7 +93,7 @@ class NotificationManager {
      *
      * @param task
      */
-    fun delete(task: Task) {
+    internal fun delete(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
             tasksRepo.getTasksBetweenFiltered(
@@ -162,7 +162,7 @@ class NotificationManager {
         }
     }
 
-    abstract class CallbackBundle(
+    sealed class CallbackBundle(
         open val uuid: Int,
         open val taskId: Long,
         open val metaId: Long,

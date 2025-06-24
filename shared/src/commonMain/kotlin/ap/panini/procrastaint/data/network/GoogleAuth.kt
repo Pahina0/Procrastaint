@@ -13,7 +13,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 
-expect fun getGoogleId(): String
+internal expect fun getGoogleId(): String
 
 /**
  * Google auth
@@ -23,8 +23,8 @@ expect fun getGoogleId(): String
  *
  * @constructor Create empty Google auth
  */
-object GoogleAuth {
-    fun AuthConfig.auth(
+internal object GoogleAuth {
+    internal fun AuthConfig.auth(
         preferenceRepository: PreferenceRepository,
     ) {
         bearer {

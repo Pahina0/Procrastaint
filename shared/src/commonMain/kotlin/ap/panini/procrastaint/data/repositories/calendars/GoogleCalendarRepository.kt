@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlin.time.Duration.Companion.minutes
 
-class GoogleCalendarRepository(
+class GoogleCalendarRepository internal constructor(
     private val preference: PreferenceRepository,
     private val gcApi: GoogleCalendarApi
 ) : CalendarRepository {

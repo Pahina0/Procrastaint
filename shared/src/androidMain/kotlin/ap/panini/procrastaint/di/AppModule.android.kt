@@ -18,7 +18,7 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase> {
     )
 }
 
-actual fun createDataStore(): DataStore<Preferences> {
+internal actual fun createDataStore(): DataStore<Preferences> {
     val ctx: Context = getKoin().get()
     return createDataStore(producePath = { ctx.filesDir.resolve(DataStoreFileName).absolutePath })
 }

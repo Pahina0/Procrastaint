@@ -4,7 +4,7 @@ import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import kotlinx.coroutines.flow.Flow
 
-interface CalendarRepository {
+sealed interface CalendarRepository {
 
     sealed interface Response {
         data object Success : Response

@@ -57,7 +57,7 @@ val appModule = module {
     single { NetworkCalendarRepository(get(), get(), get()) }
 }
 
-fun getKtor(
+private fun getKtor(
     url: String,
     authConfig: AuthConfig.() -> Unit = {}
 ): Ktorfit {
@@ -98,21 +98,21 @@ fun getKtor(
     }
 }
 
-fun getRoomDatabase(builder: RoomDatabase.Builder<ProcrastaintDatabase>): ProcrastaintDatabase {
+private fun getRoomDatabase(builder: RoomDatabase.Builder<ProcrastaintDatabase>): ProcrastaintDatabase {
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }
 
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase>
+internal expect fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase>
 
 // https://developer.android.com/kotlin/multiplatform/datastore
-fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+internal fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
         produceFile = { producePath().toPath() }
     )
 
 internal const val DataStoreFileName = "procrastaint.preferences_pb"
 
-expect fun createDataStore(): DataStore<Preferences>
+internal expect fun createDataStore(): DataStore<Preferences>

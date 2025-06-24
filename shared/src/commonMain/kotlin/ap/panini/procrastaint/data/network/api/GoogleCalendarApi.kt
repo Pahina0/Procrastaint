@@ -13,7 +13,7 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import kotlinx.coroutines.flow.Flow
 
-interface GoogleCalendarApi {
+internal interface GoogleCalendarApi {
 
     companion object {
         const val BASE_URL = "https://www.googleapis.com/calendar/v3/"

@@ -114,27 +114,6 @@ class NetworkCalendarRepository(
         // can have future calendars here
     )
 
-    /**
-     * Google create calendar
-     * creates a calendar for the application. if one already exists then it saves that one
-     * this is called only once when logging into google
-     */
-    suspend fun googleCreateCalendar() {
-        val response = googleCalendarRepository.createCalendar()
-
-        if (response is CalendarRepository.Response.Error) {
-            CoroutineScope(Dispatchers.IO).launch {
-                nsDao.insertNetworkSyncItem(
-                    NetworkSyncItem(
-                        time = 0,
-                        location = NetworkSyncItem.SyncData.GOOGLE,
-                        action = NetworkSyncItem.SyncAction.CREATE_CALENDAR
-                    )
-                )
-            }
-        }
-    }
-
     suspend fun createTask(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
 
