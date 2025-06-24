@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +30,10 @@ fun DividerText(
             color = if (highlight) MaterialTheme.colorScheme.primary else DividerDefaults.color
         )
 
-        Text(text, fontWeight = if (highlight) FontWeight.Bold else null)
+        Text(
+            text, fontWeight = if (highlight) FontWeight.Bold else null,
+            style = if (highlight) LocalTextStyle.current else MaterialTheme.typography.labelSmall
+        )
 
         HorizontalDivider(
             modifier = Modifier

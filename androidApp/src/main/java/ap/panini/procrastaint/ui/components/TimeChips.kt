@@ -44,7 +44,8 @@ fun TimeChips(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Remove start time"
+                        contentDescription = "Remove start time",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 },
                 selected = true,
@@ -67,7 +68,8 @@ fun TimeChips(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Remove end time"
+                        contentDescription = "Remove end time",
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 },
                 selected = true,

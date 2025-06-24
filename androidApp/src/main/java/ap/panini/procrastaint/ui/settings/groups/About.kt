@@ -5,6 +5,8 @@ import androidx.compose.material.icons.outlined.Attribution
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.KeyboardOptionKey
+import androidx.compose.material.icons.outlined.Spellcheck
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler
 import ap.panini.procrastaint.BuildConfig
@@ -25,6 +27,15 @@ fun About(navigator: DestinationsNavigator) {
             subtext = "Help contribute",
             onClick = {
                 uriHandler.openUri("https://github.com/Pahina0/Procrastaint")
+            }
+        )
+
+        SettingsItem(
+            Icons.Outlined.Spellcheck,
+            "Text parser source code",
+            subtext = "See how times are pulled from your tasks",
+            onClick = {
+                uriHandler.openUri("https://github.com/Pahina0/kwhen")
             }
         )
 

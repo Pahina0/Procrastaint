@@ -78,7 +78,7 @@ fun DayView(
             }
 
             if (usingItems.isEmpty()) {
-                item { Spacer(modifier = Modifier.height(50.dp)) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
                 ++amt
             } else if (firstTask == -1) {
                 firstTask = amt - 1
@@ -102,7 +102,7 @@ fun DayView(
             TaskView(it, onCheck, onEdit)
         }
         if (remainingItems.isEmpty()) {
-            item { Spacer(modifier = Modifier.height(50.dp)) }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
         } else if (firstTask == -1) {
             firstTask = amt - 1
         }

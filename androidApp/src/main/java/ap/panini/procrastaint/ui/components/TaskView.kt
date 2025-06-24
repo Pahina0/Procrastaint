@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -35,67 +37,75 @@ fun TaskView(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ListItem(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .combinedClickable(
-                onLongClick = { onEdit(task.taskId) },
-                onClick = { onCheck(task) }
-            ),
+    ) {
+        ListItem(
+            modifier = Modifier
+                .combinedClickable(
+                    onLongClick = { onEdit(task.taskId) },
+                    onClick = { onCheck(task) }
+                ),
 
-        trailingContent = {
-            if (task.startTime != null) {
-                Text(
-                    task.currentEventTime.formatMilliseconds(
-                        setOf(Time.HOUR, Time.MINUTE),
-                        smart = false,
-                        useAbbreviated = true
-                    )
-                )
-            }
-        },
-
-        leadingContent = {
-            Checkbox(
-                checked = task.completed != null,
-                onCheckedChange = {
-                    onCheck(task)
-                },
-            )
-        },
-
-        supportingContent = {
-            Column {
-                if (task.repeatOften != null && task.repeatTag != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Outlined.Repeat,
-                            null,
-                            modifier = Modifier.height(15.dp)
+            trailingContent = {
+                if (task.startTime != null) {
+                    Text(
+                        task.currentEventTime.formatMilliseconds(
+                            setOf(Time.HOUR, Time.MINUTE),
+                            smart = false,
+                            useAbbreviated = true
                         )
+                    )
+                }
+            },
+
+            leadingContent = {
+                Checkbox(
+                    checked = task.completed != null,
+                    onCheckedChange = {
+                        onCheck(task)
+                    },
+                )
+            },
+
+            supportingContent = {
+                Column {
+                    if (task.repeatOften != null && task.repeatTag != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Outlined.Repeat,
+                                null,
+                                modifier = Modifier.height(15.dp)
+                            )
+                            Text(
+                                "${task.repeatOften} ${task.repeatTag!!.name}",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+
+                    if (task.description.isNotBlank()) {
                         Text(
-                            "${task.repeatOften} ${task.repeatTag!!.name}",
+                            task.description,
+                            modifier = Modifier.clickable { expanded = !expanded },
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = if (expanded) Int.MAX_VALUE else 1,
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
+            },
 
-                if (task.description.isNotBlank()) {
-                    Text(
-                        task.description,
-                        modifier = Modifier.clickable { expanded = !expanded },
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = if (expanded) Int.MAX_VALUE else 1,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
+            headlineContent = {
+                Text(task.title)
             }
-        },
-
-        headlineContent = {
-            Text(task.title)
-        }
-    )
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 5.dp, horizontal = 80.dp),
+            thickness = 1.dp
+        )
+    }
 }
