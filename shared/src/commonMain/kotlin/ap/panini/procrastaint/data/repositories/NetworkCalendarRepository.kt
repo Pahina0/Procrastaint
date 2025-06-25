@@ -97,9 +97,7 @@ class NetworkCalendarRepository(
         }
 
         if (response is CalendarRepository.Response.Success) {
-            CoroutineScope(Dispatchers.IO).launch {
-                nsDao.deleteSyncItem(item)
-            }
+            deleteSyncItem(item)
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 nsDao.updateSyncItem(item.copy(failCount = item.failCount + 1))
@@ -107,6 +105,12 @@ class NetworkCalendarRepository(
         }
 
         return response
+    }
+
+    fun deleteSyncItem(item: NetworkSyncItem) {
+        CoroutineScope(Dispatchers.IO).launch {
+            nsDao.deleteSyncItem(item)
+        }
     }
 
     private val calendars = mapOf(

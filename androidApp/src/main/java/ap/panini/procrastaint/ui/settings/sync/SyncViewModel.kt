@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.ui.settings.sync
 
+import android.net.Network
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,10 @@ class SyncViewModel(
                 _uiState.update { it.copy(syncList = latest) }
             }
         }
+    }
+
+    fun deleteItem(item: NetworkSyncItem) {
+        nsRepository.deleteSyncItem(item)
     }
 
     fun sync() {
