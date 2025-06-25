@@ -7,8 +7,8 @@ It currently features Google Calendar integration for seamless task syncing.
 <div align="center">
   <img src="https://github.com/user-attachments/assets/15949bd8-8fe9-451e-9eac-15824f865c2b" width="200"/>
   <img src="https://github.com/user-attachments/assets/ecfb80ad-4c66-42f2-bf4f-e1a1aa1161d0" width="200"/>
-  <img src="https://github.com/user-attachments/assets/5af97831-abe2-4b3c-b166-0fcacd4fdebb" width="200"/>
   <img src="https://github.com/user-attachments/assets/aa9eb9f6-e578-418d-bcc4-7379b29cd356" width="200"/>
+  <img src="https://github.com/user-attachments/assets/5af97831-abe2-4b3c-b166-0fcacd4fdebb" width="200"/>
 </div>
 
 ---
