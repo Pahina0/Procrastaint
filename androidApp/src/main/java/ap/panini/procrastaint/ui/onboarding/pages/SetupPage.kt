@@ -1,6 +1,8 @@
-package ap.panini.procrastaint.ui.onboarding.components
+package ap.panini.procrastaint.ui.onboarding.pages
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
+import ap.panini.procrastaint.ui.onboarding.components.OnBoardingItem
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import ap.panini.procrastaint.ui.settings.auth.OAuth
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -44,9 +47,9 @@ fun SetupPage(
     Card(modifier = modifier) {
         Column {
             SectionDivider("Permissions")
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 PermissionRequester(
-                    android.Manifest.permission.POST_NOTIFICATIONS,
+                    Manifest.permission.POST_NOTIFICATIONS,
                     "Notifications",
                     "Get notified when tasks are due",
                     Intent(

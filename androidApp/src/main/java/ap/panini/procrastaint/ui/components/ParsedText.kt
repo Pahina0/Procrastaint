@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
+import kotlin.math.min
 
 /**
  * Parsed text a text with the highlighted range
@@ -84,7 +85,7 @@ fun ParsedText(
             }
         }
 
-        append(text.substring(range.last + 1))
+        append(text.substring(min(range.last + 1, text.length)))
     }
 
     Text(

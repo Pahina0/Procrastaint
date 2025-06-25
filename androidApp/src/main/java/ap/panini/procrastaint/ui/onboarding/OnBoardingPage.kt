@@ -1,8 +1,9 @@
 package ap.panini.procrastaint.ui.onboarding
 
 import androidx.compose.runtime.Composable
-import ap.panini.procrastaint.ui.onboarding.components.DemoPage
-import ap.panini.procrastaint.ui.onboarding.components.SetupPage
+import ap.panini.procrastaint.ui.onboarding.pages.DemoPage
+import ap.panini.procrastaint.ui.onboarding.pages.SetupPage
+import ap.panini.procrastaint.ui.onboarding.pages.TryPage
 
 enum class OnBoardingPage(
     val topBarText: String,
@@ -13,6 +14,12 @@ enum class OnBoardingPage(
         "Demo",
         "Next",
         { DemoPage() }
+    ),
+
+    Try(
+        "Try",
+        "Got it",
+        { TryPage() }
     ),
 
     Setup(
