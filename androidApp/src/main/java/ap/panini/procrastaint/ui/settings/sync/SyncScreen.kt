@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -71,7 +70,6 @@ fun SyncScreen(
 
 @Composable
 private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Unit) {
-
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.EndToStart ||
@@ -107,7 +105,8 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
                     tint = Color.White
                 )
             }
-        }) {
+        }
+    ) {
         Column {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text("TaskId: ${item.taskId}")

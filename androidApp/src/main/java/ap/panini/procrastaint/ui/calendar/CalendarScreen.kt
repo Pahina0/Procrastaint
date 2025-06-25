@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.max
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Destination<RootGraph>(
     start = true,
 )
@@ -122,11 +123,13 @@ fun CalendarScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = {
-                        viewModel.setSelectedTime(
-                            today
-                        )
-                    }) {
+                    IconButton(
+                        onClick = {
+                            viewModel.setSelectedTime(
+                                today
+                            )
+                        }
+                    ) {
                         Icon(Icons.Outlined.Today, contentDescription = "Today")
                     }
                 }
@@ -152,17 +155,17 @@ fun CalendarScreen(
                             time,
                             itemState,
                             dateType =
-                                when (time) {
-                                    state.selectedTime -> ViewingType.Selected
-                                    today -> ViewingType.Today
-                                    else -> {
-                                        if (time < today) {
-                                            ViewingType.Past
-                                        } else {
-                                            ViewingType.Future
-                                        }
+                            when (time) {
+                                state.selectedTime -> ViewingType.Selected
+                                today -> ViewingType.Today
+                                else -> {
+                                    if (time < today) {
+                                        ViewingType.Past
+                                    } else {
+                                        ViewingType.Future
                                     }
-                                },
+                                }
+                            },
 
                             onClick = {
                                 coroutineScope.launch {
