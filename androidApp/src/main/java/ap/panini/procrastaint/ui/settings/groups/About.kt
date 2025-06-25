@@ -5,7 +5,6 @@ import androidx.compose.material.icons.outlined.Attribution
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.KeyboardOptionKey
 import androidx.compose.material.icons.outlined.Spellcheck
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler

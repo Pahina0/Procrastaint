@@ -31,7 +31,8 @@ fun DividerText(
         )
 
         Text(
-            text, fontWeight = if (highlight) FontWeight.Bold else null,
+            text,
+            fontWeight = if (highlight) FontWeight.Bold else null,
             style = if (highlight) LocalTextStyle.current else MaterialTheme.typography.labelSmall
         )
 

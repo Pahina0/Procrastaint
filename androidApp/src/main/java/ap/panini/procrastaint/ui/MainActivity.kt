@@ -15,11 +15,12 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Upcoming
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,12 +57,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         val viewModel by viewModel<MainActivityViewModel>()
         val preferences by inject<PreferenceRepository>()
-
-        enableEdgeToEdge()
 
         Thread.setDefaultUncaughtExceptionHandler(GlobalExceptionHandler(this))
 
@@ -146,15 +146,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     @Composable
     private fun BottomBar(
         destinationsNavigator: DestinationsNavigator,
         curDestination: TypedDestinationSpec<out Any?>,
         modifier: Modifier = Modifier,
     ) {
-        NavigationBar(modifier = modifier) {
+        ShortNavigationBar(modifier = modifier) {
             BottomBarDestination.entries.forEach { destination ->
-                NavigationBarItem(
+                ShortNavigationBarItem(
                     selected = curDestination == destination.direction,
                     onClick = {
                         destinationsNavigator.navigate(destination.direction) {

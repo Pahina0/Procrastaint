@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +34,6 @@ fun DemoPage(modifier: Modifier = Modifier) {
         "Meditate jun 8th 9pm",
         "Start cooking at 11am for 5 weeks every tuesday"
     )
-
 
     LaunchedEffect(Unit) {
         simulateTyping(sentences)

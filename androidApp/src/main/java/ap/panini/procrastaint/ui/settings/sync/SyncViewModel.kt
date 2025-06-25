@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.ui.settings.sync
 
-import android.net.Network
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -14,6 +14,8 @@ complexity:
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: [ 'Composable' ]
+  ComplexCondition:
+    threshold: 6
 
 formatting:
   autoCorrect: true

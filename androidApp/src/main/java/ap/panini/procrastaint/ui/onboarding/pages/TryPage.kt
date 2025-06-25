@@ -35,10 +35,7 @@ fun TryPage(modifier: Modifier = Modifier) {
     var outlineColor by remember { mutableStateOf(Color.Unspecified) }
 
     LaunchedEffect(text) {
-
     }
-
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,10 +50,9 @@ fun TryPage(modifier: Modifier = Modifier) {
         HorizontalDivider(modifier = Modifier.padding(15.dp))
 
         OutlinedTextField(
-            text, onValueChange = {
-
+            text,
+            onValueChange = {
                 parsed = Parser().parse(it).firstOrNull()
-
 
                 outlineColor = if (parsed != null &&
                     parsed!!.repeatOften == 1 &&
@@ -69,7 +65,9 @@ fun TryPage(modifier: Modifier = Modifier) {
                     Color.Unspecified
                 }
 
-                text = it }, placeholder = {
+                text = it
+            },
+            placeholder = {
                 Text("Brush teeth at 9pm everyday")
             },
             label = { Text("Make your own task!") },
@@ -78,7 +76,6 @@ fun TryPage(modifier: Modifier = Modifier) {
                 unfocusedBorderColor = outlineColor
             )
         )
-
 
         ParserExample(parsed, text)
     }

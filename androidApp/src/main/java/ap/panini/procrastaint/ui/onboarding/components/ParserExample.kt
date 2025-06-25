@@ -70,5 +70,4 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
             }
         }
     }
-
 }
