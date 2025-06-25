@@ -10,14 +10,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.ui.onboarding.components.ParserExample
@@ -31,11 +29,8 @@ fun TryPage(modifier: Modifier = Modifier) {
     var text by remember { mutableStateOf("") }
     var parsed by remember { mutableStateOf<Parsed?>(null) }
 
-    val successColor = MaterialTheme.colorScheme.tertiary
-    var outlineColor by remember { mutableStateOf(Color.Unspecified) }
+    var success by remember { mutableStateOf(false) }
 
-    LaunchedEffect(text) {
-    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,19 +46,16 @@ fun TryPage(modifier: Modifier = Modifier) {
 
         OutlinedTextField(
             text,
+            isError = !success,
             onValueChange = {
                 parsed = Parser().parse(it).firstOrNull()
 
-                outlineColor = if (parsed != null &&
-                    parsed!!.repeatOften == 1 &&
-                    parsed!!.repeatTag == Time.DAY &&
-                    parsed!!.startTimes.size == 1 &&
-                    parsed!!.startTimes.first().hour() == 21
-                ) {
-                    successColor
-                } else {
-                    Color.Unspecified
-                }
+                success = parsed != null &&
+                        parsed!!.repeatOften == 1 &&
+                        parsed!!.repeatTag == Time.DAY &&
+                        parsed!!.startTimes.size == 1 &&
+                        parsed!!.startTimes.first().hour() == 21
+
 
                 text = it
             },
@@ -71,12 +63,12 @@ fun TryPage(modifier: Modifier = Modifier) {
                 Text("Brush teeth at 9pm everyday")
             },
             label = { Text("Make your own task!") },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = outlineColor,
-                unfocusedBorderColor = outlineColor
-            )
         )
 
         ParserExample(parsed, text)
+
+        if (success) {
+            Text("Congratulations! You got it!")
+        }
     }
 }

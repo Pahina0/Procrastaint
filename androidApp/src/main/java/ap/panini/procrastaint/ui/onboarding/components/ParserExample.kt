@@ -33,7 +33,7 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         ParsedText(
