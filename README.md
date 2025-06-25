@@ -1,14 +1,21 @@
 # Procrastaint
 
-**Procrastaint** is a todo list built using **Kotlin Multiplatform**. It integrates a [natural language processor](https://github.com/Pahina0/KWhen) to extract dates and times from plain English, letting users quickly create time-based tasks just by writing sentences.
+**Procrastaint** is a todo list built using Kotlin Multiplatform (iOS one day...). It integrates a [natural language processor](https://github.com/Pahina0/KWhen) to extract dates and times from plain English, letting users quickly create time-based tasks just by writing sentences.
 
 It currently features Google Calendar integration for seamless task syncing.
 
+## Why?
+
+This feature exists in a few other todo list apps so why make another you may ask? Well the amount you can do with those is generally good, but limited. As it is the main feature I use, I wanted to improve on it in my own ways so here it is!  
+_Stop defaulting "at 1" to 1am... no one is awake and doing tasks that early_
+
+## Screenshots
+
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/15949bd8-8fe9-451e-9eac-15824f865c2b" width="200"/>
-  <img src="https://github.com/user-attachments/assets/ecfb80ad-4c66-42f2-bf4f-e1a1aa1161d0" width="200"/>
-  <img src="https://github.com/user-attachments/assets/aa9eb9f6-e578-418d-bcc4-7379b29cd356" width="200"/>
-  <img src="https://github.com/user-attachments/assets/5af97831-abe2-4b3c-b166-0fcacd4fdebb" width="200"/>
+
+| <img src="https://github.com/user-attachments/assets/15949bd8-8fe9-451e-9eac-15824f865c2b" width="200"/> | <img src="https://github.com/user-attachments/assets/ecfb80ad-4c66-42f2-bf4f-e1a1aa1161d0" width="200"/> | <img src="https://github.com/user-attachments/assets/aa9eb9f6-e578-418d-bcc4-7379b29cd356" width="200"/> | <img src="https://github.com/user-attachments/assets/5af97831-abe2-4b3c-b166-0fcacd4fdebb" width="200"/> |
+|:--:|:--:|:--:|:--:|
+
 </div>
 
 ---
