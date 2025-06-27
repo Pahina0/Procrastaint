@@ -30,7 +30,7 @@ class TaskRepository(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            val updatedTask = taskDao.getTask(id)
+            val updatedTask = getTask(id)
             notificationManager.create(updatedTask)
             calendar.createTask(updatedTask)
         }
@@ -38,7 +38,8 @@ class TaskRepository(
         return true
     }
 
-    suspend fun getTask(id: Long): Task = taskDao.getTask(id)
+    suspend fun getTask(id: Long): Task = taskDao.getTask(id)!!
+    suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTask(id)
 
     suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
@@ -61,7 +62,7 @@ class TaskRepository(
         )
 
         CoroutineScope(Dispatchers.IO).launch {
-            val task = taskDao.getTask(taskCompletion.taskId)
+            val task = getTask(taskCompletion.taskId)
             getTasksBetweenFiltered(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
@@ -79,7 +80,7 @@ class TaskRepository(
         )
 
         CoroutineScope(Dispatchers.IO).launch {
-            val task = taskDao.getTask(taskCompletion.taskId)
+            val task = getTask(taskCompletion.taskId)
             getTasksBetweenFiltered(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
