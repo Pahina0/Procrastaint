@@ -38,8 +38,8 @@ class TaskRepository(
         return true
     }
 
-    suspend fun getTask(id: Long): Task = taskDao.getTask(id)!!
-    suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTask(id)
+    suspend fun getTask(id: Long): Task = taskDao.getTask(id)
+    suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
 
     suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
