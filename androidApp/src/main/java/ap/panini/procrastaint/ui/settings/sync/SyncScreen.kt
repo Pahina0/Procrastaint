@@ -60,7 +60,7 @@ fun SyncScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(state.syncList) {
+                items(state.syncList, key = { it.id }) {
                     SyncItem(it, viewModel::deleteItem)
                 }
             }
@@ -95,7 +95,8 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
 
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.errorContainer),
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .fillMaxSize(),
                 contentAlignment = alignment
             ) {
                 Icon(

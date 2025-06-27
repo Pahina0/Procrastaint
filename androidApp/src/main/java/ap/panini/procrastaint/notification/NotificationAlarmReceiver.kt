@@ -35,7 +35,8 @@ class NotificationAlarmReceiver : BroadcastReceiver(), KoinComponent {
 
         if (failed) return
 
-        val task = runBlocking { taskRepo.getTask(taskId) }
+        // sometimes the task doesn't exist when received?
+        val task = runBlocking { taskRepo.getTaskOrNull(taskId) } ?: return
 
         val completeIntent = Intent(context, NotificationReceiver::class.java).apply {
             action = NotificationReceiver.ACTION_COMPLETE_TASK

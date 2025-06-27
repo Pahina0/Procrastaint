@@ -125,7 +125,9 @@ class NotificationManager {
                 append(taskId)
             }
 
-        return time.toInt()
+
+        // ensures its always valid number
+        return time.toIntOrNull() ?: -(time.toLong() % Int.MAX_VALUE).toInt()
     }
 
     /**
