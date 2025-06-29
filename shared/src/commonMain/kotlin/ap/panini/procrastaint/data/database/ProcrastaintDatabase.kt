@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.data.database
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -10,15 +11,22 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.entities.TaskMeta
+import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 
 @Database(
     entities = [
         TaskInfo::class,
         TaskMeta::class,
         TaskCompletion::class,
+        TaskTag::class,
+        TaskTagCrossRef::class,
         NetworkSyncItem::class
     ],
-    version = 1
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 @ConstructedBy(ProcrastaintDatabaseConstructor::class)
 abstract class ProcrastaintDatabase : RoomDatabase() {

@@ -1,6 +1,7 @@
 package ap.panini.procrastaint.data.entities
 
 import androidx.room.Embedded
+import androidx.room.Junction
 import androidx.room.Relation
 
 data class Task(
@@ -17,5 +18,12 @@ data class Task(
         parentColumn = "taskId",
         entityColumn = "taskId"
     )
-    val completions: List<TaskCompletion> = emptyList()
+    val completions: List<TaskCompletion> = emptyList(),
+
+    @Relation(
+        parentColumn = "taskId",
+        entityColumn = "tagId",
+        associateBy = Junction(TaskTagCrossRef::class)
+    )
+    val tags: List<TaskTag> = emptyList()
 )

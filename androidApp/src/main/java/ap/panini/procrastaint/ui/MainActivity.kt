@@ -9,10 +9,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.LibraryAddCheck
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Upcoming
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -41,6 +43,7 @@ import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.CalendarScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.LibraryScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.UpcomingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -111,7 +114,7 @@ class MainActivity : ComponentActivity() {
             floatingActionButton = {
                 AnimatedVisibility(
                     mainDestinationSelected &&
-                        curDestination != BottomBarDestination.Settings.direction
+                            curDestination != BottomBarDestination.Settings.direction
                 ) {
                     FloatingActionButton(onClick = {
                         viewModel.onShow()
@@ -121,7 +124,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-        ) {
+            ) {
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -201,12 +204,13 @@ class MainActivity : ComponentActivity() {
             R.string.upcoming
         ),
 
-        //        Library(
-//            LibraryScreenDestination,
-//            Icons.Default.LibraryAddCheck,
-//            Icons.Outlined.LibraryAddCheck,
-//            R.string.library
-//        ),
+        Library(
+            LibraryScreenDestination,
+            Icons.Default.LibraryAddCheck,
+            Icons.Outlined.LibraryAddCheck,
+            R.string.library
+        ),
+
         Settings(
             SettingsScreenDestination,
             Icons.Default.Settings,
