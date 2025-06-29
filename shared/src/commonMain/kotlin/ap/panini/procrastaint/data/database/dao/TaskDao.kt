@@ -3,6 +3,7 @@ package ap.panini.procrastaint.data.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import ap.panini.procrastaint.data.entities.Task
@@ -10,10 +11,14 @@ import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.TaskTag
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertTag(taskTag: TaskTag): Long
+    
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
 

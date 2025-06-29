@@ -4,6 +4,7 @@ import ap.panini.procrastaint.services.NotificationWorker
 import ap.panini.procrastaint.services.SyncWorker
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
+import ap.panini.procrastaint.ui.library.LibraryViewModel
 import ap.panini.procrastaint.ui.settings.SettingsViewModel
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import ap.panini.procrastaint.ui.settings.sync.SyncViewModel
@@ -19,6 +20,7 @@ val androidModule = module {
     viewModel { SettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
     viewModel { CalendarViewModel(get()) }
+    viewModel { LibraryViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }
 

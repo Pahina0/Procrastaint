@@ -4,6 +4,7 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,10 @@ class TaskRepository(
 
     suspend fun getTask(id: Long): Task = taskDao.getTask(id)
     suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
+
+    suspend fun upsertTaskTag(tag: TaskTag) {
+        taskDao.upsertTag(tag)
+    }
 
     suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)

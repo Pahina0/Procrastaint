@@ -90,6 +90,7 @@ fun TaskBottomSheet(
     saveTask: () -> Unit,
     deleteTask: () -> Unit
 ) {
+    // TODO: make it so when they create a new start/end time it writes it into the text
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
     val currentAutoParsed = state.autoParsed.getOrNull(state.viewing)
