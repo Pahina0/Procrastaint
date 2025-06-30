@@ -10,7 +10,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -24,22 +27,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.TaskTag
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> AutoCompleteTextField(
-    suggestions: List<T>,
-    suggestionToString: T.() -> String = { toString() },
-    onSuggestionClick: ((T) -> Unit)? = null,
-    suggestionContent: @Composable (T, onClick: () -> Unit) -> Unit = { v, c ->
-        SuggestionChip(label = { Text(v.suggestionToString()) }, onClick = c)
-    },
+fun TaskTextField(
+    suggestions: List<TaskTag>,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     onCurrentWordChanged: (String) -> Unit = {},
@@ -130,7 +130,7 @@ fun <T> AutoCompleteTextField(
                 items(suggestions) { suggestion ->
                     val onClick: () -> Unit =
                         {
-                            val suggestionString = suggestion.suggestionToString()
+                            val suggestionString = suggestion.generateTag()
                             val beforeCursor = text.substring(0, cursorPos)
                             val afterCursor = text.substring(cursorPos)
 
@@ -156,13 +156,15 @@ fun <T> AutoCompleteTextField(
                                 selection = TextRange(newCursorPos)
                             )
                             onValueChange(textFieldValue.text)
-                            onSuggestionClick?.invoke(suggestion)
                         }
 
-                    suggestionContent(
-                        suggestion,
-                        onClick
-                    )
+                    SuggestionChip(icon = {
+                        Icon(
+                            Icons.Outlined.Tag,
+                            contentDescription = null,
+                            tint = suggestion.toRgb().let { Color(it.first, it.second, it.third) }
+                        )
+                    }, label = { Text(suggestion.title) }, onClick = onClick)
                 }
             }
         }

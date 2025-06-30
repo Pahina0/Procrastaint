@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
-import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ButtonDefaults
@@ -21,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -32,14 +30,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskTag
-import ap.panini.procrastaint.ui.components.AutoCompleteTextField
-import ap.panini.procrastaint.ui.components.ParsedText
-import ap.panini.procrastaint.ui.components.TagItem
+import ap.panini.procrastaint.ui.components.TaskTextField
 import ap.panini.procrastaint.ui.components.TimeChips
+import ap.panini.procrastaint.ui.components.rememberParsedText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,23 +75,11 @@ fun TaskBottomSheet(
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            AutoCompleteTextField(
+            TaskTextField(
                 suggestions = tagSuggestions,
-                suggestionContent = { v, click ->
-                    SuggestionChip(
-                        onClick = click,
-                        label = { Text(v.title) },
-                        icon = {
-                            Icon(
-                                Icons.Outlined.Tag,
-                                contentDescription = null,
-                                tint = v.toRgb().let { Color(it.first, it.second, it.third) })
-                        })
-                },
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { updateTitle(it) },
                 label = { Text(text = "Whats on your mind?") },
-                suggestionToString = { generateTag() },
                 onCurrentWordChanged = { tagSuggestions = getTagsStarting(it) },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 trailingIcon = {
@@ -120,10 +104,12 @@ fun TaskBottomSheet(
             )
 
             if (state.task.isNotBlank()) {
-                ParsedText(
-                    state.task,
-                    state.parsed,
-                    state.viewing,
+                Text(
+                    text = rememberParsedText(
+                        state.task,
+                        state.parsed,
+                        state.viewing,
+                    ),
                     style = MaterialTheme.typography.labelSmall
                 )
             }
@@ -159,12 +145,14 @@ fun TaskBottomSheet(
                 }
             }
 
-            ParsedText(
-                state.task,
-                state.parsed,
-                state.viewing,
-                style = MaterialTheme.typography.labelSmall,
-                show = false
+            Text(
+                text = rememberParsedText(
+                    state.task,
+                    state.parsed,
+                    state.viewing,
+                    show = false
+                ),
+                style = MaterialTheme.typography.labelSmall
             )
         }
     }
