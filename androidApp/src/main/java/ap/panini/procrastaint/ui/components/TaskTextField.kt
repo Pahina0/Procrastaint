@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +40,7 @@ import ap.panini.procrastaint.data.entities.TaskTag
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskTextField(
+    text: String,
     suggestions: List<TaskTag>,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
@@ -64,7 +66,7 @@ fun TaskTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
 
     val text = textFieldValue.text
     val cursorPos = textFieldValue.selection.start.coerceIn(0, text.length)

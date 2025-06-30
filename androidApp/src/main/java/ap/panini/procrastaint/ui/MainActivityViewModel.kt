@@ -1,7 +1,6 @@
 package ap.panini.procrastaint.ui
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.entities.TaskTag
@@ -39,16 +38,6 @@ class MainActivityViewModel(
         }
     }
 
-    fun getTagColor(tag: String): Color? {
-        return runBlocking {
-            db.getTagOrNull(tag)?.color?.let {
-                TaskTag.hexToRgb(it).let {
-                    Color(it.first, it.second, it.third)
-                }
-            }
-        }
-    }
-
     /**
      * Edit created task launches the bottom sheet and puts you in the state to edit a task
      *
@@ -56,7 +45,6 @@ class MainActivityViewModel(
      */
     fun editCreatedTask(taskId: Long) {
         viewModelScope.launch {
-            onShow()
             val task = db.getTask(taskId)
 
             _uiState.update {
@@ -68,6 +56,7 @@ class MainActivityViewModel(
             }
 
             updateTask(uiState.value.task)
+            onShow()
         }
     }
 

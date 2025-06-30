@@ -22,7 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -97,6 +101,32 @@ fun TaskView(
                         )
                     }
 
+
+
+                    if (task.tags.isNotEmpty()) {
+                        val tags = buildAnnotatedString {
+                            task.tags.forEachIndexed { i, v ->
+                                withStyle(
+                                    style = SpanStyle(
+                                        color =
+                                            v.toRgb().let {
+                                                Color(it.first, it.second, it.third)
+                                            }
+                                    )
+                                ) {
+                                    if (i != 0) {
+                                        append("\n")
+                                    }
+                                    append("#")
+                                }
+
+                                append(v.displayTitle)
+                            }
+                        }
+
+
+                        Text(tags)
+                    }
                 }
             },
 
