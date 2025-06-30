@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
+import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ButtonDefaults
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskTag
@@ -51,7 +54,6 @@ fun TaskBottomSheet(
     saveTask: () -> Unit,
     deleteTask: () -> Unit
 ) {
-    // TODO: make it so when they create a new start/end time it writes it into the text
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
     val parsedTimes by remember(state.parsed?.times, state.viewing) {
@@ -79,41 +81,22 @@ fun TaskBottomSheet(
         ) {
             AutoCompleteTextField(
                 suggestions = tagSuggestions,
-                dropdownContent = {
-                    TagItem(it)
+                suggestionContent = { v, click ->
+                    SuggestionChip(
+                        onClick = click,
+                        label = { Text(v.title) },
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Tag,
+                                contentDescription = null,
+                                tint = v.toRgb().let { Color(it.first, it.second, it.third) })
+                        })
                 },
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { updateTitle(it) },
                 label = { Text(text = "Whats on your mind?") },
                 suggestionToString = { generateTag() },
                 onCurrentWordChanged = { tagSuggestions = getTagsStarting(it) },
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                trailingIcon = {
-                    IconButton(onClick = { saveTask() }) {
-                        when (state.mode) {
-                            is MainActivityViewModel.MainUiState.Mode.Create -> {
-                                Icon(
-                                    imageVector = Icons.Outlined.TaskAlt,
-                                    contentDescription = "Save task"
-                                )
-                            }
-
-                            is MainActivityViewModel.MainUiState.Mode.Edit -> {
-                                Icon(
-                                    imageVector = Icons.Outlined.Edit,
-                                    contentDescription = "Edit task"
-                                )
-                            }
-                        }
-                    }
-                }
-            )
-            // input task
-            OutlinedTextField(
-                value = state.task,
-                onValueChange = { updateTitle(it) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(text = "Whats on your mind?") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 trailingIcon = {
                     IconButton(onClick = { saveTask() }) {

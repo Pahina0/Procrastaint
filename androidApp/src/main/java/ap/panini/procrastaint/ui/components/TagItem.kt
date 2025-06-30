@@ -20,10 +20,11 @@ import ap.panini.procrastaint.data.entities.TaskTag
 
 @Composable
 fun TagItem(
-    tag: TaskTag
+    tag: TaskTag,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(10.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
