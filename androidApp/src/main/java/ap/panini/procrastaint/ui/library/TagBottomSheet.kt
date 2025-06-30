@@ -85,7 +85,7 @@ fun TagBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            ColorPicker(state.taskTag.color!!) {
+            ColorPicker(state.taskTag.color) {
                 state.updateColor(it)
             }
 

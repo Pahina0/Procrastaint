@@ -161,6 +161,13 @@ class MainActivityViewModel(
         }
     }
 
+    fun getTagsStarting(title: String): List<TaskTag> {
+        val title = title.trim()
+        if (title.isEmpty() || title.first() != '#') return emptyList()
+
+        return runBlocking { db.getTagStartingWith(title.substring(1)) }
+    }
+
     fun updateDescription(description: String) {
         _uiState.update {
             it.copy(

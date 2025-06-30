@@ -87,6 +87,8 @@ class TaskRepository(
         }
     }
 
+    suspend fun getTagStartingWith(title: String) = taskDao.getTagsStarting(title)
+
     suspend fun deleteTask(taskId: Long) {
         deleteTask(getTask(taskId))
     }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.ui.components.ScreenScaffold
+import ap.panini.procrastaint.ui.components.TagItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
@@ -103,44 +104,7 @@ fun LibraryScreen(
                             onClick = {}
                         )
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Outlined.Tag,
-                            contentDescription = null,
-                            tint = it.toRgb().let { c -> Color(c.first, c.second, c.third) }
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                itemVerticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    it.displayTitle,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-
-                                Text(
-                                    "#${it.title}",
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-
-                            if (it.info.isNotBlank()) {
-                                Text(it.info, style = MaterialTheme.typography.labelMedium)
-                            }
-                        }
-                    }
+                    TagItem(it)
                 }
             }
         }

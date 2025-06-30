@@ -27,12 +27,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.ui.components.AutoCompleteTextField
 import ap.panini.procrastaint.ui.components.ParsedText
+import ap.panini.procrastaint.ui.components.TagItem
 import ap.panini.procrastaint.ui.components.TimeChips
 import kotlinx.coroutines.launch
 
@@ -44,9 +47,9 @@ fun TaskBottomSheet(
     updateDescription: (String) -> Unit,
     viewNextParsed: () -> Unit,
     onDismissRequest: () -> Unit,
+    getTagsStarting: (String) -> List<TaskTag>,
     saveTask: () -> Unit,
-    deleteTask: () -> Unit,
-    getTagColor: (String) -> Color?
+    deleteTask: () -> Unit
 ) {
     // TODO: make it so when they create a new start/end time it writes it into the text
     val scope = rememberCoroutineScope()
@@ -54,6 +57,8 @@ fun TaskBottomSheet(
     val parsedTimes by remember(state.parsed?.times, state.viewing) {
         mutableStateOf(state.parsed?.times?.getOrNull(state.viewing))
     }
+
+    var tagSuggestions by remember { mutableStateOf(listOf<TaskTag>()) }
 
     ModalBottomSheet(
         modifier = Modifier.fillMaxWidth(),
@@ -72,6 +77,37 @@ fun TaskBottomSheet(
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            AutoCompleteTextField(
+                suggestions = tagSuggestions,
+                dropdownContent = {
+                    TagItem(it)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { updateTitle(it) },
+                label = { Text(text = "Whats on your mind?") },
+                suggestionToString = { generateTag() },
+                onCurrentWordChanged = { tagSuggestions = getTagsStarting(it) },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                trailingIcon = {
+                    IconButton(onClick = { saveTask() }) {
+                        when (state.mode) {
+                            is MainActivityViewModel.MainUiState.Mode.Create -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.TaskAlt,
+                                    contentDescription = "Save task"
+                                )
+                            }
+
+                            is MainActivityViewModel.MainUiState.Mode.Edit -> {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "Edit task"
+                                )
+                            }
+                        }
+                    }
+                }
+            )
             // input task
             OutlinedTextField(
                 value = state.task,

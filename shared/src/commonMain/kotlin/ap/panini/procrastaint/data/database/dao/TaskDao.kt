@@ -42,10 +42,13 @@ interface TaskDao {
     @Query("""DELETE FROM TaskTagCrossRef WHERE taskId = :taskId""")
     suspend fun deleteTagsCrossRef(taskId: Long)
 
-
     @Transaction
     @Query("""SELECT * FROM TaskTag""")
     fun getTags(): Flow<List<TaskTag>>
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE title LIKE :title || '%'""")
+    suspend fun getTagsStarting(title: String): List<TaskTag>
 
     @Transaction
     @Query("""SELECT * FROM TaskTag WHERE title = :title""")
