@@ -1,14 +1,15 @@
 package ap.panini.procrastaint.ui.library
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -76,7 +77,9 @@ fun LibraryScreen(
                 onDismissRequest = {
                     bottomSheetState.randomReset()
                     showBottomSheet = false
-                }, onSave = {
+                },
+                isValidTag = viewModel::isValidTag,
+                onSave = {
                     showBottomSheet = false
                     bottomSheetState.randomReset()
                     viewModel.onSave(it)
@@ -116,11 +119,23 @@ fun LibraryScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            Text(
-                                it.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                itemVerticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    it.displayTitle,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                Text(
+                                    "#${it.title}",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+
+
                             if (it.info.isNotBlank()) {
                                 Text(it.info, style = MaterialTheme.typography.labelMedium)
                             }

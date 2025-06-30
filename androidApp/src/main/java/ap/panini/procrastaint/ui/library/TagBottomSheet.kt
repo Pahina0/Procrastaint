@@ -28,6 +28,7 @@ import ap.panini.procrastaint.ui.components.ColorPicker
 fun TagBottomSheet(
     onDismissRequest: () -> Unit,
     onSave: (TaskTag) -> Unit,
+    isValidTag: (TaskTag) -> Boolean,
     state: BottomSheetTagState = rememberBottomSheetTagState(),
 ) {
     val tag = state.taskTag
@@ -35,6 +36,12 @@ fun TagBottomSheet(
         TaskTag.hexToRgb(tag.color).let {
             Color(it.first, it.second, it.third)
         }
+    }
+
+    val validTag by remember(tag.title) {
+        mutableStateOf(
+            isValidTag(tag)
+        )
     }
 
     ModalBottomSheet(
@@ -57,9 +64,19 @@ fun TagBottomSheet(
                         tint = color
                     )
                 },
-                label = { Text("Title") },
+                isError = !validTag,
+                label = { Text("Title identifier (unique and no spaces)") },
                 value = tag.title,
-                onValueChange = state::updateTitle,
+                onValueChange = {
+                    state.updateTitle(it)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                label = { Text("Display title") },
+                value = tag.displayTitle,
+                onValueChange = state::updateDisplayTitle,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -74,7 +91,11 @@ fun TagBottomSheet(
                 state.updateColor(it)
             }
 
-            Button(onClick = { onSave(tag) }, modifier = Modifier.fillMaxWidth()) {
+            Button(
+                enabled = validTag,
+                onClick = { onSave(tag) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Save tag")
             }
         }
@@ -85,7 +106,7 @@ class BottomSheetTagState(initialTag: TaskTag? = null) {
     var taskTag by mutableStateOf(initialTag ?: random())
         private set
 
-    private fun random() = TaskTag("", "", TaskTag.generateRandomColor())
+    private fun random() = TaskTag("", "", "", TaskTag.generateRandomColor())
 
     fun randomReset() {
         taskTag = random()
@@ -95,9 +116,15 @@ class BottomSheetTagState(initialTag: TaskTag? = null) {
         this.taskTag = tag
     }
 
+    fun updateDisplayTitle(title: String) {
+        taskTag = taskTag.copy(displayTitle = title)
+    }
 
     fun updateTitle(title: String) {
-        taskTag = taskTag.copy(title = title)
+        taskTag = taskTag.copy(
+            title = title.replace(' ', '-'),
+            displayTitle = title.replace('-', ' ')
+        )
     }
 
     fun updateInfo(info: String) {

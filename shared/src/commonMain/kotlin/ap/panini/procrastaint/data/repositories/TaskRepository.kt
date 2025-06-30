@@ -43,6 +43,7 @@ class TaskRepository(
     suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
 
     fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
+    suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
 
     suspend fun upsertTaskTag(tag: TaskTag) {
         taskDao.upsertTag(tag)

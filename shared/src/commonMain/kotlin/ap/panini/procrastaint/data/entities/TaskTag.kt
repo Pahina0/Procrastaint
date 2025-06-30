@@ -8,6 +8,8 @@ import kotlin.random.Random
 @Entity
 data class TaskTag(
 
+    val displayTitle: String,
+
     @ColumnInfo(index = true)
     val title: String,
 

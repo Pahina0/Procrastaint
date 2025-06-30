@@ -39,6 +39,10 @@ interface TaskDao {
     fun getTags(): Flow<List<TaskTag>>
 
     @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE title = :title""")
+    suspend fun getTagOrNull(title: String): TaskTag?
+
+    @Transaction
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
     suspend fun getTask(id: Long): Task
 
