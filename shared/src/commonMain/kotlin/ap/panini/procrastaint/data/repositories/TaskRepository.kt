@@ -5,6 +5,7 @@ import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 import ap.panini.procrastaint.notifications.NotificationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,8 @@ class TaskRepository(
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
         tasks.tags.forEach {
-            upsertTaskTag(it)
+            val tagId = upsertTaskTag(it)
+            upsertTaskTagCrossRef(TaskTagCrossRef(id, tagId))
         }
 
         tasks.meta.forEach {
@@ -49,7 +51,10 @@ class TaskRepository(
     fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
     suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
 
-    suspend fun upsertTaskTag(tag: TaskTag) {
+    suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
+        taskDao.upsertTagCrossRef(taskTagCrossRef)
+
+    suspend fun upsertTaskTag(tag: TaskTag): Long {
         // check if valid color
         val tag = if (tag.toRgbOrNull() == null) {
             tag.copy(color = TaskTag.generateRandomColor())
@@ -57,7 +62,7 @@ class TaskRepository(
             tag
         }
 
-        taskDao.upsertTag(tag)
+        return taskDao.upsertTag(tag)
     }
 
     suspend fun editTask(newTask: Task) {
@@ -74,6 +79,7 @@ class TaskRepository(
 
     suspend fun deleteTask(task: Task) {
         taskDao.deleteTask(task.taskInfo)
+        taskDao.deleteTagsCrossRef(task.taskInfo.taskId) // deletes tags
 
         CoroutineScope(Dispatchers.IO).launch {
             notificationManager.delete(task)

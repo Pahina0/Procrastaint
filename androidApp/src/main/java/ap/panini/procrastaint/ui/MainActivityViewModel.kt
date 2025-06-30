@@ -66,6 +66,8 @@ class MainActivityViewModel(
                     mode = MainUiState.Mode.Edit(taskId)
                 )
             }
+
+            updateTask(uiState.value.task)
         }
     }
 
@@ -129,22 +131,6 @@ class MainActivityViewModel(
 
         onHide()
     }
-
-//    fun setRepeatTag(tag: Time?) {
-//        _uiState.update {
-//            it.copy(
-//                repeatTag = tag
-//            )
-//        }
-//    }
-//
-//    fun setRepeatInterval(interval: Int?) {
-//        _uiState.update {
-//            it.copy(
-//                repeatInterval = interval
-//            )
-//        }
-//    }
 
     fun updateTask(title: String) {
         val parsed = parser.parse(title)

@@ -12,12 +12,16 @@ import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertTag(taskTag: TaskTag): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
 
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
@@ -33,6 +37,11 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: TaskInfo)
+
+    @Transaction
+    @Query("""DELETE FROM TaskTagCrossRef WHERE taskId = :taskId""")
+    suspend fun deleteTagsCrossRef(taskId: Long)
+
 
     @Transaction
     @Query("""SELECT * FROM TaskTag""")

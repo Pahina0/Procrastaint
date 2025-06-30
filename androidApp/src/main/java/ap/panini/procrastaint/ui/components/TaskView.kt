@@ -96,6 +96,7 @@ fun TaskView(
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
+
                 }
             },
 
