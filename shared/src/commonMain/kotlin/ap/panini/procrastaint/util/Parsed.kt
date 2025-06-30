@@ -74,7 +74,8 @@ data class Parsed(
                 description = description,
                 extractedTimePhrase = extractedTimePhrase
             ),
-            meta = meta
+            meta = meta,
+            tags = tags.map { it.tag }
         )
     }
 

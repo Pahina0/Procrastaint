@@ -26,6 +26,10 @@ class TaskRepository(
     suspend fun insertTask(tasks: Task): Boolean {
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
+        tasks.tags.forEach {
+            upsertTaskTag(it)
+        }
+
         tasks.meta.forEach {
             taskDao.insertTaskMeta(it.copy(taskId = id))
         }
@@ -46,6 +50,13 @@ class TaskRepository(
     suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
 
     suspend fun upsertTaskTag(tag: TaskTag) {
+        // check if valid color
+        val tag = if (tag.toRgbOrNull() == null) {
+            tag.copy(color = TaskTag.generateRandomColor())
+        } else {
+            tag
+        }
+
         taskDao.upsertTag(tag)
     }
 
