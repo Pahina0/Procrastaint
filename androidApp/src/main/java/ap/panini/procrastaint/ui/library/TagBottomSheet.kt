@@ -2,9 +2,10 @@ package ap.panini.procrastaint.ui.library
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,35 +15,40 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.ui.components.ColorPicker
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagBottomSheet(
-    state: LibraryViewModel.LibraryUiState,
-    updateTitle: (String) -> Unit,
-    updateColor: (String) -> Unit,
-    updateInfo: (String) -> Unit,
+    tag: TaskTag,
     onDismissRequest: () -> Unit,
     onSave: (TaskTag) -> Unit
 ) {
-    val controller = rememberColorPickerController()
 
-    LaunchedEffect(state.tag.color) {
-        println(state.tag.color)
-//        val color = TaskTag.hexToRgb(state.tag.color).let { Color(it.first, it.second, it.third) }
-//        controller.selectByColor(color, fromUser = true)
+    // Internal state
+    var internalTag by remember(tag) { mutableStateOf(tag) }
+
+    val color by remember(internalTag) {
+        mutableStateOf(TaskTag.hexToRgb(internalTag.color).let {
+            Color(it.first, it.second, it.third)
+        }
+        )
     }
-
 
     ModalBottomSheet(
         modifier = Modifier.fillMaxWidth(),
-        onDismissRequest = { onDismissRequest() }
+        onDismissRequest = onDismissRequest
     ) {
         Column(
             modifier = Modifier
@@ -57,41 +63,25 @@ fun TagBottomSheet(
                     Icon(
                         Icons.Outlined.Tag,
                         contentDescription = null,
-                        tint = TaskTag.hexToRgb(state.tag.color)
-                            .let { Color(it.first, it.second, it.third) }
+                        tint = color
                     )
                 },
                 label = { Text("Title") },
-                value = state.tag.title,
-                onValueChange = updateTitle,
+                value = internalTag.title,
+                onValueChange = { internalTag = internalTag.copy(title = it) },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 label = { Text("Info") },
-                value = state.tag.info,
-                onValueChange = updateInfo,
+                value = internalTag.info,
+                onValueChange = { internalTag = internalTag.copy(info = it) },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            HsvColorPicker(
-                initialColor = TaskTag.hexToRgb(state.tag.color)
-                    .let { Color(it.first, it.second, it.third) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                controller = controller,
-                onColorChanged = {
-                    updateColor(it.color.let {
-                        TaskTag.rgbToHex(
-                            it.red.toInt(),
-                            it.green.toInt(),
-                            it.blue.toInt()
-                        )
-                    })
-                }
-            )
+            ColorPicker(tag.color) {
+                internalTag = internalTag.copy(color = it)
+            }
         }
-
     }
 }

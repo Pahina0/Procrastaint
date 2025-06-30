@@ -53,10 +53,7 @@ fun LibraryScreen(
 
         if (state.showBottomSheet) {
             TagBottomSheet(
-                state = state,
-                updateInfo = { viewModel.onUpdateTag(state.tag.copy(info = it)) },
-                updateColor = { /*viewModel.onUpdateTag(state.tag.copy(color = it)) */},
-                updateTitle = { viewModel.onUpdateTag(state.tag.copy(title = it)) },
+                tag = state.tag,
                 onDismissRequest = {
                     viewModel.showBottomSheet(false)
                 }, onSave = {
