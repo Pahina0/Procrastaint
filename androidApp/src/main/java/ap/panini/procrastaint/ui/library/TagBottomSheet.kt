@@ -54,7 +54,12 @@ fun TagBottomSheet(
                 .padding(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text("Create a new tag")
+            OutlinedTextField(
+                label = { Text("Display title") },
+                value = tag.displayTitle,
+                onValueChange = state::updateDisplayTitle,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             OutlinedTextField(
                 leadingIcon = {
@@ -70,13 +75,6 @@ fun TagBottomSheet(
                 onValueChange = {
                     state.updateTitle(it)
                 },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                label = { Text("Display title") },
-                value = tag.displayTitle,
-                onValueChange = state::updateDisplayTitle,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -117,13 +115,15 @@ class BottomSheetTagState(initialTag: TaskTag? = null) {
     }
 
     fun updateDisplayTitle(title: String) {
-        taskTag = taskTag.copy(displayTitle = title)
+        taskTag = taskTag.copy(
+            displayTitle = title,
+            title = title.replace(' ', '-')
+        )
     }
 
     fun updateTitle(title: String) {
         taskTag = taskTag.copy(
             title = title.replace(' ', '-'),
-            displayTitle = title.replace('-', ' ')
         )
     }
 

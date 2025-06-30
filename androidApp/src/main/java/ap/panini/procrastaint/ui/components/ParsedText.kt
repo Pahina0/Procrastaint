@@ -20,7 +20,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
-import kotlin.math.min
+import ap.panini.procrastaint.util.Parsed
+import ap.panini.procrastaint.util.Time
 
 /**
  * Parsed text a text with the highlighted range
@@ -50,8 +51,10 @@ import kotlin.math.min
 @Composable
 fun ParsedText(
     text: String,
-    range: IntRange?,
+    parsed: Parsed?,
+    selectedTime: Int,
     modifier: Modifier = Modifier,
+    getTagColor: ((title: String) -> Color?)? = null,
     show: Boolean = true,
     color: Color = Color.Unspecified,
     autoSize: TextAutoSize? = null,
@@ -72,22 +75,54 @@ fun ParsedText(
     style: TextStyle = LocalTextStyle.current
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+
+    val extracted = mutableListOf<Extracted>()
+
+    parsed?.let {
+        val time = it.times.getOrNull(selectedTime)?.extractedRange
+        if (time != null) {
+            extracted += Extracted.Time(time)
+        }
+
+        extracted += it.tags.map { Extracted.Tag(it.tag.title, it.extractedRange) }
+    }
+
+    extracted.sortBy { it.range.first }
 
     val annotated = buildAnnotatedString {
-        if (range == null) {
+        if (parsed == null || extracted.isEmpty()) {
             append(text)
             return@buildAnnotatedString
         }
 
-        append(text.substring(0, range.first))
+        var currentIndex = 0
 
-        if (show) {
-            withStyle(style = SpanStyle(color = primaryColor)) {
-                append(text.substring(range))
+        for (item in extracted) {
+            val range = item.range
+            if (currentIndex < range.first) {
+                append(text.substring(currentIndex, range.first))
             }
+
+            if (show) {
+                withStyle(
+                    style = SpanStyle(
+                        color = when (item) {
+                            is Extracted.Tag -> getTagColor?.invoke(item.tag) ?: tertiaryColor
+                            else -> primaryColor
+                        }
+                    )
+                ) {
+                    append(text.substring(range))
+                }
+            }
+
+            currentIndex = range.last + 1
         }
 
-        append(text.substring(min(range.last + 1, text.length)))
+        if (currentIndex < text.length) {
+            append(text.substring(currentIndex))
+        }
     }
 
     Text(
@@ -111,4 +146,9 @@ fun ParsedText(
         onTextLayout = onTextLayout,
         style = style
     )
+}
+
+private sealed class Extracted(val range: IntRange) {
+    class Time(range: IntRange) : Extracted(range)
+    class Tag(val tag: String, range: IntRange) : Extracted(range)
 }

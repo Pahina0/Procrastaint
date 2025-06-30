@@ -1,44 +1,60 @@
 package ap.panini.procrastaint.util
 
 import ap.panini.kwhen.TimeParser
+import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Time.Companion.toTime
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 
-class Parser {
-    private val textParser = TimeParser()
+class Parser(private val db: TaskRepository) {
+    private var textParser = TimeParser()
 
-    fun parse(input: String): List<Parsed> =
-        textParser.parse(input).run {
-            map {
-                val startTimes = it.startTime.map { startTime ->
-                    startTime.toMillisecondLocal()
-                }
-                Parsed(
-                    it.text,
-                    it.range,
-                    startTimes.toSet(),
-                    it.endTime?.toMillisecondLocal(),
-                    it.tagsTimeStart.map { mapped -> mapped.toTime() }.toSet(),
-                    it.tagsTimeEnd.map { mapped -> mapped.toTime() }.toSet(),
-                    repeatTag = it.repeatTag?.toTime(),
-                    repeatOften = it.repeatOften ?: 0
-                )
+    private fun reset() {
+        textParser = TimeParser()
+    }
+
+    fun parse(input: String): Parsed {
+        reset()
+
+        val tagRegex = Regex("(\\s*)#(\\S+)")
+        val tagMatches = tagRegex.findAll(input)
+
+        val tags = tagMatches.map {
+            val tag = it.groupValues[2] // Extract the actual tag without #
+            ParsedTag(
+                tag =
+                runBlocking { db.getTagOrNull(tag) } ?: TaskTag(tag),
+                extractedRange = it.range
+            )
+        }.toList()
+
+        val times = textParser.parse(input).map {
+            val startTimes = it.startTime.map { startTime ->
+                startTime.toMillisecondLocal()
             }
+
+            ParsedTime(
+                text = it.text,
+                extractedRange = it.range,
+                startTimes = startTimes.toSet(),
+                endTime = it.endTime?.toMillisecondLocal(),
+                tagsTimeStart = it.tagsTimeStart.map { mapped -> mapped.toTime() }.toSet(),
+                tagsTimeEnd = it.tagsTimeEnd.map { mapped -> mapped.toTime() }.toSet(),
+                repeatTag = it.repeatTag?.toTime(),
+                repeatOften = it.repeatOften ?: 0,
+            )
         }
+
+        return Parsed(
+            text = input,
+            times = times,
+            tags = tags
+        )
+    }
 
     private fun LocalDateTime.toMillisecondLocal() =
         toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 }
-
-data class Parsed(
-    val text: String,
-    val extractedRange: IntRange,
-    val startTimes: Set<Long>,
-    val endTime: Long?,
-    val tagsTimeStart: Set<Time>,
-    val tagsTimeEnd: Set<Time>,
-    val repeatTag: Time?,
-    val repeatOften: Int
-)

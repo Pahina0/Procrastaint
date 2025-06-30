@@ -49,6 +49,12 @@ class TaskRepository(
         taskDao.upsertTag(tag)
     }
 
+    suspend fun editTask(newTask: Task) {
+        deleteTask(newTask)
+
+        insertTask(newTask)
+    }
+
     suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
 
@@ -62,6 +68,10 @@ class TaskRepository(
             notificationManager.delete(task)
             calendar.deleteTask(task)
         }
+    }
+
+    suspend fun deleteTask(taskId: Long) {
+        deleteTask(getTask(taskId))
     }
 
     suspend fun addCompletion(taskCompletion: TaskCompletion) {

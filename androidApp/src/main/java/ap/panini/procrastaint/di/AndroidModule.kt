@@ -15,7 +15,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val androidModule = module {
-    viewModel { MainActivityViewModel(get()) }
+    viewModel { MainActivityViewModel(get(), get()) }
     viewModel { UpcomingViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }

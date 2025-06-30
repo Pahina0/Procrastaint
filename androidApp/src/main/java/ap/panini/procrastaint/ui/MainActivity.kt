@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
             floatingActionButton = {
                 AnimatedVisibility(
                     mainDestinationSelected &&
-                            curDestination != BottomBarDestination.Settings.direction
+                        curDestination != BottomBarDestination.Settings.direction
                 ) {
                     FloatingActionButton(onClick = {
                         viewModel.onShow()
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -132,12 +132,9 @@ class MainActivity : ComponentActivity() {
                     viewModel::updateDescription,
                     viewModel::viewNextParsed,
                     viewModel::onHide,
-                    viewModel::editManualStartTime,
-                    viewModel::editEndTime,
-                    viewModel::setRepeatTag,
-                    viewModel::setRepeatInterval,
                     viewModel::save,
-                    viewModel::deleteEditTask
+                    viewModel::deleteEditTask,
+                    viewModel::getTagColor
                 )
             }
 

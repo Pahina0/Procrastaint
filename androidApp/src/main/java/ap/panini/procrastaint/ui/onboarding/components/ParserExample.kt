@@ -3,12 +3,10 @@ package ap.panini.procrastaint.ui.onboarding.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +29,8 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
         Time.MINUTE to "Minute"
     )
 
+    val parsedTime = parsed?.times?.getOrNull(0)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
@@ -38,7 +38,8 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
     ) {
         ParsedText(
             text = text,
-            range = parsed?.extractedRange,
+            parsed,
+            0,
             textAlign = TextAlign.Center
         )
 
@@ -49,19 +50,14 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TimeChips(parsed)
-
-                parsed?.let {
-                    if (it.repeatOften != 0) {
-                        Text("Repeating every ${it.repeatOften} ${timeOptions[it.repeatTag]}(s)")
-                    }
-                }
+                TimeChips(parsed?.times?.getOrNull(0))
 
                 Spacer(modifier = Modifier.padding(30.dp))
 
                 ParsedText(
                     text = text,
-                    range = parsed?.extractedRange,
+                    parsed,
+                    0,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelMedium,
                     show = false,

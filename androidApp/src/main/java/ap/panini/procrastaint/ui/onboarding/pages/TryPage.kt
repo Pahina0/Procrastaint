@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,14 +21,15 @@ import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Parser
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.hour
+import org.koin.compose.koinInject
 
 @Composable
 fun TryPage(modifier: Modifier = Modifier) {
+    val parser: Parser = koinInject()
     var text by remember { mutableStateOf("") }
     var parsed by remember { mutableStateOf<Parsed?>(null) }
 
     var success by remember { mutableStateOf(false) }
-
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,14 +47,15 @@ fun TryPage(modifier: Modifier = Modifier) {
             text,
             isError = !success,
             onValueChange = {
-                parsed = Parser().parse(it).firstOrNull()
+                parsed = parser.parse(it)
 
-                success = parsed != null &&
-                        parsed!!.repeatOften == 1 &&
-                        parsed!!.repeatTag == Time.DAY &&
-                        parsed!!.startTimes.size == 1 &&
-                        parsed!!.startTimes.first().hour() == 21
+                val parsedTime = parsed?.times?.firstOrNull()
 
+                success = parsedTime != null &&
+                    parsedTime.repeatOften == 1 &&
+                    parsedTime.repeatTag == Time.DAY &&
+                    parsedTime.startTimes.size == 1 &&
+                    parsedTime.startTimes.first().hour() == 21
 
                 text = it
             },

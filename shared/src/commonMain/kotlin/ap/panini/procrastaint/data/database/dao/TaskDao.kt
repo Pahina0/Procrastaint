@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertTag(taskTag: TaskTag): Long
-    
+
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
 

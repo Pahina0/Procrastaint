@@ -20,7 +20,6 @@ class LibraryViewModel(
             started = SharingStarted.WhileSubscribed(5000)
         )
 
-
     fun isValidTag(tag: TaskTag): Boolean {
         return runBlocking {
             val found = db.getTagOrNull(tag.title)
@@ -35,5 +34,4 @@ class LibraryViewModel(
             db.upsertTaskTag(tag)
         }
     }
-
 }

@@ -20,6 +20,8 @@ data class TaskTag(
     @PrimaryKey(autoGenerate = true)
     val tagId: Long = 0,
 ) {
+    constructor(title: String) : this(title.replace('-', ' '), title, "", generateRandomColor())
+
     companion object {
         fun rgbToHex(r: Int, g: Int, b: Int): String {
             return "#" + intToHex(r) + intToHex(g) + intToHex(b)
@@ -59,8 +61,9 @@ data class TaskTag(
             return Triple(r, g, b)
         }
     }
-}
 
+    fun generateTag() = "#$title"
+}
 
 @Entity(primaryKeys = ["taskId", "tagId"])
 data class TaskTagCrossRef(

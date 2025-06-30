@@ -22,9 +22,11 @@ import ap.panini.procrastaint.util.Parser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.compose.koinInject
 
 @Composable
 fun DemoPage(modifier: Modifier = Modifier) {
+    val parser: Parser = koinInject()
     var text by remember { mutableStateOf("") }
     var parsed by remember { mutableStateOf<Parsed?>(null) }
     val sentences = listOf(
@@ -38,7 +40,7 @@ fun DemoPage(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) {
         simulateTyping(sentences)
             .collect { typedText ->
-                parsed = Parser().parse(typedText).firstOrNull()
+                parsed = parser.parse(typedText)
                 text = typedText
             }
     }

@@ -14,6 +14,7 @@ import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import ap.panini.procrastaint.notifications.NotificationManager
+import ap.panini.procrastaint.util.Parser
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
 import de.jensklingenberg.ktorfit.ktorfit
@@ -55,6 +56,8 @@ val appModule = module {
 
     single { GoogleCalendarRepository(get(), get()) }
     single { NetworkCalendarRepository(get(), get(), get()) }
+
+    factory { Parser(get()) }
 }
 
 private fun getKtor(

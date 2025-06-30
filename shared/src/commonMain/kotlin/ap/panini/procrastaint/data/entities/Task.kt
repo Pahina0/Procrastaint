@@ -26,4 +26,9 @@ data class Task(
         associateBy = Junction(TaskTagCrossRef::class)
     )
     val tags: List<TaskTag> = emptyList()
-)
+) {
+    fun generateOriginalText() =
+        "${taskInfo.title} ${taskInfo.extractedTimePhrase} ${
+            tags.joinToString(" ") { it.generateTag() }
+        }"
+}

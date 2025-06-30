@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -83,7 +82,8 @@ fun LibraryScreen(
                     showBottomSheet = false
                     bottomSheetState.randomReset()
                     viewModel.onSave(it)
-                })
+                }
+            )
         }
 
         LazyColumn(
@@ -101,7 +101,8 @@ fun LibraryScreen(
                                 bottomSheetState.setTag(it)
                             },
                             onClick = {}
-                        )) {
+                        )
+                ) {
                     Row(
                         modifier = Modifier
                             .padding(10.dp)
@@ -113,7 +114,8 @@ fun LibraryScreen(
                             Icons.Outlined.Tag,
                             contentDescription = null,
                             tint = TaskTag.hexToRgb(it.color)
-                                .let { c -> Color(c.first, c.second, c.third) })
+                                .let { c -> Color(c.first, c.second, c.third) }
+                        )
 
                         Column(
                             modifier = Modifier
@@ -135,7 +137,6 @@ fun LibraryScreen(
                                 )
                             }
 
-
                             if (it.info.isNotBlank()) {
                                 Text(it.info, style = MaterialTheme.typography.labelMedium)
                             }
@@ -144,6 +145,5 @@ fun LibraryScreen(
                 }
             }
         }
-
     }
 }
