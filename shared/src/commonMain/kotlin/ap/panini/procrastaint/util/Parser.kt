@@ -26,7 +26,7 @@ class Parser(private val db: TaskRepository) {
             val tag = it.groupValues[2] // Extract the actual tag without #
             ParsedTag(
                 tag =
-                runBlocking { db.getTagOrNull(tag) } ?: TaskTag(tag),
+                    runBlocking { db.getTagOrNull(tag) } ?: TaskTag(tag),
                 extractedRange = it.range
             )
         }.toList()

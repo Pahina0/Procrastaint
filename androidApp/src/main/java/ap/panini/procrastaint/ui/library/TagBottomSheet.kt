@@ -33,7 +33,7 @@ fun TagBottomSheet(
 ) {
     val tag = state.taskTag
     val color = remember(tag.color) {
-        TaskTag.hexToRgb(tag.color).let {
+        tag.toRgb().let {
             Color(it.first, it.second, it.third)
         }
     }
@@ -85,7 +85,7 @@ fun TagBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            ColorPicker(state.taskTag.color) {
+            ColorPicker(state.taskTag.color!!) {
                 state.updateColor(it)
             }
 

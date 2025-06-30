@@ -10,12 +10,18 @@ data class Parsed(
     val times: List<ParsedTime>,
     val tags: List<ParsedTag>
 ) {
+    /**
+     * Text extracted returns the task after all the tags and times are removed from the string
+     * it is what wolud get saved as a task
+     *
+     * @param timeIndex
+     * @return
+     */
     fun textExtracted(timeIndex: Int): String = removeRangesFromString(
         text,
-        (
-            times.getOrNull(timeIndex)?.extractedRange?.let { listOf(it) }
-                ?: emptyList()
-            ) + tags.map { it.extractedRange }
+        (times.getOrNull(timeIndex)?.extractedRange?.let { listOf(it) }
+            ?: emptyList()
+                ) + tags.map { it.extractedRange }
     )
 
     /**
@@ -86,7 +92,7 @@ data class Parsed(
             }
         }
 
-        return result
+        return result.trim()
     }
 }
 

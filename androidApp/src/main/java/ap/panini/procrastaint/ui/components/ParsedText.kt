@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
+import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Time
 
@@ -54,7 +55,6 @@ fun ParsedText(
     parsed: Parsed?,
     selectedTime: Int,
     modifier: Modifier = Modifier,
-    getTagColor: ((title: String) -> Color?)? = null,
     show: Boolean = true,
     color: Color = Color.Unspecified,
     autoSize: TextAutoSize? = null,
@@ -85,7 +85,7 @@ fun ParsedText(
             extracted += Extracted.Time(time)
         }
 
-        extracted += it.tags.map { Extracted.Tag(it.tag.title, it.extractedRange) }
+        extracted += it.tags.map { Extracted.Tag(it.tag, it.extractedRange) }
     }
 
     extracted.sortBy { it.range.first }
@@ -108,7 +108,10 @@ fun ParsedText(
                 withStyle(
                     style = SpanStyle(
                         color = when (item) {
-                            is Extracted.Tag -> getTagColor?.invoke(item.tag) ?: tertiaryColor
+                            is Extracted.Tag -> item.tag.toRgbOrNull()?.let {
+                                Color(it.first, it.second, it.third)
+                            } ?: tertiaryColor
+
                             else -> primaryColor
                         }
                     )
@@ -150,5 +153,5 @@ fun ParsedText(
 
 private sealed class Extracted(val range: IntRange) {
     class Time(range: IntRange) : Extracted(range)
-    class Tag(val tag: String, range: IntRange) : Extracted(range)
+    class Tag(val tag: TaskTag, range: IntRange) : Extracted(range)
 }

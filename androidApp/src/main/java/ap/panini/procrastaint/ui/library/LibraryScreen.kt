@@ -113,8 +113,7 @@ fun LibraryScreen(
                         Icon(
                             Icons.Outlined.Tag,
                             contentDescription = null,
-                            tint = TaskTag.hexToRgb(it.color)
-                                .let { c -> Color(c.first, c.second, c.third) }
+                            tint = it.toRgb().let { c -> Color(c.first, c.second, c.third) }
                         )
 
                         Column(

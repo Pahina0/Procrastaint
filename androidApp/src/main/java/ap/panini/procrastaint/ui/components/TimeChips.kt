@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material3.Icon
@@ -22,11 +23,14 @@ import ap.panini.procrastaint.util.ParsedTime
 fun TimeChips(
     currentAutoParsed: ParsedTime?,
     modifier: Modifier = Modifier,
+    leadingContent: @Composable FlowRowScope.() -> Unit = {}
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier
     ) {
+        leadingContent()
+
         currentAutoParsed?.startTimes?.forEach { time ->
             InputChip(
                 selected = true,

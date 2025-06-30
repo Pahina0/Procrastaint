@@ -105,18 +105,18 @@ fun TaskBottomSheet(
                     state.task,
                     state.parsed,
                     state.viewing,
-                    getTagColor = getTagColor,
                     style = MaterialTheme.typography.labelSmall
                 )
             }
 
-            ActionList(
-                viewNextParsed = viewNextParsed,
-                viewing = state.viewing,
-                currentViewingSize = state.parsed?.times?.size ?: 0
-            )
 
-            TimeChips(parsedTimes)
+            TimeChips(parsedTimes, leadingContent = {
+                ActionList(
+                    viewNextParsed = viewNextParsed,
+                    viewing = state.viewing,
+                    currentViewingSize = state.parsed?.times?.size ?: 0
+                )
+            })
 
             OutlinedTextField(
                 value = state.description,

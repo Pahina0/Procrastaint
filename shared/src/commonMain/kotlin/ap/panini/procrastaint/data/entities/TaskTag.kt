@@ -20,7 +20,15 @@ data class TaskTag(
     @PrimaryKey(autoGenerate = true)
     val tagId: Long = 0,
 ) {
-    constructor(title: String) : this(title.replace('-', ' '), title, "", generateRandomColor())
+    constructor(title: String) : this(title.replace('-', ' '), title, "", "")
+
+    fun toRgb() = hexToRgb(color)
+
+    fun toRgbOrNull() = try {
+        hexToRgb(color)
+    } catch (e: Exception) {
+        null
+    }
 
     companion object {
         fun rgbToHex(r: Int, g: Int, b: Int): String {
