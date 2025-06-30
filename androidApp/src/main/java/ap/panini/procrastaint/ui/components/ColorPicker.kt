@@ -27,35 +27,18 @@ fun ColorPicker(
 ) {
     val controller = rememberColorPickerController()
 
-    var hexTextColor by remember(color) {
-        mutableStateOf(color)
-    }
-
-    val parsedColor: Color? = try {
-        TaskTag.hexToRgb(hexTextColor)
-            .let { Color(it.first, it.second, it.third) }
-    } catch (_: Exception) {
-        null
-    }
-
-    val color = parsedColor ?: try {
-        TaskTag.hexToRgb(color)
-            .let { Color(it.first, it.second, it.third) }
+    val parsedColor = try {
+        TaskTag.hexToRgb(color).let { Color(it.first, it.second, it.third) }
     } catch (_: Exception) {
         Color.Gray
     }
 
-    LaunchedEffect(hexTextColor) {
-        parsedColor?.let {
-            controller.selectByColor(
-                TaskTag.hexToRgb(hexTextColor)
-                    .let { Color(it.first, it.second, it.third) },
-                fromUser = false
-            )
-            onColorChange(hexTextColor)
-        }
-    }
+    var hexTextColor by remember { mutableStateOf(color) }
 
+    LaunchedEffect(color) {
+        hexTextColor = color
+        controller.selectByColor(parsedColor, fromUser = false)
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -63,7 +46,7 @@ fun ColorPicker(
         verticalAlignment = Alignment.CenterVertically
     ) {
         HsvColorPicker(
-            initialColor = color,
+            initialColor = parsedColor,
             modifier = Modifier.size(100.dp),
             controller = controller,
             onColorChanged = {
@@ -72,15 +55,29 @@ fun ColorPicker(
                     (it.color.green * 255).toInt(),
                     (it.color.blue * 255).toInt()
                 )
-                hexTextColor = hex // update hex text field
+                hexTextColor = hex
+                onColorChange(hex)
             }
         )
 
         OutlinedTextField(
             label = { Text("Hex") },
             value = hexTextColor,
-            onValueChange = { hexTextColor = it },
-            isError = parsedColor == null,
+            onValueChange = {
+                hexTextColor = it
+                try {
+                    TaskTag.hexToRgb(it)
+                    onColorChange(it)
+                } catch (_: Exception) {
+                    // do nothing or show error
+                }
+            },
+            isError = try {
+                TaskTag.hexToRgb(hexTextColor)
+                false
+            } catch (_: Exception) {
+                true
+            },
             modifier = Modifier.weight(1f)
         )
     }

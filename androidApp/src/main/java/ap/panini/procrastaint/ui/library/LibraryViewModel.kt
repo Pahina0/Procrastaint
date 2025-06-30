@@ -20,45 +20,13 @@ class LibraryViewModel(
 
     @Immutable
     data class LibraryUiState(
-        val tag: TaskTag = TaskTag(
-            "",
-            "",
-            TaskTag.generateRandomColor()
-        ),
-
         val showBottomSheet: Boolean = false,
     )
 
-    fun showBottomSheet(show: Boolean) {
-        if (!show) {
-            // resets state
-            _uiState.update {
-                it.copy(
-                    tag = TaskTag(
-                        "",
-                        "",
-                        TaskTag.generateRandomColor()
-                    )
-                )
-            }
-        }
 
-        _uiState.update { it.copy(showBottomSheet = show) }
-    }
-
-    fun onEdit(tag: TaskTag) {
-        showBottomSheet(true)
-        _uiState.update { it.copy(tag = tag) }
-    }
-
-    fun onUpdateTag(tag: TaskTag) {
-        _uiState.update { it.copy(tag = tag) }
-    }
-
-    fun onSave() {
-        showBottomSheet(false)
+    fun onSave(tag: TaskTag) {
         viewModelScope.launch {
-            db.upsertTaskTag(uiState.value.tag)
+            db.upsertTaskTag(tag)
         }
     }
 

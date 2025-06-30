@@ -2,16 +2,11 @@ package ap.panini.procrastaint.ui.library
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopSearchBar
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -33,13 +27,16 @@ fun LibraryScreen(
     viewModel: LibraryViewModel = koinViewModel(),
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    val bottomSheetState = rememberBottomSheetTagState()
 
     ScreenScaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(title = { Text("Library") }, actions = {
                 IconButton(onClick = {
-                    viewModel.showBottomSheet(true)
+                    showBottomSheet = true
                     // show bottom sheet asking for name, color, and label
 
                     // also make parser parse for #.....
@@ -51,13 +48,16 @@ fun LibraryScreen(
         }
     ) {
 
-        if (state.showBottomSheet) {
+        if (showBottomSheet) {
             TagBottomSheet(
-                tag = state.tag,
+                state = bottomSheetState,
                 onDismissRequest = {
-                    viewModel.showBottomSheet(false)
+                    bottomSheetState.randomReset()
+                    showBottomSheet = false
                 }, onSave = {
-                    viewModel.onSave()
+                    showBottomSheet = false
+                    bottomSheetState.randomReset()
+                    viewModel.onSave(it)
                 })
         }
 
