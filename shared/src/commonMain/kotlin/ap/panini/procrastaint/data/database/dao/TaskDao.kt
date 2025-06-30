@@ -35,6 +35,10 @@ interface TaskDao {
     suspend fun deleteTask(task: TaskInfo)
 
     @Transaction
+    @Query("""SELECT * FROM TaskTag""")
+    fun getTags(): Flow<List<TaskTag>>
+
+    @Transaction
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
     suspend fun getTask(id: Long): Task
 

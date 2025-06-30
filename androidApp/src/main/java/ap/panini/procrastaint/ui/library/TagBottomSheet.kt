@@ -32,7 +32,6 @@ fun TagBottomSheet(
 ) {
     val tag = state.taskTag
     val color = remember(tag.color) {
-        println("HI")
         TaskTag.hexToRgb(tag.color).let {
             Color(it.first, it.second, it.third)
         }
@@ -72,7 +71,6 @@ fun TagBottomSheet(
             )
 
             ColorPicker(state.taskTag.color) {
-                println("1")
                 state.updateColor(it)
             }
 
