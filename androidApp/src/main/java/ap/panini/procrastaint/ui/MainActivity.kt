@@ -119,7 +119,13 @@ class MainActivity : ComponentActivity() {
                             || curDestination == TagScreenDestination
                 ) {
                     FloatingActionButton(onClick = {
-                        viewModel.onShow()
+                        when (curDestination) {
+                            TagScreenDestination -> {
+                                val tagId = navController.currentBackStackEntry?.arguments?.getLong("tagId")
+                                viewModel.onShow(tagId = tagId)
+                            }
+                            else -> viewModel.onShow()
+                        }
                     }) {
                         Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
                     }

@@ -61,42 +61,46 @@ fun rememberParsedText(
 
         extracted.sortBy { it.range.first }
 
-        buildAnnotatedString {
-            if (parsed == null || extracted.isEmpty()) {
-                append(text)
-                return@buildAnnotatedString
-            }
-
-            var currentIndex = 0
-
-            for (item in extracted) {
-                val range = item.range
-                if (currentIndex < range.first) {
-                    append(text.substring(currentIndex, range.first))
+        try {
+            buildAnnotatedString {
+                if (parsed == null || extracted.isEmpty()) {
+                    append(text)
+                    return@buildAnnotatedString
                 }
 
-                if (show) {
-                    withStyle(
-                        style = SpanStyle(
-                            color = when (item) {
-                                is Extracted.Tag -> item.tag.toRgbOrNull()?.let {
-                                    Color(it.first, it.second, it.third)
-                                } ?: tertiaryColor
+                var currentIndex = 0
 
-                                else -> primaryColor
-                            }
-                        )
-                    ) {
-                        append(text.substring(range))
+                for (item in extracted) {
+                    val range = item.range
+                    if (currentIndex < range.first) {
+                        append(text.substring(currentIndex, range.first))
                     }
+
+                    if (show) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = when (item) {
+                                    is Extracted.Tag -> item.tag.toRgbOrNull()?.let {
+                                        Color(it.first, it.second, it.third)
+                                    } ?: tertiaryColor
+
+                                    else -> primaryColor
+                                }
+                            )
+                        ) {
+                            append(text.substring(range))
+                        }
+                    }
+
+                    currentIndex = range.last + 1
                 }
 
-                currentIndex = range.last + 1
+                if (currentIndex < text.length) {
+                    append(text.substring(currentIndex))
+                }
             }
-
-            if (currentIndex < text.length) {
-                append(text.substring(currentIndex))
-            }
+        } catch (e: Exception) {
+            AnnotatedString(text)
         }
 
 
