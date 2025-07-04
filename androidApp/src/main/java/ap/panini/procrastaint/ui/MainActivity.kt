@@ -45,6 +45,7 @@ import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.CalendarScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.LibraryScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TagScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.UpcomingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.Direction
@@ -113,8 +114,9 @@ class MainActivity : ComponentActivity() {
 
             floatingActionButton = {
                 AnimatedVisibility(
-                    mainDestinationSelected &&
-                            curDestination != BottomBarDestination.Settings.direction
+                    (mainDestinationSelected &&
+                            curDestination != BottomBarDestination.Settings.direction)
+                            || curDestination == TagScreenDestination
                 ) {
                     FloatingActionButton(onClick = {
                         viewModel.onShow()
@@ -167,7 +169,6 @@ class MainActivity : ComponentActivity() {
                     },
                     icon = {
                         Icon(
-
                             if (curDestination == destination.direction) {
                                 destination.iconSelected
                             } else {

@@ -55,6 +55,10 @@ interface TaskDao {
     suspend fun getTagOrNull(title: String): TaskTag?
 
     @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE tagId = :id""")
+    suspend fun getTag(id: Long): TaskTag
+
+    @Transaction
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
     suspend fun getTask(id: Long): Task
 
@@ -88,25 +92,33 @@ interface TaskDao {
             ON ti.taskId = ttcr.taskId
         LEFT JOIN TaskTag tt
             ON ttcr.tagId = tt.tagId
-        WHERE tm.startTime IS NOT NULL
-            AND (
-                tm.startTime >= :from
-                OR (
-                    (
-                        tm.repeatTag IS NOT NULL
-                        AND tm.repeatOften IS NOT NULL
-                        )
+        WHERE (
+                (
+                    tm.startTime IS NOT NULL
                     AND (
-                        tm.endTime IS NULL
-                        OR tm.endTime >= :from
+                        tm.startTime >= :from
+                        OR (
+                            (
+                                tm.repeatTag IS NOT NULL
+                                AND tm.repeatOften IS NOT NULL
+                                )
+                            AND (
+                                tm.endTime IS NULL
+                                OR tm.endTime >= :from
+                                )
+                            )
                         )
-                    )
+                    AND (:to IS NULL OR tm.startTime <= :to)
                 )
-            AND (:to IS NULL OR tm.startTime <= :to)
+                OR (
+                    :includeNoTimeTasks
+                    AND tm.startTime IS NULL
+                )
+            )
             AND (:taskId IS NULL OR ti.taskId = :taskId)
             AND (:tagId IS NULL OR tt.tagId = :tagId)
         ORDER BY tm.startTime
     """
     )
-    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null): Flow<List<TaskSingle>>
+    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null, includeNoTimeTasks: Boolean = false): Flow<List<TaskSingle>>
 }

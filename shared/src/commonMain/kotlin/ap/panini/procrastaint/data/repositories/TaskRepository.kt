@@ -7,6 +7,7 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 import ap.panini.procrastaint.notifications.NotificationManager
+import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,6 +52,7 @@ class TaskRepository(
 
     fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
     suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
+    suspend fun getTag(id: Long): TaskTag = taskDao.getTag(id)
 
     suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
         taskDao.upsertTagCrossRef(taskTagCrossRef)
@@ -130,8 +132,15 @@ class TaskRepository(
         }
     }
 
-    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null, maxRepetition: Long = Long.MAX_VALUE): Flow<List<TaskSingle>> =
-        taskDao.getTasks(from, to, taskId, tagId).organize(
+    fun getTasks(
+        from: Long = Date.getTodayStart(),
+        to: Long? = null,
+        taskId: Long? = null,
+        tagId: Long? = null,
+        maxRepetition: Long = Long.MAX_VALUE,
+        includeNoTimeTasks: Boolean = false
+    ): Flow<List<TaskSingle>> =
+        taskDao.getTasks(from, to, taskId, tagId, includeNoTimeTasks).organize(
             from = from,
             to = to ?: Long.MAX_VALUE,
             maxRepetition = maxRepetition
@@ -199,7 +208,7 @@ class TaskRepository(
      * @param maxRepetition
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun Flow<List<TaskSingle>>.organize(
+    private fun Flow<List<TaskSingle>>.organize(
         from: Long,
         to: Long = Long.MAX_VALUE,
         maxRepetition: Long = Long.MAX_VALUE

@@ -31,7 +31,8 @@ class UpcomingViewModel(
         viewModelScope.launch {
             db.getTasks(
                 Date.getTodayStart(),
-                maxRepetition = 6
+                maxRepetition = 6,
+                includeNoTimeTasks = true
             ).flowOn(Dispatchers.IO).collectLatest { taskInfos: List<TaskSingle> ->
                 _uiState.update {
                     it.copy(
