@@ -76,7 +76,7 @@ class NotificationManager {
     internal fun create(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
-            tasksRepo.getTasksBetweenFiltered(
+            tasksRepo.getTasksBetween(
                 now,
                 now + HOURS_AHEAD.hours.inWholeMilliseconds,
                 task.taskInfo.taskId
@@ -96,7 +96,7 @@ class NotificationManager {
     internal fun delete(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
-            tasksRepo.getTasksBetweenFiltered(
+            tasksRepo.getTasksBetween(
                 now,
                 now + HOURS_AHEAD.hours.inWholeMilliseconds,
                 task.taskInfo.taskId

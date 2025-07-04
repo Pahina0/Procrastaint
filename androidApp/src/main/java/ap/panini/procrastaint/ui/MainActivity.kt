@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
             mainDestinationSelected = directions.any { it == curDestination }
         }
 
-        val state = viewModel.uiState.collectAsStateWithLifecycle().value
+        val state by viewModel.uiState.collectAsStateWithLifecycle()
         Scaffold(
             bottomBar = {
                 if (mainDestinationSelected) {

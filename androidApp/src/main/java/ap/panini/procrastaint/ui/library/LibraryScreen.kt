@@ -38,6 +38,8 @@ import ap.panini.procrastaint.ui.components.TagItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.generated.destinations.TagScreenDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -45,8 +47,9 @@ import org.koin.androidx.compose.koinViewModel
 fun LibraryScreen(
     modifier: Modifier = Modifier,
     viewModel: LibraryViewModel = koinViewModel(),
+    navigator: DestinationsNavigator
 ) {
-    val tags = viewModel.tags.collectAsStateWithLifecycle().value
+    val tags by viewModel.tags.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(tags) {
@@ -109,7 +112,9 @@ fun LibraryScreen(
                                 showBottomSheet = true
                                 bottomSheetState.setTag(it)
                             },
-                            onClick = {}
+                            onClick = {
+                                navigator.navigate(TagScreenDestination(it.tagId))
+                            }
                         )
                 ) {
                     TagItem(it)

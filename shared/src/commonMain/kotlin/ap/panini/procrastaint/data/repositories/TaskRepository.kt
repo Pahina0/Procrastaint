@@ -100,7 +100,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetweenFiltered(
+            getTasksBetween(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -118,7 +118,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetweenFiltered(
+            getTasksBetween(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -129,14 +129,8 @@ class TaskRepository(
         }
     }
 
-    fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetween(from, to).organize(
-            from = from,
-            to = to,
-        )
-
-    fun getTasksBetweenFiltered(from: Long, to: Long, taskId: Long): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetweenFiltered(from, to, taskId).organize(
+    fun getTasksBetween(from: Long, to: Long, taskId: Long? = null): Flow<List<TaskSingle>> =
+        taskDao.getTasksBetween(from, to, taskId).organize(
             from = from,
             to = to,
         )
