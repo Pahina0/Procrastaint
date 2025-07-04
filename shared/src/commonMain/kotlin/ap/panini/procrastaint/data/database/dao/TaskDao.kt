@@ -84,6 +84,10 @@ interface TaskDao {
         LEFT JOIN TaskCompletion tc
             ON ti.taskId = tc.taskId
                 AND tm.metaId = tc.metaId
+        LEFT JOIN TaskTagCrossRef ttcr
+            ON ti.taskId = ttcr.taskId
+        LEFT JOIN TaskTag tt
+            ON ttcr.tagId = tt.tagId
         WHERE tm.startTime IS NOT NULL
             AND (
                 tm.startTime >= :from
@@ -98,44 +102,11 @@ interface TaskDao {
                         )
                     )
                 )
-            AND tm.startTime <= :to
+            AND (:to IS NULL OR tm.startTime <= :to)
             AND (:taskId IS NULL OR ti.taskId = :taskId)
+            AND (:tagId IS NULL OR tt.tagId = :tagId)
         ORDER BY tm.startTime
     """
     )
-    fun getTasksBetween(from: Long, to: Long, taskId: Long?): Flow<List<TaskSingle>>
-
-    @Query(
-        """
-        SELECT ti.taskId,
-            tm.metaId,
-            tc.completionId,
-            ti.title,
-            ti.description,
-            tc.completionTime AS completed,
-            tm.startTime,
-            tm.endTime,
-            tm.repeatTag,
-            tm.repeatOften,
-            COALESCE(tc.forTime, - 1) AS currentEventTime
-        FROM TaskInfo ti
-        LEFT JOIN TaskMeta tm
-            ON ti.taskId = tm.taskId
-        LEFT JOIN TaskCompletion tc
-            ON ti.taskId = tc.taskId
-                AND tm.metaId = tc.metaId
-        WHERE tc.completionTime IS NULL
-            OR (
-                (
-                    tm.repeatTag IS NOT NULL
-                    AND tm.repeatOften IS NOT NULL
-                    )
-                AND (
-                    tm.endTime IS NULL
-                    OR tm.endTime >= :from
-                    )
-                )
-    """
-    )
-    fun getAllTasks(from: Long): Flow<List<TaskSingle>>
+    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null): Flow<List<TaskSingle>>
 }

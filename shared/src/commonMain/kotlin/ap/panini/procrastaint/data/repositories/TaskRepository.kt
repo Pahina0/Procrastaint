@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import kotlinx.serialization.builtins.LongArraySerializer
 import kotlin.math.min
 
 class TaskRepository(
@@ -100,7 +101,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetween(
+            getTasks(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -118,7 +119,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetween(
+            getTasks(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -129,16 +130,12 @@ class TaskRepository(
         }
     }
 
-    fun getTasksBetween(from: Long, to: Long, taskId: Long? = null): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetween(from, to, taskId).organize(
+    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null, maxRepetition: Long = Long.MAX_VALUE): Flow<List<TaskSingle>> =
+        taskDao.getTasks(from, to, taskId, tagId).organize(
             from = from,
-            to = to,
+            to = to ?: Long.MAX_VALUE,
+            maxRepetition = maxRepetition
         )
-
-    fun getTasksFrom(from: Long): Flow<List<TaskSingle>> = taskDao.getAllTasks(from).organize(
-        from = from,
-        maxRepetition = 5
-    )
 
     /**
      * Get all repetitions in a tasks given a single task
