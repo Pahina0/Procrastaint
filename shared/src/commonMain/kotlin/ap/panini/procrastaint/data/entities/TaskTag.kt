@@ -2,6 +2,7 @@ package ap.panini.procrastaint.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlin.random.Random
 
@@ -73,7 +74,23 @@ data class TaskTag(
     fun generateTag() = "#$title"
 }
 
-@Entity(primaryKeys = ["taskId", "tagId"])
+@Entity(
+    primaryKeys = ["taskId", "tagId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = TaskInfo::class,
+            parentColumns = ["taskId"],
+            childColumns = ["taskId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = TaskTag::class,
+            parentColumns = ["tagId"],
+            childColumns = ["tagId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class TaskTagCrossRef(
     val taskId: Long,
     val tagId: Long,

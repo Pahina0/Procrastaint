@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TagItem
 import com.ramcosta.composedestinations.annotation.Destination
@@ -70,6 +71,13 @@ fun LibraryScreen(
             })
         }
     ) { padding ->
+
+        if (tags.isEmpty()) {
+            EmptyPage(
+                Icons.Outlined.Tag,
+                "No tags\nWrite a #tag in your next task to get started!"
+            )
+        }
 
         if (showBottomSheet) {
             TagBottomSheet(
