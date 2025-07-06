@@ -119,6 +119,7 @@ fun TagScreen(
                     task = task,
                     onCheck = viewModel::checkTask,
                     onEdit = activityViewModel::editCreatedTask,
+                    showFullDate = true
                 )
             }
 
@@ -135,6 +136,7 @@ fun TagScreen(
                     task = task,
                     onCheck = viewModel::checkTask,
                     onEdit = activityViewModel::editCreatedTask,
+                    showFullDate = true
                 )
             }
         }

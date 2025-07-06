@@ -37,7 +37,8 @@ fun TaskView(
     task: TaskSingle,
     onCheck: (TaskSingle) -> Unit,
     onEdit: (taskId: Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showFullDate: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -54,10 +55,16 @@ fun TaskView(
 
             trailingContent = {
                 if (task.startTime != null) {
+                    val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
+
+                    if (showFullDate) {
+                        timeSet += Time.DAY
+                    }
+
                     Text(
                         task.currentEventTime.formatMilliseconds(
-                            setOf(Time.HOUR, Time.MINUTE),
-                            smart = false,
+                            timeSet,
+                            smart = showFullDate,
                             useAbbreviated = true
                         )
                     )

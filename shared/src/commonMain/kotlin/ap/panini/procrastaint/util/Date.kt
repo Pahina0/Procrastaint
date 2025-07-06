@@ -5,6 +5,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormatBuilder
@@ -91,8 +92,10 @@ object Date {
         val hour = known.contains(Time.HOUR)
         val minute = known.contains(Time.MINUTE)
 
+        val daysAway = now.date.daysUntil(time.date)
+
         val formatter = LocalDateTime.Format {
-            formatDate(year, month, week, day, useAbbreviated)
+            formatDate(year, month, week, day, daysAway, useAbbreviated)
 
             val showDate = month || day || year || week
             val showTime = hour || minute
@@ -112,8 +115,10 @@ object Date {
         month: Boolean,
         week: Boolean,
         day: Boolean,
+        daysAway: Int = 0,
         useAbbreviated: Boolean = false
     ) {
+
         val monthFormat =
             with(MonthNames) { if (useAbbreviated) ENGLISH_ABBREVIATED else ENGLISH_FULL }
 
@@ -121,9 +126,31 @@ object Date {
             if (year) {
                 date(LocalDate.Formats.ISO)
             } else {
-                monthName(monthFormat)
-                char(' ')
-                dayOfMonth(padding = Padding.NONE)
+                when (daysAway) {
+                    0 -> {
+                        chars("Today")
+                    }
+
+                    1 -> {
+                        chars("Tomorrow")
+                    }
+
+                    in 2..6 -> {
+                        dayOfWeek(
+                            if (useAbbreviated) {
+                                DayOfWeekNames.ENGLISH_ABBREVIATED
+                            } else {
+                                DayOfWeekNames.ENGLISH_FULL
+                            }
+                        )
+                    }
+
+                    else -> {
+                        monthName(monthFormat)
+                        char(' ')
+                        dayOfMonth(padding = Padding.NONE)
+                    }
+                }
             }
         } else if (month) {
             monthName(monthFormat)
