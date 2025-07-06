@@ -86,6 +86,8 @@ fun CalendarScreen(
 
     LaunchedEffect(state.selectedTime) {
         coroutineScope.launch {
+            if (pagerState.pageCount == 0) return@launch
+
             var index =
                 max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
             pagerState.animateScrollToPage(index)

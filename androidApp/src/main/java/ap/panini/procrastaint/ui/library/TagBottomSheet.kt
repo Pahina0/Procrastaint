@@ -58,17 +58,8 @@ fun TagBottomSheet(
                 .padding(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onDismissRequest) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-                Text(text = "Edit Tag", modifier = Modifier.weight(1f))
-            }
             OutlinedTextField(
-                label = { Text("Display title") },
+                label = { Text("Tag display title") },
                 value = tag.displayTitle,
                 onValueChange = state::updateDisplayTitle,
                 modifier = Modifier.fillMaxWidth()

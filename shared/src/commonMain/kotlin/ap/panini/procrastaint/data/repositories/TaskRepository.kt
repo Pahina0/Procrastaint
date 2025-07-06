@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.serialization.builtins.LongArraySerializer
 import kotlin.math.min
 
 class TaskRepository(
@@ -57,6 +56,7 @@ class TaskRepository(
     suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
         taskDao.upsertTagCrossRef(taskTagCrossRef)
 
+
     suspend fun upsertTaskTag(tag: TaskTag): Long {
         // check if valid color
         val tag = if (tag.toRgbOrNull() == null) {
@@ -65,7 +65,23 @@ class TaskRepository(
             tag
         }
 
+        if (tag.tagId != 0L) return tag.tagId
+
         return taskDao.upsertTag(tag)
+    }
+
+    suspend fun deleteTag(tag: TaskTag) {
+        taskDao.deleteTag(tag)
+    }
+
+    suspend fun deleteTagWithTasks(tag: TaskTag) {
+        val tasks = taskDao.getTaskTagCrossRef(tag.tagId)
+        deleteTag(tag)
+
+        for (task in tasks) {
+            deleteTask(task.taskId)
+        }
+
     }
 
     suspend fun editTask(newTask: Task) {
