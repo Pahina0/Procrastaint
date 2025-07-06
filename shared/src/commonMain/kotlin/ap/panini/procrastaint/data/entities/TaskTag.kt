@@ -27,24 +27,28 @@ data class TaskTag(
 
     fun toRgbOrNull() = try {
         hexToRgb(color)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 
     companion object {
+        private const val HEX_CHARS = "0123456789ABCDEF"
+        private const val BASE16 = 16
+
+        const val HUE = 256
+
         fun rgbToHex(r: Int, g: Int, b: Int): String {
             return "#" + intToHex(r) + intToHex(g) + intToHex(b)
         }
 
         private fun intToHex(value: Int): String {
-            val hexChars = "0123456789ABCDEF"
-            val high = value / 16
-            val low = value % 16
-            return "${hexChars[high]}${hexChars[low]}"
+            val high = value / BASE16
+            val low = value % BASE16
+            return "${HEX_CHARS[high]}${HEX_CHARS[low]}"
         }
 
         fun generateRandomColor() =
-            rgbToHex(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+            rgbToHex(Random.nextInt(HUE), Random.nextInt(HUE), Random.nextInt(HUE))
 
         fun hexToRgb(hex: String): Triple<Int, Int, Int> {
             fun hexCharToInt(c: Char): Int {
@@ -59,9 +63,7 @@ data class TaskTag(
                 return hexCharToInt(c1) * 16 + hexCharToInt(c2)
             }
 
-            if (!hex.startsWith("#") || hex.length != 7) {
-                throw IllegalArgumentException("Hex color must be in the format #RRGGBB invalid Hex of $hex")
-            }
+            require((hex.startsWith("#") && hex.length == 7))
 
             val r = hexPairToInt(hex[1], hex[2])
             val g = hexPairToInt(hex[3], hex[4])

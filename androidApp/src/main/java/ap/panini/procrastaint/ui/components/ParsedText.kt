@@ -1,30 +1,14 @@
 package ap.panini.procrastaint.ui.components
 
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.TextUnit
 import ap.panini.procrastaint.data.entities.TaskTag
-import ap.panini.procrastaint.ui.components.Extracted
 import ap.panini.procrastaint.util.Parsed
 import ap.panini.procrastaint.util.Time
 import kotlin.collections.mutableListOf
@@ -99,11 +83,9 @@ fun rememberParsedText(
                     append(text.substring(currentIndex))
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             AnnotatedString(text)
         }
-
-
     }
 }
 

@@ -19,9 +19,10 @@ data class Parsed(
      */
     fun textExtracted(timeIndex: Int): String = removeRangesFromString(
         text,
-        (times.getOrNull(timeIndex)?.extractedRange?.let { listOf(it) }
-            ?: emptyList()
-                ) + tags.map { it.extractedRange }
+        (
+            times.getOrNull(timeIndex)?.extractedRange?.let { listOf(it) }
+                ?: emptyList()
+            ) + tags.map { it.extractedRange }
     )
 
     /**

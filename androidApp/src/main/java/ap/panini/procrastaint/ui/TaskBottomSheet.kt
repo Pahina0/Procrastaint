@@ -82,7 +82,7 @@ fun TaskBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { updateTitle(it) },
                 label = { Text(text = "Whats on your mind?") },
-                onCurrentWordChanged = { tagSuggestions = getTagsStarting(it) },
+                onCurrentWordChange = { tagSuggestions = getTagsStarting(it) },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 trailingIcon = {
                     IconButton(onClick = { saveTask() }) {
@@ -117,7 +117,6 @@ fun TaskBottomSheet(
                     style = MaterialTheme.typography.labelSmall
                 )
             }
-
 
             TimeChips(parsedTimes, leadingContent = {
                 ActionList(

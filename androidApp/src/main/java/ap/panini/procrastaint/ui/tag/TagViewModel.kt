@@ -59,5 +59,4 @@ class TagViewModel(
             db.deleteTagWithTasks(tag)
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package ap.panini.procrastaint.data.entities
 
-import androidx.room.Ignore
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.runBlocking

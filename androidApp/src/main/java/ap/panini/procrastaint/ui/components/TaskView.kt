@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -42,107 +41,106 @@ fun TaskView(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ListItem(
-        modifier = modifier
-            .combinedClickable(
-                onLongClick = { onEdit(task.taskId) },
-                onClick = { onCheck(task) }
-            ),
+    Column(modifier = modifier) {
+        ListItem(
+            modifier = Modifier
+                .combinedClickable(
+                    onLongClick = { onEdit(task.taskId) },
+                    onClick = { onCheck(task) }
+                ),
 
-        trailingContent = {
-            if (task.startTime != null) {
-                val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
+            trailingContent = {
+                if (task.startTime != null) {
+                    val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
 
-                if (showFullDate) {
-                    timeSet += Time.DAY
-                }
-
-                Text(
-                    task.currentEventTime.formatMilliseconds(
-                        timeSet,
-                        smart = showFullDate,
-                        useAbbreviated = true
-                    )
-                )
-            }
-        },
-
-        leadingContent = {
-            Checkbox(
-                checked = task.completed != null,
-                onCheckedChange = {
-                    onCheck(task)
-                },
-            )
-        },
-
-        supportingContent = {
-            Column {
-                if (task.repeatOften != null && task.repeatTag != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 2.dp)
-                    ) {
-                        Icon(
-                            Icons.Outlined.Repeat,
-                            null,
-                            modifier = Modifier
-                                .height(12.dp)
-                                .padding(end = 4.dp)
-                        )
-                        Text(
-                            "${task.repeatOften} ${task.repeatTag!!.name}",
-                            style = MaterialTheme.typography.labelSmall
-                        )
+                    if (showFullDate) {
+                        timeSet += Time.DAY
                     }
-                }
 
-                if (task.description.isNotBlank()) {
                     Text(
-                        task.description,
-                        modifier = Modifier
-                            .clickable { expanded = !expanded },
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = if (expanded) Int.MAX_VALUE else 1,
-                        style = MaterialTheme.typography.bodySmall
+                        task.currentEventTime.formatMilliseconds(
+                            timeSet,
+                            smart = showFullDate,
+                            useAbbreviated = true
+                        )
                     )
                 }
+            },
 
+            leadingContent = {
+                Checkbox(
+                    checked = task.completed != null,
+                    onCheckedChange = {
+                        onCheck(task)
+                    },
+                )
+            },
 
-
-                if (task.tags.isNotEmpty()) {
-                    val tags = buildAnnotatedString {
-                        task.tags.forEachIndexed { i, v ->
-                            withStyle(
-                                style = SpanStyle(
-                                    color =
-                                        v.toRgb().let {
-                                            Color(it.first, it.second, it.third)
-                                        }
-                                )
-                            ) {
-                                if (i != 0) {
-                                    append("\n")
-                                }
-                                append("#")
-                            }
-
-                            append(v.displayTitle)
+            supportingContent = {
+                Column {
+                    if (task.repeatOften != null && task.repeatTag != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 2.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Repeat,
+                                null,
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .padding(end = 4.dp)
+                            )
+                            Text(
+                                "${task.repeatOften} ${task.repeatTag!!.name}",
+                                style = MaterialTheme.typography.labelSmall
+                            )
                         }
                     }
 
+                    if (task.description.isNotBlank()) {
+                        Text(
+                            task.description,
+                            modifier = Modifier
+                                .clickable { expanded = !expanded },
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = if (expanded) Int.MAX_VALUE else 1,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
-                    Text(tags)
+                    if (task.tags.isNotEmpty()) {
+                        val tags = buildAnnotatedString {
+                            task.tags.forEachIndexed { i, v ->
+                                withStyle(
+                                    style = SpanStyle(
+                                        color =
+                                        v.toRgb().let {
+                                            Color(it.first, it.second, it.third)
+                                        }
+                                    )
+                                ) {
+                                    if (i != 0) {
+                                        append("\n")
+                                    }
+                                    append("#")
+                                }
+
+                                append(v.displayTitle)
+                            }
+                        }
+
+                        Text(tags)
+                    }
                 }
-            }
-        },
+            },
 
-        headlineContent = {
-            Text(task.title)
-        }
-    )
-    HorizontalDivider(
-        modifier = Modifier.padding(bottom = 5.dp, start = 80.dp, end = 80.dp),
-        thickness = 0.5.dp
-    )
+            headlineContent = {
+                Text(task.title)
+            }
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(bottom = 5.dp, start = 80.dp, end = 80.dp),
+            thickness = 0.5.dp
+        )
+    }
 }

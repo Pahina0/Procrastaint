@@ -114,9 +114,11 @@ class MainActivity : ComponentActivity() {
 
             floatingActionButton = {
                 AnimatedVisibility(
-                    (mainDestinationSelected &&
-                            curDestination != BottomBarDestination.Settings.direction)
-                            || curDestination == TagScreenDestination
+                    (
+                        mainDestinationSelected &&
+                            curDestination != BottomBarDestination.Settings.direction
+                        ) ||
+                        curDestination == TagScreenDestination
                 ) {
                     FloatingActionButton(onClick = {
                         when (curDestination) {
@@ -132,7 +134,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-            ) {
+        ) {
             if (state.visible) {
                 TaskBottomSheet(
                     state,

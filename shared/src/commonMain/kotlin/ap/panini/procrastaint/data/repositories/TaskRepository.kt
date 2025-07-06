@@ -56,7 +56,6 @@ class TaskRepository(
     suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
         taskDao.insertTagCrossRef(taskTagCrossRef)
 
-
     suspend fun upsertTaskTag(tag: TaskTag): Long {
         // check if valid color
         val tag = if (tag.toRgbOrNull() == null) {
@@ -84,7 +83,6 @@ class TaskRepository(
         for (task in tasks) {
             deleteTask(task.taskId)
         }
-
     }
 
     suspend fun editTask(newTask: Task) {

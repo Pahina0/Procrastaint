@@ -37,9 +37,9 @@ import org.koin.androidx.compose.koinViewModel
 @Destination<RootGraph>
 @Composable
 fun LibraryScreen(
+    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: LibraryViewModel = koinViewModel(),
-    navigator: DestinationsNavigator
 ) {
     val tags by viewModel.tags.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -85,7 +85,6 @@ fun LibraryScreen(
                 "No tags\nWrite a #tag in your next task to get started!"
             )
         }
-
 
         LazyColumn(
             modifier = Modifier

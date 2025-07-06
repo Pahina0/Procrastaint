@@ -40,9 +40,9 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun TagScreen(
     tagId: Long,
+    destinationsNavigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: TagViewModel = koinViewModel { parametersOf(tagId) },
-    destinationsNavigator: DestinationsNavigator,
 ) {
     val incompleteTasks = viewModel.incompleteTasks.collectAsStateWithLifecycle(emptyList()).value
     val completedTasks = viewModel.completedTasks.collectAsStateWithLifecycle(emptyList()).value

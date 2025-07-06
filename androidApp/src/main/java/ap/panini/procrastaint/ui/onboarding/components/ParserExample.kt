@@ -55,7 +55,6 @@ fun ParserExample(parsed: Parsed?, text: String, modifier: Modifier = Modifier) 
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
-
             }
         }
     }

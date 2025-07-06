@@ -71,7 +71,6 @@ class MainActivityViewModel(
     }
 
     fun onShow(tagId: Long? = null) {
-
         var text = uiState.value.task
         if (tagId != null && uiState.value.task.isBlank()) {
             runBlocking { text += "#${db.getTag(tagId).title} " }

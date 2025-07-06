@@ -118,7 +118,6 @@ object Date {
         daysAway: Int = 0,
         useAbbreviated: Boolean = false
     ) {
-
         val monthFormat =
             with(MonthNames) { if (useAbbreviated) ENGLISH_ABBREVIATED else ENGLISH_FULL }
 

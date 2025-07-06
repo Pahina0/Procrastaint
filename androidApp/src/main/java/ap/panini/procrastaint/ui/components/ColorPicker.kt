@@ -23,6 +23,7 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 @Composable
 fun ColorPicker(
     color: String,
+    modifier: Modifier = Modifier,
     onColorChange: (String) -> Unit
 ) {
     val controller = rememberColorPickerController()
@@ -41,7 +42,7 @@ fun ColorPicker(
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

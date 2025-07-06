@@ -19,13 +19,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,10 +42,10 @@ import ap.panini.procrastaint.data.entities.TaskTag
 fun TaskTextField(
     text: String,
     suggestions: List<TaskTag>,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
-    onCurrentWordChanged: (String) -> Unit = {},
-    onValueChange: (String) -> Unit,
+    onCurrentWordChange: (String) -> Unit = {},
     enabled: Boolean = true,
     readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
@@ -71,6 +71,9 @@ fun TaskTextField(
     val text = textFieldValue.text
     val cursorPos = textFieldValue.selection.start.coerceIn(0, text.length)
 
+    val latestOnValueChange by rememberUpdatedState(onValueChange)
+    val latestOnCurrentWordChange by rememberUpdatedState(onCurrentWordChange)
+
     val wordAtCursor = remember(text, cursorPos) {
         val before = text.substring(0, cursorPos)
         val after = text.substring(cursorPos)
@@ -84,11 +87,11 @@ fun TaskTextField(
     }
 
     LaunchedEffect(textFieldValue) {
-        onValueChange(textFieldValue.text)
+        latestOnValueChange(textFieldValue.text)
     }
 
     LaunchedEffect(wordAtCursor) {
-        onCurrentWordChanged(wordAtCursor)
+        latestOnCurrentWordChange(wordAtCursor)
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -96,7 +99,7 @@ fun TaskTextField(
             value = textFieldValue,
             onValueChange = {
                 textFieldValue = it
-                onValueChange(it.text)
+                latestOnValueChange(it.text)
             },
             modifier = Modifier.fillMaxWidth(),
             label = label,
@@ -157,7 +160,7 @@ fun TaskTextField(
                                 text = newText,
                                 selection = TextRange(newCursorPos)
                             )
-                            onValueChange(textFieldValue.text)
+                            latestOnValueChange(textFieldValue.text)
                         }
 
                     SuggestionChip(icon = {

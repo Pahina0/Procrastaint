@@ -28,7 +28,7 @@ data class Task(
     val tags: List<TaskTag> = emptyList()
 ) {
     fun generateOriginalText() =
-        "${taskInfo.title}${taskInfo.extractedTimePhrase} ${
+        "${taskInfo.title} ${taskInfo.extractedTimePhrase.trim()} ${
             tags.joinToString(" ") { it.generateTag() }
         }".trim()
 }

@@ -39,14 +39,13 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun SyncScreen(
+    destinationsNavigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: SyncViewModel = koinViewModel(),
-    destinationsNavigator: DestinationsNavigator,
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 

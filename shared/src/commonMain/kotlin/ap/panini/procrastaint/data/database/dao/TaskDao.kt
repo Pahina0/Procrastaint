@@ -49,7 +49,6 @@ interface TaskDao {
     @Query("""SELECT * FROM TaskTagCrossRef WHERE tagId = :tagId""")
     suspend fun getTaskTagCrossRef(tagId: Long): List<TaskTagCrossRef>
 
-
     @Transaction
     @Query("""DELETE FROM TaskTagCrossRef WHERE taskId = :taskId""")
     suspend fun deleteTagsCrossRef(taskId: Long)
@@ -132,5 +131,11 @@ interface TaskDao {
         ORDER BY tm.startTime
     """
     )
-    fun getTasks(from: Long, to: Long? = null, taskId: Long? = null, tagId: Long? = null, includeNoTimeTasks: Boolean = false): Flow<List<TaskSingle>>
+    fun getTasks(
+        from: Long,
+        to: Long? = null,
+        taskId: Long? = null,
+        tagId: Long? = null,
+        includeNoTimeTasks: Boolean = false
+    ): Flow<List<TaskSingle>>
 }

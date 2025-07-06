@@ -34,5 +34,4 @@ class LibraryViewModel(
             db.upsertTaskTag(tag)
         }
     }
-
 }
