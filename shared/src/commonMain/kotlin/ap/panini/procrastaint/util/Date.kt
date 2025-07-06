@@ -19,6 +19,13 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
+const val StartOfWeek = 2
+const val EndOfWeek = 6
+
+fun Instant.toLocalDate(): LocalDate {
+    return this.toLocalDateTime(TimeZone.currentSystemDefault()).date
+}
+
 object Date {
     private const val ROUND_NUMBER = 100000
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -141,7 +148,7 @@ object Date {
                         chars("Tomorrow")
                     }
 
-                    in 2..6 -> {
+                    in START_OF_WEEK..END_OF_WEEK -> {
                         dayOfWeek(
                             DayOfWeekNames.ENGLISH_FULL
                         )

@@ -35,6 +35,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private const val HorizontalPadding = 16f
+private const val VerticalPadding = 8f
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
@@ -111,7 +114,7 @@ fun TagScreen(
                 Text(
                     text = "Incomplete",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = Dp(16f), vertical = Dp(8f))
+                    modifier = Modifier.padding(horizontal = Dp(HorizontalPadding), vertical = Dp(VerticalPadding))
                 )
             }
             items(incompleteTasks) { task ->
@@ -127,7 +130,7 @@ fun TagScreen(
                 Text(
                     text = "Complete",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = Dp(16f), vertical = Dp(8f))
+                    modifier = Modifier.padding(horizontal = Dp(HorizontalPadding), vertical = Dp(VerticalPadding))
                 )
             }
 

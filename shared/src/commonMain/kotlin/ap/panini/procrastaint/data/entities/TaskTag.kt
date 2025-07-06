@@ -37,6 +37,17 @@ data class TaskTag(
 
         const val HUE = 256
 
+        private const val HEX_BASE = 16
+        private const val HEX_PREFIX = "#"
+        private const val HEX_LENGTH = 7
+        private const val HEX_R_START = 1
+        private const val HEX_R_END = 2
+        private const val HEX_G_START = 3
+        private const val HEX_G_END = 4
+        private const val HEX_B_START = 5
+        private const val HEX_B_END = 6
+        private const val HEX_VALUE_OFFSET = 10
+
         fun rgbToHex(r: Int, g: Int, b: Int): String {
             return "#" + intToHex(r) + intToHex(g) + intToHex(b)
         }
@@ -54,20 +65,20 @@ data class TaskTag(
             fun hexCharToInt(c: Char): Int {
                 return when (c.uppercaseChar()) {
                     in '0'..'9' -> c - '0'
-                    in 'A'..'F' -> c - 'A' + 10
+                    in 'A'..'F' -> c - 'A' + HEX_VALUE_OFFSET
                     else -> throw IllegalArgumentException("Invalid hex character: $c")
                 }
             }
 
             fun hexPairToInt(c1: Char, c2: Char): Int {
-                return hexCharToInt(c1) * 16 + hexCharToInt(c2)
+                return hexCharToInt(c1) * HEX_BASE + hexCharToInt(c2)
             }
 
-            require((hex.startsWith("#") && hex.length == 7))
+            require((hex.startsWith(HEX_PREFIX) && hex.length == HEX_LENGTH))
 
-            val r = hexPairToInt(hex[1], hex[2])
-            val g = hexPairToInt(hex[3], hex[4])
-            val b = hexPairToInt(hex[5], hex[6])
+            val r = hexPairToInt(hex[HEX_R_START], hex[HEX_R_END])
+            val g = hexPairToInt(hex[HEX_G_START], hex[HEX_G_END])
+            val b = hexPairToInt(hex[HEX_B_START], hex[HEX_B_END])
 
             return Triple(r, g, b)
         }

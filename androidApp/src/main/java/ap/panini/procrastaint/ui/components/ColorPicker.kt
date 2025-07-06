@@ -20,6 +20,9 @@ import ap.panini.procrastaint.data.entities.TaskTag
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 
+private const val ColorMultiplier = 255f
+private const val WeightOne = 1f
+
 @Composable
 fun ColorPicker(
     color: String,
@@ -52,9 +55,9 @@ fun ColorPicker(
             controller = controller,
             onColorChanged = {
                 val hex = TaskTag.rgbToHex(
-                    (it.color.red * 255).toInt(),
-                    (it.color.green * 255).toInt(),
-                    (it.color.blue * 255).toInt()
+                    (it.color.red * ColorMultiplier).toInt(),
+                    (it.color.green * ColorMultiplier).toInt(),
+                    (it.color.blue * ColorMultiplier).toInt()
                 )
                 hexTextColor = hex
                 onColorChange(hex)
@@ -79,7 +82,7 @@ fun ColorPicker(
             } catch (_: Exception) {
                 true
             },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(WeightOne)
         )
     }
 }
