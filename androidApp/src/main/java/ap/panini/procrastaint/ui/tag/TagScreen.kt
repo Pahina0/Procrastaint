@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.components.ScreenScaffold
@@ -43,7 +44,8 @@ fun TagScreen(
     viewModel: TagViewModel = koinViewModel { parametersOf(tagId) },
     destinationsNavigator: DestinationsNavigator,
 ) {
-    val tasks = viewModel.tasks.collectAsStateWithLifecycle(emptyList()).value
+    val incompleteTasks = viewModel.incompleteTasks.collectAsStateWithLifecycle(emptyList()).value
+    val completedTasks = viewModel.completedTasks.collectAsStateWithLifecycle(emptyList()).value
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDeleteWithTasksDialog by remember { mutableStateOf(false) }
@@ -105,7 +107,30 @@ fun TagScreen(
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            items(tasks) { task ->
+            item {
+                Text(
+                    text = "Incomplete",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = Dp(16f), vertical = Dp(8f))
+                )
+            }
+            items(incompleteTasks) { task ->
+                TaskView(
+                    task = task,
+                    onCheck = viewModel::checkTask,
+                    onEdit = activityViewModel::editCreatedTask,
+                )
+            }
+
+            item {
+                Text(
+                    text = "Complete",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = Dp(16f), vertical = Dp(8f))
+                )
+            }
+
+            items(completedTasks.asReversed()) { task ->
                 TaskView(
                     task = task,
                     onCheck = viewModel::checkTask,
