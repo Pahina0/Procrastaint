@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.ui.library.components
+package ap.panini.procrastaint.ui.tag.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme

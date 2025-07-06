@@ -15,7 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
+import ap.panini.procrastaint.ui.components.TagBottomSheet
+import ap.panini.procrastaint.ui.components.rememberBottomSheetTagState
 import ap.panini.procrastaint.ui.library.components.TagItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -44,6 +45,22 @@ fun LibraryScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val bottomSheetState = rememberBottomSheetTagState()
+
+    if (showBottomSheet) {
+        TagBottomSheet(
+            state = bottomSheetState,
+            onDismissRequest = {
+                bottomSheetState.randomReset()
+                showBottomSheet = false
+            },
+            isValidTag = viewModel::isValidTag,
+            onSave = {
+                showBottomSheet = false
+                bottomSheetState.randomReset()
+                viewModel.onSave(it)
+            }
+        )
+    }
 
     ScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -69,21 +86,6 @@ fun LibraryScreen(
             )
         }
 
-        if (showBottomSheet) {
-            TagBottomSheet(
-                state = bottomSheetState,
-                onDismissRequest = {
-                    bottomSheetState.randomReset()
-                    showBottomSheet = false
-                },
-                isValidTag = viewModel::isValidTag,
-                onSave = {
-                    showBottomSheet = false
-                    bottomSheetState.randomReset()
-                    viewModel.onSave(it)
-                }
-            )
-        }
 
         LazyColumn(
             modifier = Modifier
