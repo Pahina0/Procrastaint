@@ -81,13 +81,13 @@ data class TaskTag(
             entity = TaskInfo::class,
             parentColumns = ["taskId"],
             childColumns = ["taskId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = TaskTag::class,
             parentColumns = ["tagId"],
             childColumns = ["tagId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ]
 )

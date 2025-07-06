@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
@@ -17,11 +18,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun upsertTag(taskTag: TaskTag): Long
+    @Insert
+    suspend fun insertTag(taskTag: TaskTag): Long
+
+    @Update
+    suspend fun updateTag(taskTag: TaskTag)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun upsertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
+    suspend fun insertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
 
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long

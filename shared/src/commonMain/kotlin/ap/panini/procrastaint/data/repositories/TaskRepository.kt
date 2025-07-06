@@ -54,7 +54,7 @@ class TaskRepository(
     suspend fun getTag(id: Long): TaskTag = taskDao.getTag(id)
 
     suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
-        taskDao.upsertTagCrossRef(taskTagCrossRef)
+        taskDao.insertTagCrossRef(taskTagCrossRef)
 
 
     suspend fun upsertTaskTag(tag: TaskTag): Long {
@@ -65,9 +65,12 @@ class TaskRepository(
             tag
         }
 
-        if (tag.tagId != 0L) return tag.tagId
+        if (tag.tagId != 0L) {
+            taskDao.updateTag(tag)
+            return tag.tagId
+        }
 
-        return taskDao.upsertTag(tag)
+        return taskDao.insertTag(tag)
     }
 
     suspend fun deleteTag(tag: TaskTag) {

@@ -39,7 +39,7 @@ fun TagBottomSheet(
 
     val validTag by remember(tag.title) {
         mutableStateOf(
-            isValidTag(tag)
+            isValidTag(tag) && tag.title.isNotBlank()
         )
     }
 
