@@ -1,12 +1,7 @@
 package ap.panini.procrastaint.ui.library
 
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +12,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -26,20 +20,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
-import ap.panini.procrastaint.ui.components.TagItem
+import ap.panini.procrastaint.ui.library.components.TagItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import org.koin.androidx.compose.koinViewModel
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.generated.destinations.TagScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -51,10 +42,6 @@ fun LibraryScreen(
 ) {
     val tags by viewModel.tags.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(tags) {
-        println(tags)
-    }
 
     val bottomSheetState = rememberBottomSheetTagState()
 
@@ -117,7 +104,9 @@ fun LibraryScreen(
                             }
                         )
                 ) {
-                    TagItem(it)
+                    TagItem(
+                        tag = it,
+                    )
                 }
             }
         }

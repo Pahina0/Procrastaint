@@ -2,7 +2,6 @@ package ap.panini.procrastaint.ui.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,4 +34,5 @@ class LibraryViewModel(
             db.upsertTaskTag(tag)
         }
     }
+
 }

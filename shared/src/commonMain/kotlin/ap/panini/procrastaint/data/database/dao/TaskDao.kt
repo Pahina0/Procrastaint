@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun upsertTag(taskTag: TaskTag): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun upsertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
 
     @Insert
@@ -37,6 +37,14 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: TaskInfo)
+
+    @Delete
+    suspend fun deleteTag(tag: TaskTag)
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTagCrossRef WHERE tagId = :tagId""")
+    suspend fun getTaskTagCrossRef(tagId: Long): List<TaskTagCrossRef>
+
 
     @Transaction
     @Query("""DELETE FROM TaskTagCrossRef WHERE taskId = :taskId""")
