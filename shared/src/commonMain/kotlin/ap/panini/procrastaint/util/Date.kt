@@ -126,6 +126,13 @@ object Date {
             if (year) {
                 date(LocalDate.Formats.ISO)
             } else {
+                if (useAbbreviated) {
+                    monthName(monthFormat)
+                    char(' ')
+                    dayOfMonth(padding = Padding.NONE)
+                    return
+                }
+
                 when (daysAway) {
                     0 -> {
                         chars("Today")
@@ -137,11 +144,7 @@ object Date {
 
                     in 2..6 -> {
                         dayOfWeek(
-                            if (useAbbreviated) {
-                                DayOfWeekNames.ENGLISH_ABBREVIATED
-                            } else {
-                                DayOfWeekNames.ENGLISH_FULL
-                            }
+                            DayOfWeekNames.ENGLISH_FULL
                         )
                     }
 
