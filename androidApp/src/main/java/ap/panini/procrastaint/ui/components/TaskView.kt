@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -22,7 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -33,14 +36,12 @@ fun TaskView(
     task: TaskSingle,
     onCheck: (TaskSingle) -> Unit,
     onEdit: (taskId: Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showFullDate: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
+    Column(modifier = modifier) {
         ListItem(
             modifier = Modifier
                 .combinedClickable(
@@ -50,10 +51,16 @@ fun TaskView(
 
             trailingContent = {
                 if (task.startTime != null) {
+                    val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
+
+                    if (showFullDate) {
+                        timeSet += Time.DAY
+                    }
+
                     Text(
                         task.currentEventTime.formatMilliseconds(
-                            setOf(Time.HOUR, Time.MINUTE),
-                            smart = false,
+                            timeSet,
+                            smart = showFullDate,
                             useAbbreviated = true
                         )
                     )
@@ -73,12 +80,15 @@ fun TaskView(
                 Column {
                     if (task.repeatOften != null && task.repeatTag != null) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 2.dp)
                         ) {
                             Icon(
                                 Icons.Outlined.Repeat,
                                 null,
-                                modifier = Modifier.height(15.dp)
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .padding(end = 4.dp)
                             )
                             Text(
                                 "${task.repeatOften} ${task.repeatTag!!.name}",
@@ -90,11 +100,36 @@ fun TaskView(
                     if (task.description.isNotBlank()) {
                         Text(
                             task.description,
-                            modifier = Modifier.clickable { expanded = !expanded },
+                            modifier = Modifier
+                                .clickable { expanded = !expanded },
                             overflow = TextOverflow.Ellipsis,
                             maxLines = if (expanded) Int.MAX_VALUE else 1,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.bodySmall
                         )
+                    }
+
+                    if (task.tags.isNotEmpty()) {
+                        val tags = buildAnnotatedString {
+                            task.tags.forEachIndexed { i, v ->
+                                withStyle(
+                                    style = SpanStyle(
+                                        color =
+                                        v.toRgb().let {
+                                            Color(it.first, it.second, it.third)
+                                        }
+                                    )
+                                ) {
+                                    if (i != 0) {
+                                        append("\n")
+                                    }
+                                    append("#")
+                                }
+
+                                append(v.displayTitle)
+                            }
+                        }
+
+                        Text(tags)
                     }
                 }
             },
@@ -104,8 +139,8 @@ fun TaskView(
             }
         )
         HorizontalDivider(
-            modifier = Modifier.padding(vertical = 5.dp, horizontal = 80.dp),
-            thickness = 1.dp
+            modifier = Modifier.padding(bottom = 5.dp, start = 80.dp, end = 80.dp),
+            thickness = 0.5.dp
         )
     }
 }

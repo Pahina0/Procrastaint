@@ -41,6 +41,7 @@ fun UpcomingScreen(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
 
+//    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     val scrollBehavior =

@@ -21,6 +21,16 @@ enum class Time {
         }
     }
 
+    override fun toString(): String = when (this) {
+        SECOND -> "Second"
+        MINUTE -> "Minute"
+        HOUR -> "Hour"
+        DAY -> "Day"
+        WEEK -> "Week"
+        MONTH -> "Month"
+        YEAR -> "Year"
+    }
+
     fun toTimeRepeatString(): String = when (this) {
         SECOND -> "SECONDLY"
         MINUTE -> "MINUTELY"

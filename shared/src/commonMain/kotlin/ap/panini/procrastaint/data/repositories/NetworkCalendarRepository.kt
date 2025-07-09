@@ -187,7 +187,6 @@ class NetworkCalendarRepository(
             }
 
             if (response is CalendarRepository.Response.Error) {
-                println("${task.taskInfo} $completion")
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         nsDao.insertNetworkSyncItem(

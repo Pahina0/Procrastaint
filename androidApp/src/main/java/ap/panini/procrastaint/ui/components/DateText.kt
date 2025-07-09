@@ -1,9 +1,12 @@
 package ap.panini.procrastaint.ui.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
@@ -14,7 +17,8 @@ fun DateText(
 ) {
     Text(
         date?.takeUnless { it == 0L }?.formatMilliseconds(setOf(Time.DAY, Time.MONTH)) ?: "Unknown",
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = modifier
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier.padding(vertical = 8.dp)
     )
 }

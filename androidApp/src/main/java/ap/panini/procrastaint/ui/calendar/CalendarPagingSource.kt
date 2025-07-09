@@ -21,7 +21,7 @@ class CalendarPagingSource(
             data = listOf(
                 Pair(
                     from,
-                    db.getTasksBetween(from, from + 24.hours.inWholeMilliseconds)
+                    db.getTasks(from, from + 24.hours.inWholeMilliseconds)
                 )
             ),
             prevKey = (from) - 24.hours.inWholeMilliseconds,

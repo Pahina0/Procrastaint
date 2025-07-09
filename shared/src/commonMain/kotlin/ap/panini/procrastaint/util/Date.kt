@@ -5,6 +5,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.DateTimeFormatBuilder
@@ -17,6 +18,13 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+
+const val StartOfWeek = 2
+const val EndOfWeek = 6
+
+fun Instant.toLocalDate(): LocalDate {
+    return this.toLocalDateTime(TimeZone.currentSystemDefault()).date
+}
 
 object Date {
     private const val ROUND_NUMBER = 100000
@@ -91,8 +99,10 @@ object Date {
         val hour = known.contains(Time.HOUR)
         val minute = known.contains(Time.MINUTE)
 
+        val daysAway = now.date.daysUntil(time.date)
+
         val formatter = LocalDateTime.Format {
-            formatDate(year, month, week, day, useAbbreviated)
+            formatDate(year, month, week, day, daysAway, useAbbreviated)
 
             val showDate = month || day || year || week
             val showTime = hour || minute
@@ -112,6 +122,7 @@ object Date {
         month: Boolean,
         week: Boolean,
         day: Boolean,
+        daysAway: Int = 0,
         useAbbreviated: Boolean = false
     ) {
         val monthFormat =
@@ -121,9 +132,34 @@ object Date {
             if (year) {
                 date(LocalDate.Formats.ISO)
             } else {
-                monthName(monthFormat)
-                char(' ')
-                dayOfMonth(padding = Padding.NONE)
+                if (useAbbreviated) {
+                    monthName(monthFormat)
+                    char(' ')
+                    dayOfMonth(padding = Padding.NONE)
+                    return
+                }
+
+                when (daysAway) {
+                    0 -> {
+                        chars("Today")
+                    }
+
+                    1 -> {
+                        chars("Tomorrow")
+                    }
+
+                    in StartOfWeek..EndOfWeek -> {
+                        dayOfWeek(
+                            DayOfWeekNames.ENGLISH_FULL
+                        )
+                    }
+
+                    else -> {
+                        monthName(monthFormat)
+                        char(' ')
+                        dayOfMonth(padding = Padding.NONE)
+                    }
+                }
             }
         } else if (month) {
             monthName(monthFormat)

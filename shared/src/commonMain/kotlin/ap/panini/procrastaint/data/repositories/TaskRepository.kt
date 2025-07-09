@@ -4,7 +4,10 @@ import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 import ap.panini.procrastaint.notifications.NotificationManager
+import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +28,11 @@ class TaskRepository(
     suspend fun insertTask(tasks: Task): Boolean {
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
+        tasks.tags.forEach {
+            val tagId = upsertTaskTag(it)
+            upsertTaskTagCrossRef(TaskTagCrossRef(id, tagId))
+        }
+
         tasks.meta.forEach {
             taskDao.insertTaskMeta(it.copy(taskId = id))
         }
@@ -41,6 +49,48 @@ class TaskRepository(
     suspend fun getTask(id: Long): Task = taskDao.getTask(id)
     suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
 
+    fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
+    suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
+    suspend fun getTag(id: Long): TaskTag = taskDao.getTag(id)
+
+    suspend fun upsertTaskTagCrossRef(taskTagCrossRef: TaskTagCrossRef) =
+        taskDao.insertTagCrossRef(taskTagCrossRef)
+
+    suspend fun upsertTaskTag(tag: TaskTag): Long {
+        // check if valid color
+        val tag = if (tag.toRgbOrNull() == null) {
+            tag.copy(color = TaskTag.generateRandomColor())
+        } else {
+            tag
+        }
+
+        if (tag.tagId != 0L) {
+            taskDao.updateTag(tag)
+            return tag.tagId
+        }
+
+        return taskDao.insertTag(tag)
+    }
+
+    suspend fun deleteTag(tag: TaskTag) {
+        taskDao.deleteTag(tag)
+    }
+
+    suspend fun deleteTagWithTasks(tag: TaskTag) {
+        val tasks = taskDao.getTaskTagCrossRef(tag.tagId)
+        deleteTag(tag)
+
+        for (task in tasks) {
+            deleteTask(task.taskId)
+        }
+    }
+
+    suspend fun editTask(newTask: Task) {
+        deleteTask(newTask)
+
+        insertTask(newTask)
+    }
+
     suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
 
@@ -49,11 +99,18 @@ class TaskRepository(
 
     suspend fun deleteTask(task: Task) {
         taskDao.deleteTask(task.taskInfo)
+        taskDao.deleteTagsCrossRef(task.taskInfo.taskId) // deletes tags
 
         CoroutineScope(Dispatchers.IO).launch {
             notificationManager.delete(task)
             calendar.deleteTask(task)
         }
+    }
+
+    suspend fun getTagStartingWith(title: String) = taskDao.getTagsStarting(title)
+
+    suspend fun deleteTask(taskId: Long) {
+        deleteTask(getTask(taskId))
     }
 
     suspend fun addCompletion(taskCompletion: TaskCompletion) {
@@ -63,7 +120,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetweenFiltered(
+            getTasks(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -81,7 +138,7 @@ class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val task = getTask(taskCompletion.taskId)
-            getTasksBetweenFiltered(
+            getTasks(
                 taskCompletion.forTime,
                 taskCompletion.forTime,
                 taskCompletion.taskId
@@ -92,22 +149,19 @@ class TaskRepository(
         }
     }
 
-    fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetween(from, to).organize(
+    fun getTasks(
+        from: Long = Date.getTodayStart(),
+        to: Long? = null,
+        taskId: Long? = null,
+        tagId: Long? = null,
+        maxRepetition: Long = Long.MAX_VALUE,
+        includeNoTimeTasks: Boolean = false
+    ): Flow<List<TaskSingle>> =
+        taskDao.getTasks(from, to, taskId, tagId, includeNoTimeTasks).organize(
             from = from,
-            to = to,
+            to = to ?: Long.MAX_VALUE,
+            maxRepetition = maxRepetition
         )
-
-    fun getTasksBetweenFiltered(from: Long, to: Long, taskId: Long): Flow<List<TaskSingle>> =
-        taskDao.getTasksBetweenFiltered(from, to, taskId).organize(
-            from = from,
-            to = to,
-        )
-
-    fun getTasksFrom(from: Long): Flow<List<TaskSingle>> = taskDao.getAllTasks(from).organize(
-        from = from,
-        maxRepetition = 5
-    )
 
     /**
      * Get all repetitions in a tasks given a single task
@@ -171,7 +225,7 @@ class TaskRepository(
      * @param maxRepetition
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun Flow<List<TaskSingle>>.organize(
+    private fun Flow<List<TaskSingle>>.organize(
         from: Long,
         to: Long = Long.MAX_VALUE,
         maxRepetition: Long = Long.MAX_VALUE

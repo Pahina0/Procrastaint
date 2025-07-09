@@ -76,7 +76,7 @@ class NotificationManager {
     internal fun create(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
-            tasksRepo.getTasksBetweenFiltered(
+            tasksRepo.getTasks(
                 now,
                 now + HOURS_AHEAD.hours.inWholeMilliseconds,
                 task.taskInfo.taskId
@@ -96,7 +96,7 @@ class NotificationManager {
     internal fun delete(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
-            tasksRepo.getTasksBetweenFiltered(
+            tasksRepo.getTasks(
                 now,
                 now + HOURS_AHEAD.hours.inWholeMilliseconds,
                 task.taskInfo.taskId
@@ -125,7 +125,6 @@ class NotificationManager {
                 append(taskId)
             }
 
-
         // ensures its always valid number
         return time.toIntOrNull() ?: -(time.toLong() % Int.MAX_VALUE).toInt()
     }
@@ -137,7 +136,7 @@ class NotificationManager {
     fun getNextDayNotifications() {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
-            tasksRepo.getTasksBetween(now, now + HOURS_AHEAD.hours.inWholeMilliseconds).first()
+            tasksRepo.getTasks(now, now + HOURS_AHEAD.hours.inWholeMilliseconds).first()
         }
 
         if (callback == null) throw NullPointerException("Make sure you initialize `callback`")

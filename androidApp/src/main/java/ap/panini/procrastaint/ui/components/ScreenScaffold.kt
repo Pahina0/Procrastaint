@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenScaffold(
     modifier: Modifier = Modifier,
@@ -29,7 +31,9 @@ fun ScreenScaffold(
 ) {
     Scaffold(
         modifier = modifier,
-        topBar = topBar,
+        topBar = {
+            topBar()
+        },
         bottomBar = bottomBar,
         snackbarHost = snackbarHost,
         floatingActionButton = floatingActionButton,

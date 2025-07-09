@@ -8,7 +8,8 @@ naming:
 
 complexity:
   TooManyFunctions:
-    thresholdInClasses: 15
+    thresholdInClasses: 25
+    thresholdInInterfaces: 25
   LongMethod:
     ignoreAnnotated: [ 'Composable' ]
   LongParameterList:

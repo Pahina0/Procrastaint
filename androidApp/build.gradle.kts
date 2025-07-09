@@ -9,13 +9,13 @@ plugins {
 
 android {
     namespace = "ap.panini.procrastaint"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "ap.panini.procrastaint"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 4
-        versionName = "0.0.3"
+        targetSdk = 36
+        versionCode = 5
+        versionName = "0.0.4"
     }
     buildFeatures {
         buildConfig = true
@@ -92,4 +92,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+
+    implementation(libs.compose.colorpicker)
 }

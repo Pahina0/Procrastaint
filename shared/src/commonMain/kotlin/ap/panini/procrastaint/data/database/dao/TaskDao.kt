@@ -3,17 +3,30 @@ package ap.panini.procrastaint.data.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
 import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.data.entities.TaskTagCrossRef
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
+    @Insert
+    suspend fun insertTag(taskTag: TaskTag): Long
+
+    @Update
+    suspend fun updateTag(taskTag: TaskTag)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
+
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
 
@@ -28,6 +41,33 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: TaskInfo)
+
+    @Delete
+    suspend fun deleteTag(tag: TaskTag)
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTagCrossRef WHERE tagId = :tagId""")
+    suspend fun getTaskTagCrossRef(tagId: Long): List<TaskTagCrossRef>
+
+    @Transaction
+    @Query("""DELETE FROM TaskTagCrossRef WHERE taskId = :taskId""")
+    suspend fun deleteTagsCrossRef(taskId: Long)
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTag""")
+    fun getTags(): Flow<List<TaskTag>>
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE title LIKE :title || '%'""")
+    suspend fun getTagsStarting(title: String): List<TaskTag>
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE title = :title""")
+    suspend fun getTagOrNull(title: String): TaskTag?
+
+    @Transaction
+    @Query("""SELECT * FROM TaskTag WHERE tagId = :id""")
+    suspend fun getTag(id: Long): TaskTag
 
     @Transaction
     @Query("""SELECT * FROM TaskInfo WHERE taskId = :id""")
@@ -59,97 +99,43 @@ interface TaskDao {
         LEFT JOIN TaskCompletion tc
             ON ti.taskId = tc.taskId
                 AND tm.metaId = tc.metaId
-        WHERE (tm.startTime IS NOT NULL
-            AND (
-                tm.startTime >= :from
-                OR (
-                    (
-                        tm.repeatTag IS NOT NULL
-                        AND tm.repeatOften IS NOT NULL
-                        )
-                    AND (
-                        tm.endTime IS NULL
-                        OR tm.endTime >= :from
-                        )
-                    )
-                )
-            AND tm.startTime <= :to)
-            AND ti.taskId = :taskId
-        ORDER BY tm.startTime
-    """
-    )
-    fun getTasksBetweenFiltered(from: Long, to: Long, taskId: Long): Flow<List<TaskSingle>>
-
-    @Query(
-        """
-        SELECT ti.taskId,
-            tm.metaId,
-            tc.completionId,
-            ti.title,
-            ti.description,
-            tc.completionTime AS completed,
-            tm.startTime,
-            tm.endTime,
-            tm.repeatTag,
-            tm.repeatOften,
-            COALESCE(tc.forTime, - 1) AS currentEventTime
-        FROM TaskInfo ti
-        LEFT JOIN TaskMeta tm
-            ON ti.taskId = tm.taskId
-        LEFT JOIN TaskCompletion tc
-            ON ti.taskId = tc.taskId
-                AND tm.metaId = tc.metaId
-        WHERE tm.startTime IS NOT NULL
-            AND (
-                tm.startTime >= :from
-                OR (
-                    (
-                        tm.repeatTag IS NOT NULL
-                        AND tm.repeatOften IS NOT NULL
-                        )
-                    AND (
-                        tm.endTime IS NULL
-                        OR tm.endTime >= :from
-                        )
-                    )
-                )
-            AND tm.startTime <= :to
-        ORDER BY tm.startTime
-    """
-    )
-    fun getTasksBetween(from: Long, to: Long): Flow<List<TaskSingle>>
-
-    @Query(
-        """
-        SELECT ti.taskId,
-            tm.metaId,
-            tc.completionId,
-            ti.title,
-            ti.description,
-            tc.completionTime AS completed,
-            tm.startTime,
-            tm.endTime,
-            tm.repeatTag,
-            tm.repeatOften,
-            COALESCE(tc.forTime, - 1) AS currentEventTime
-        FROM TaskInfo ti
-        LEFT JOIN TaskMeta tm
-            ON ti.taskId = tm.taskId
-        LEFT JOIN TaskCompletion tc
-            ON ti.taskId = tc.taskId
-                AND tm.metaId = tc.metaId
-        WHERE tc.completionTime IS NULL
-            OR (
+        LEFT JOIN TaskTagCrossRef ttcr
+            ON ti.taskId = ttcr.taskId
+        LEFT JOIN TaskTag tt
+            ON ttcr.tagId = tt.tagId
+        WHERE (
                 (
-                    tm.repeatTag IS NOT NULL
-                    AND tm.repeatOften IS NOT NULL
-                    )
-                AND (
-                    tm.endTime IS NULL
-                    OR tm.endTime >= :from
-                    )
+                    tm.startTime IS NOT NULL
+                    AND (
+                        tm.startTime >= :from
+                        OR (
+                            (
+                                tm.repeatTag IS NOT NULL
+                                AND tm.repeatOften IS NOT NULL
+                                )
+                            AND (
+                                tm.endTime IS NULL
+                                OR tm.endTime >= :from
+                                )
+                            )
+                        )
+                    AND (:to IS NULL OR tm.startTime <= :to)
                 )
+                OR (
+                    :includeNoTimeTasks
+                    AND tm.startTime IS NULL
+                )
+            )
+            AND (:taskId IS NULL OR ti.taskId = :taskId)
+            AND (:tagId IS NULL OR tt.tagId = :tagId)
+        ORDER BY tm.startTime
     """
     )
-    fun getAllTasks(from: Long): Flow<List<TaskSingle>>
+    fun getTasks(
+        from: Long,
+        to: Long? = null,
+        taskId: Long? = null,
+        tagId: Long? = null,
+        includeNoTimeTasks: Boolean = false
+    ): Flow<List<TaskSingle>>
 }
