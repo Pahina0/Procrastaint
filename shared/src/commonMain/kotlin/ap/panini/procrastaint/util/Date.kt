@@ -148,7 +148,7 @@ object Date {
                         chars("Tomorrow")
                     }
 
-                    in START_OF_WEEK..END_OF_WEEK -> {
+                    in StartOfWeek..EndOfWeek -> {
                         dayOfWeek(
                             DayOfWeekNames.ENGLISH_FULL
                         )
