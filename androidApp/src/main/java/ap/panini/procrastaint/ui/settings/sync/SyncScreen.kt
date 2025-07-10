@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.SyncDisabled
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -90,21 +91,19 @@ fun SyncScreen(
 
 @Composable
 private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Unit) {
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.EndToStart ||
-                it == SwipeToDismissBoxValue.StartToEnd
-            ) {
-                deleteItem(item)
-            }
-            it != SwipeToDismissBoxValue.StartToEnd
-        }
-    )
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+
 
     SwipeToDismissBox(
         modifier = Modifier.fillMaxWidth(),
         state = swipeToDismissBoxState,
         enableDismissFromStartToEnd = false,
+        onDismiss = {
+            if (it == SwipeToDismissBoxValue.EndToStart) {
+                deleteItem(item)
+                swipeToDismissBoxState.reset()
+            }
+        },
         backgroundContent = {
             val direction = swipeToDismissBoxState.dismissDirection
             val alignment = when (direction) {
@@ -128,17 +127,23 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
             }
         }
     ) {
-        Column {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("TaskId: ${item.taskId}")
-                Text("MetaId: ${item.metaId}")
-                Text("CompletionId: ${item.completionId}")
-                Text("Runs: ${item.failCount}")
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Column(modifier = Modifier.padding(10.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("TaskId: ${item.taskId}")
+                    Text("MetaId: ${item.metaId}")
+                    Text("CompletionId: ${item.completionId}")
+                    Text("Runs: ${item.failCount}")
+                }
 
-            Text("Location: ${item.location}")
-            Text("Action: ${item.action}")
-            Text(item.time.toRFC3339(), style = MaterialTheme.typography.labelSmall)
+                Text("Location: ${item.location}")
+                Text("Action: ${item.action}")
+                Text(item.time.toRFC3339(), style = MaterialTheme.typography.labelSmall)
+            }
         }
     }
 }
