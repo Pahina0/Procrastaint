@@ -20,6 +20,7 @@ ktor = "3.2.1"
 ktorfitConvertersFlow = "2.4.0"
 ktorfitLib = "2.6.1"
 kwhen = "0.1.0"
+material = "1.8.3"
 navigationCompose = "2.9.1"
 pagingCompose = "3.3.6"
 sqliteBundled = "2.5.2"
@@ -36,6 +37,7 @@ colorpicker = "1.1.2"
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialicons" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }

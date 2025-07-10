@@ -22,22 +22,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ap.panini.procrastaint.ui.Route
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TagBottomSheet
 import ap.panini.procrastaint.ui.components.rememberBottomSheetTagState
 import ap.panini.procrastaint.ui.library.components.TagItem
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.TagScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun LibraryScreen(
-    navigator: DestinationsNavigator,
+    onNavigateToTag: (Route.Tag) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LibraryViewModel = koinViewModel(),
 ) {
@@ -101,7 +97,7 @@ fun LibraryScreen(
                                 bottomSheetState.setTag(it)
                             },
                             onClick = {
-                                navigator.navigate(TagScreenDestination(it.tagId))
+                                onNavigateToTag(Route.Tag(it.tagId))
                             }
                         )
                 ) {

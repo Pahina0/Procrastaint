@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -25,7 +25,6 @@ import androidx.compose.material3.ShortNavigationBar
 import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,25 +33,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.crash.GlobalExceptionHandler
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.CalendarScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.LibraryScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.TagScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.UpcomingScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.TypedDestinationSpec
-import com.ramcosta.composedestinations.utils.currentDestinationAsState
-import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
-import com.ramcosta.composedestinations.utils.startDestination
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
@@ -93,48 +84,51 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainContent(viewModel: MainActivityViewModel) {
         val navController = rememberNavController()
-        val directions = remember { BottomBarDestination.entries.map { it.direction } }
-
-        val curDestination = navController.currentDestinationAsState().value
-            ?: NavGraphs.root.startDestination
+//        val directions = remember { BottomBarDestination.entries.map { it.direction } }
+//
+//        val curDestination = navController.currentDestinationAsState().value
+//            ?: NavGraphs.root.startDestination
 
         var mainDestinationSelected by remember { mutableStateOf(false) }
 
-        LaunchedEffect(curDestination) {
-            mainDestinationSelected = directions.any { it == curDestination }
-        }
-
+//        LaunchedEffect(curDestination) {
+//            mainDestinationSelected = directions.any { it == curDestination }
+//        }
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         Scaffold(
             bottomBar = {
-                if (mainDestinationSelected) {
-                    BottomBar(navController.rememberDestinationsNavigator(), curDestination)
-                }
+                BottomBar(navController)
+//                if (mainDestinationSelected) {
+//                    BottomBar(navController.rememberDestinationsNavigator(), curDestination)
+//                }
             },
 
             floatingActionButton = {
-                AnimatedVisibility(
-                    (
-                        mainDestinationSelected &&
-                            curDestination != BottomBarDestination.Settings.direction
-                        ) ||
-                        curDestination == TagScreenDestination
-                ) {
-                    FloatingActionButton(onClick = {
-                        when (curDestination) {
-                            TagScreenDestination -> {
-                                val tagId = navController.currentBackStackEntry?.arguments?.getLong("tagId")
-                                viewModel.onShow(tagId = tagId)
-                            }
-                            else -> viewModel.onShow()
-                        }
-                    }) {
-                        Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
-                    }
+//                AnimatedVisibility(
+//                    (
+//                        mainDestinationSelected &&
+//                            curDestination != BottomBarDestination.Settings.direction
+//                        ) ||
+//                        curDestination == TagScreenDestination
+//                ) {
+                FloatingActionButton(onClick = {
+                    viewModel.onShow()
+//                    when (curDestination) {
+//                        TagScreenDestination -> {
+//                            val tagId =
+//                                navController.currentBackStackEntry?.arguments?.getLong("tagId")
+//                            viewModel.onShow(tagId = tagId)
+//                        }
+//
+//                        else -> viewModel.onShow()
+//                    }
+                }) {
+                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
                 }
+//                }
             },
 
-        ) {
+            ) { it ->
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -148,80 +142,165 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            DestinationsNavHost(
-                navGraph = NavGraphs.root,
-                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
-                navController = navController
+            Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
+                NavGraph(navController, Route.Calendar)
+            }
+//            DestinationsNavHost(
+//                navGraph = NavGraphs.root,
+//                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
+//                navController = navController
+//            )
+        }
+    }
+}
+
+private enum class BottomBarDestination(
+    val direction: Route,
+    val iconSelected: ImageVector,
+    val iconDeselected: ImageVector,
+    @StringRes val label: Int
+) {
+    Calendar(
+        Route.Calendar,
+        Icons.Default.CalendarMonth,
+        Icons.Outlined.CalendarMonth,
+        R.string.calendar
+    ),
+    Tasks(
+        Route.Upcoming,
+        Icons.Default.Upcoming,
+        Icons.Outlined.Upcoming,
+        R.string.upcoming
+    ),
+
+    Library(
+        Route.Library,
+        Icons.Default.LibraryAddCheck,
+        Icons.Outlined.LibraryAddCheck,
+        R.string.library
+    ),
+
+    Settings(
+        Route.Settings,
+        Icons.Default.Settings,
+        Icons.Outlined.Settings,
+        R.string.settings
+    ),
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun BottomBar(navController: NavController) {
+    ShortNavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+        BottomBarDestination.entries.forEach { topLevelRoute ->
+            val isSelected by remember(currentDestination) {
+                mutableStateOf(currentDestination?.hierarchy?.any {
+                    it.hasRoute(
+                        topLevelRoute.direction::class
+                    )
+                } == true)
+            }
+
+            ShortNavigationBarItem(
+                icon = {
+                    Icon(
+                        if (isSelected) {
+                            topLevelRoute.iconSelected
+                        } else {
+                            topLevelRoute.iconDeselected
+                        },
+                        contentDescription = stringResource(topLevelRoute.label)
+                    )
+                },
+                label = { Text(stringResource(topLevelRoute.label)) },
+                selected = isSelected,
+                onClick = {
+                    navController.navigate(topLevelRoute.direction) {
+                        // Pop up to the start destination of the graph to
+                        // avoid building up a large stack of destinations
+                        // on the back stack as users select items
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                }
             )
         }
     }
-
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-    @Composable
-    private fun BottomBar(
-        destinationsNavigator: DestinationsNavigator,
-        curDestination: TypedDestinationSpec<out Any?>,
-        modifier: Modifier = Modifier,
-    ) {
-        ShortNavigationBar(modifier = modifier) {
-            BottomBarDestination.entries.forEach { destination ->
-                ShortNavigationBarItem(
-                    selected = curDestination == destination.direction,
-                    onClick = {
-                        destinationsNavigator.navigate(destination.direction) {
-                            launchSingleTop = true
-                            popUpTo(destination.direction) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            if (curDestination == destination.direction) {
-                                destination.iconSelected
-                            } else {
-                                destination.iconDeselected
-                            },
-                            contentDescription = stringResource(destination.label)
-                        )
-                    },
-                    label = { Text(stringResource(destination.label)) },
-                )
-            }
-        }
-    }
-
-    private enum class BottomBarDestination(
-        val direction: Direction,
-        val iconSelected: ImageVector,
-        val iconDeselected: ImageVector,
-        @StringRes val label: Int
-    ) {
-        Calendar(
-            CalendarScreenDestination,
-            Icons.Default.CalendarMonth,
-            Icons.Outlined.CalendarMonth,
-            R.string.calendar
-        ),
-        Tasks(
-            UpcomingScreenDestination,
-            Icons.Default.Upcoming,
-            Icons.Outlined.Upcoming,
-            R.string.upcoming
-        ),
-
-        Library(
-            LibraryScreenDestination,
-            Icons.Default.LibraryAddCheck,
-            Icons.Outlined.LibraryAddCheck,
-            R.string.library
-        ),
-
-        Settings(
-            SettingsScreenDestination,
-            Icons.Default.Settings,
-            Icons.Outlined.Settings,
-            R.string.settings
-        ),
-    }
 }
+//    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+//    @Composable
+//    private fun BottomBar(
+//        destinationsNavigator: DestinationsNavigator,
+//        curDestination: TypedDestinationSpec<out Any?>,
+//        modifier: Modifier = Modifier,
+//    ) {
+//        ShortNavigationBar(modifier = modifier) {
+//            BottomBarDestination.entries.forEach { destination ->
+//                ShortNavigationBarItem(
+//                    selected = curDestination == destination.direction,
+//                    onClick = {
+//                        destinationsNavigator.navigate(destination.direction) {
+//                            launchSingleTop = true
+//                            popUpTo(destination.direction) {
+//                                inclusive = true
+//                            }
+//                        }
+//                    },
+//                    icon = {
+//                        Icon(
+//                            if (curDestination == destination.direction) {
+//                                destination.iconSelected
+//                            } else {
+//                                destination.iconDeselected
+//                            },
+//                            contentDescription = stringResource(destination.label)
+//                        )
+//                    },
+//                    label = { Text(stringResource(destination.label)) },
+//                )
+//            }
+//        }
+//    }
+//
+//    private enum class BottomBarDestination(
+//        val direction: Direction,
+//        val iconSelected: ImageVector,
+//        val iconDeselected: ImageVector,
+//        @StringRes val label: Int
+//    ) {
+//        Calendar(
+//            CalendarScreenDestination,
+//            Icons.Default.CalendarMonth,
+//            Icons.Outlined.CalendarMonth,
+//            R.string.calendar
+//        ),
+//        Tasks(
+//            UpcomingScreenDestination,
+//            Icons.Default.Upcoming,
+//            Icons.Outlined.Upcoming,
+//            R.string.upcoming
+//        ),
+//
+//        Library(
+//            LibraryScreenDestination,
+//            Icons.Default.LibraryAddCheck,
+//            Icons.Outlined.LibraryAddCheck,
+//            R.string.library
+//        ),
+//
+//        Settings(
+//            SettingsScreenDestination,
+//            Icons.Default.Settings,
+//            Icons.Outlined.Settings,
+//            R.string.settings
+//        ),
+//    }
+//}

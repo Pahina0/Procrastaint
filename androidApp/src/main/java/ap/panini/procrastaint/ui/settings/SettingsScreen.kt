@@ -15,17 +15,14 @@ import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import ap.panini.procrastaint.ui.settings.groups.About
 import ap.panini.procrastaint.ui.settings.groups.Sync
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun SettingsScreen(
-    navigator: DestinationsNavigator,
+    onNavigateToAboutLibraries: () -> Unit,
+    onNavigateToSync: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
     googleAuth: GoogleAuth = koinInject()
@@ -41,7 +38,7 @@ fun SettingsScreen(
                     .fillMaxSize()
             ) {
                 Sync(
-                    navigator,
+                    onNavigateToSync,
                     state.googleLoggedIn,
                     viewModel::googleLogout,
                     googleAuth::auth
@@ -49,7 +46,7 @@ fun SettingsScreen(
 
                 HorizontalDivider()
 
-                About(navigator)
+                About(onNavigateToAboutLibraries)
             }
         }
     }

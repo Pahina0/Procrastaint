@@ -34,16 +34,12 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun SyncScreen(
-    destinationsNavigator: DestinationsNavigator,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SyncViewModel = koinViewModel(),
 ) {
@@ -55,7 +51,7 @@ fun SyncScreen(
             TopAppBar(
                 title = { Text("Calendar Sync") },
                 navigationIcon = {
-                    IconButton(onClick = { destinationsNavigator.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"

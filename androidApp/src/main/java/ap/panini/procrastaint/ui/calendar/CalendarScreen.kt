@@ -42,17 +42,12 @@ import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-@Destination<RootGraph>(
-    start = true,
-)
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,

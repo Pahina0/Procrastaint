@@ -26,12 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.ui.Route
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.ui.tag.components.DeleteConfirmationDialog
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -39,14 +37,14 @@ private const val HorizontalPadding = 16f
 private const val VerticalPadding = 8f
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun TagScreen(
-    tagId: Long,
-    destinationsNavigator: DestinationsNavigator,
+    args: Route.Tag,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TagViewModel = koinViewModel { parametersOf(tagId) },
+    viewModel: TagViewModel = koinViewModel { parametersOf(args.tagId) },
 ) {
+
     val incompleteTasks = viewModel.incompleteTasks.collectAsStateWithLifecycle(emptyList()).value
     val completedTasks = viewModel.completedTasks.collectAsStateWithLifecycle(emptyList()).value
     var showMenu by remember { mutableStateOf(false) }
@@ -63,7 +61,7 @@ fun TagScreen(
             TopAppBar(
                 title = { Text(viewModel.tag.title) },
                 navigationIcon = {
-                    IconButton(onClick = { destinationsNavigator.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -114,7 +112,10 @@ fun TagScreen(
                 Text(
                     text = "Incomplete",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = Dp(HorizontalPadding), vertical = Dp(VerticalPadding))
+                    modifier = Modifier.padding(
+                        horizontal = Dp(HorizontalPadding),
+                        vertical = Dp(VerticalPadding)
+                    )
                 )
             }
             items(incompleteTasks) { task ->
@@ -130,7 +131,10 @@ fun TagScreen(
                 Text(
                     text = "Complete",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = Dp(HorizontalPadding), vertical = Dp(VerticalPadding))
+                    modifier = Modifier.padding(
+                        horizontal = Dp(HorizontalPadding),
+                        vertical = Dp(VerticalPadding)
+                    )
                 )
             }
 
@@ -153,7 +157,7 @@ fun TagScreen(
             onConfirm = {
                 viewModel.onDelete()
                 showDeleteDialog = false
-                destinationsNavigator.popBackStack()
+                onNavigateBack()
             },
             onDismiss = { showDeleteDialog = false }
         )
@@ -167,7 +171,7 @@ fun TagScreen(
             onConfirm = {
                 viewModel.onDeleteWithTasks()
                 showDeleteWithTasksDialog = false
-                destinationsNavigator.popBackStack()
+                onNavigateBack()
             },
             onDismiss = { showDeleteWithTasksDialog = false }
         )
