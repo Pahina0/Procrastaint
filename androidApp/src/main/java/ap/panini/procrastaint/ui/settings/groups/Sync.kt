@@ -11,13 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import ap.panini.procrastaint.ui.settings.components.Section
 import ap.panini.procrastaint.ui.settings.components.SettingsItem
-import com.ramcosta.composedestinations.generated.destinations.SyncScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Sync(
-    navigator: DestinationsNavigator,
+    onNavigateToSync: () -> Unit,
     isLoggedInGoogle: Boolean,
     logoutGoogle: () -> Unit,
     loginGoogle: (Context) -> Unit,
@@ -30,7 +28,7 @@ fun Sync(
             Icons.Outlined.Autorenew,
             "Google",
             subtext = "Sync to Google calendar",
-            onClick = { navigator.navigate(SyncScreenDestination) }
+            onClick = { onNavigateToSync() }
         ) {
             Button(
                 onClick = {

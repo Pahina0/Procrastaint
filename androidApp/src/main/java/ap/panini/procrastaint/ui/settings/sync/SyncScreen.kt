@@ -34,16 +34,12 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun SyncScreen(
-    destinationsNavigator: DestinationsNavigator,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SyncViewModel = koinViewModel(),
 ) {
@@ -55,7 +51,7 @@ fun SyncScreen(
             TopAppBar(
                 title = { Text("Calendar Sync") },
                 navigationIcon = {
-                    IconButton(onClick = { destinationsNavigator.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -94,21 +90,18 @@ fun SyncScreen(
 
 @Composable
 private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Unit) {
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-        confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.EndToStart ||
-                it == SwipeToDismissBoxValue.StartToEnd
-            ) {
-                deleteItem(item)
-            }
-            it != SwipeToDismissBoxValue.StartToEnd
-        }
-    )
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
     SwipeToDismissBox(
         modifier = Modifier.fillMaxWidth(),
         state = swipeToDismissBoxState,
         enableDismissFromStartToEnd = false,
+        onDismiss = {
+            if (it == SwipeToDismissBoxValue.EndToStart) {
+                deleteItem(item)
+                swipeToDismissBoxState.reset()
+            }
+        },
         backgroundContent = {
             val direction = swipeToDismissBoxState.dismissDirection
             val alignment = when (direction) {
@@ -132,17 +125,23 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
             }
         }
     ) {
-        Column {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("TaskId: ${item.taskId}")
-                Text("MetaId: ${item.metaId}")
-                Text("CompletionId: ${item.completionId}")
-                Text("Runs: ${item.failCount}")
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Column(modifier = Modifier.padding(10.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("TaskId: ${item.taskId}")
+                    Text("MetaId: ${item.metaId}")
+                    Text("CompletionId: ${item.completionId}")
+                    Text("Runs: ${item.failCount}")
+                }
 
-            Text("Location: ${item.location}")
-            Text("Action: ${item.action}")
-            Text(item.time.toRFC3339(), style = MaterialTheme.typography.labelSmall)
+                Text("Location: ${item.location}")
+                Text("Action: ${item.action}")
+                Text(item.time.toRFC3339(), style = MaterialTheme.typography.labelSmall)
+            }
         }
     }
 }

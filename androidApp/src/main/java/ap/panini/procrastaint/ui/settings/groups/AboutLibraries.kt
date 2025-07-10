@@ -16,15 +16,11 @@ import ap.panini.procrastaint.R
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Destination<RootGraph>
 fun AboutLibrariesScreen(
-    destinationsNavigator: DestinationsNavigator,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val libraries by rememberLibraries(R.raw.aboutlibraries)
@@ -35,7 +31,7 @@ fun AboutLibrariesScreen(
             TopAppBar(
                 title = { Text("Open Source Libraries") },
                 navigationIcon = {
-                    IconButton(onClick = { destinationsNavigator.popBackStack() }) {
+                    IconButton(onClick = { onNavigateBack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"

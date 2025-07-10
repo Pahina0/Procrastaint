@@ -11,11 +11,11 @@ import androidx.compose.ui.platform.LocalUriHandler
 import ap.panini.procrastaint.BuildConfig
 import ap.panini.procrastaint.ui.settings.components.Section
 import ap.panini.procrastaint.ui.settings.components.SettingsItem
-import com.ramcosta.composedestinations.generated.destinations.AboutLibrariesScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
-fun About(navigator: DestinationsNavigator) {
+fun About(
+    onNavigateToAboutLibraries: () -> Unit
+) {
     val uriHandler = LocalUriHandler.current
 
     Section("About") {
@@ -43,7 +43,7 @@ fun About(navigator: DestinationsNavigator) {
         })
 
         SettingsItem(Icons.Outlined.Attribution, "Open source libraries", onClick = {
-            navigator.navigate(AboutLibrariesScreenDestination())
+            onNavigateToAboutLibraries()
         })
     }
 }

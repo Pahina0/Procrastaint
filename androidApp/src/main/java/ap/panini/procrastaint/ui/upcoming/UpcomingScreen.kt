@@ -26,12 +26,9 @@ import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
 @Composable
 fun UpcomingScreen(
     modifier: Modifier = Modifier,

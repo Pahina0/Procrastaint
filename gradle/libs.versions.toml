@@ -14,23 +14,21 @@ compose-material3 = "1.4.0-alpha17"
 androidx-activityCompose = "1.10.1"
 kotlinxDatetime = "0.6.2"
 androidx-room = "2.7.2"
-kotlinxSerializationJson = "1.8.1"
+kotlinxSerializationJson = "1.9.0"
 ksp = "2.2.0-2.0.2"
-ktorClientAuth = "3.1.1"
-ktorClientContentNegotiation = "3.1.1"
-ktorClientLogging = "3.1.1"
+ktor = "3.2.1"
 ktorfitConvertersFlow = "2.4.0"
 ktorfitLib = "2.6.1"
-ktorSerializationKotlinxJson = "3.1.1"
 kwhen = "0.1.0"
+material = "1.8.3"
 navigationCompose = "2.9.1"
 pagingCompose = "3.3.6"
 sqliteBundled = "2.5.2"
 sqliteBundledAndroid = "2.5.2"
 workRuntimeKtx = "2.10.2"
 materialicons = "1.7.8"
-aboutLibraries = "12.2.3"
-serialization = "2.1.0"
+aboutLibraries = "12.2.4"
+serialization = "2.2.0"
 google-services = "4.4.3"
 crashalytics = "3.0.4"
 colorpicker = "1.1.2"
@@ -39,6 +37,7 @@ colorpicker = "1.1.2"
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialicons" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
@@ -71,10 +70,10 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
 destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "core" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktorClientAuth" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
-ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow", version.ref = "ktorfitConvertersFlow" }
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfitLib" }
 kwhen = { module = "io.github.pahinaa.kwhen:kwhen", version.ref = "kwhen" }

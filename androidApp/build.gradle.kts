@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.crashalytics)
 }
@@ -70,11 +71,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.material.icons.extended)
-
     // destinations
-    implementation(libs.destinations.core)
-    ksp(libs.destinations.ksp)
-    implementation(libs.destinations.bottom.sheet)
+//    implementation(libs.destinations.core)
+//    ksp(libs.destinations.ksp)
+//    implementation(libs.destinations.bottom.sheet)
 
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
