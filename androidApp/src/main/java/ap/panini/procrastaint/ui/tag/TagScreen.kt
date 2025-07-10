@@ -44,7 +44,6 @@ fun TagScreen(
     modifier: Modifier = Modifier,
     viewModel: TagViewModel = koinViewModel { parametersOf(args.tagId) },
 ) {
-
     val incompleteTasks = viewModel.incompleteTasks.collectAsStateWithLifecycle(emptyList()).value
     val completedTasks = viewModel.completedTasks.collectAsStateWithLifecycle(emptyList()).value
     var showMenu by remember { mutableStateOf(false) }

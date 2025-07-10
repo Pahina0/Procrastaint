@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -34,11 +35,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.crash.GlobalExceptionHandler
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
@@ -84,35 +85,46 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainContent(viewModel: MainActivityViewModel) {
         val navController = rememberNavController()
-//        val directions = remember { BottomBarDestination.entries.map { it.direction } }
-//
-//        val curDestination = navController.currentDestinationAsState().value
-//            ?: NavGraphs.root.startDestination
 
-        var mainDestinationSelected by remember { mutableStateOf(false) }
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
 
-//        LaunchedEffect(curDestination) {
-//            mainDestinationSelected = directions.any { it == curDestination }
-//        }
+
+        val showBottomBar by remember(currentDestination) {
+            mutableStateOf(
+                BottomBarDestination.entries.map { it.direction::class }
+                    .isEntryIn(currentDestination)
+            )
+        }
+
+        val showFab by remember(currentDestination) {
+            mutableStateOf(
+                ( // all the bottom sheet stuff + tag
+                        BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
+                                Route.Tag::class
+                        )
+                    .isEntryIn(currentDestination)
+            )
+        }
+
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         Scaffold(
             bottomBar = {
-                BottomBar(navController)
-//                if (mainDestinationSelected) {
-//                    BottomBar(navController.rememberDestinationsNavigator(), curDestination)
-//                }
+                if (showBottomBar) {
+                    BottomBar(navController)
+                }
             },
 
             floatingActionButton = {
-//                AnimatedVisibility(
-//                    (
-//                        mainDestinationSelected &&
-//                            curDestination != BottomBarDestination.Settings.direction
-//                        ) ||
-//                        curDestination == TagScreenDestination
-//                ) {
-                FloatingActionButton(onClick = {
-                    viewModel.onShow()
+                AnimatedVisibility(showFab) {
+                    FloatingActionButton(onClick = {
+                        if (listOf(Route.Tag::class).isEntryIn(currentDestination)) {
+                            val tagId = navBackStackEntry?.toRoute<Route.Tag>()?.tagId
+                            viewModel.onShow(tagId = tagId)
+                        } else {
+                            viewModel.onShow()
+                        }
+                    }
 //                    when (curDestination) {
 //                        TagScreenDestination -> {
 //                            val tagId =
@@ -122,10 +134,11 @@ class MainActivity : ComponentActivity() {
 //
 //                        else -> viewModel.onShow()
 //                    }
-                }) {
-                    Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
+                    )
+                    {
+                        Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
+                    }
                 }
-//                }
             },
 
             ) { it ->
@@ -196,11 +209,7 @@ private fun BottomBar(navController: NavController) {
         val currentDestination = navBackStackEntry?.destination
         BottomBarDestination.entries.forEach { topLevelRoute ->
             val isSelected by remember(currentDestination) {
-                mutableStateOf(currentDestination?.hierarchy?.any {
-                    it.hasRoute(
-                        topLevelRoute.direction::class
-                    )
-                } == true)
+                mutableStateOf(listOf(topLevelRoute.direction::class).isEntryIn(currentDestination))
             }
 
             ShortNavigationBarItem(
@@ -303,4 +312,4 @@ private fun BottomBar(navController: NavController) {
 //            R.string.settings
 //        ),
 //    }
-//}
+// }

@@ -1,6 +1,8 @@
 package ap.panini.procrastaint.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +16,7 @@ import ap.panini.procrastaint.ui.settings.sync.SyncScreen
 import ap.panini.procrastaint.ui.tag.TagScreen
 import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 sealed interface Route {
 
@@ -44,7 +47,6 @@ sealed interface Route {
 
 @Composable
 fun NavGraph(navController: NavHostController, startDestination: Route) {
-
     NavHost(navController = navController, startDestination = startDestination) {
         composable<Route.OnBoarding> { OnBoardingScreen() }
 
@@ -83,7 +85,9 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-
     }
+}
 
+fun List<KClass<out Route>>.isEntryIn(navDestination: NavDestination?): Boolean {
+    return any { navDestination?.hasRoute(it) == true }
 }
