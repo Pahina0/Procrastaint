@@ -41,7 +41,8 @@ android {
         }
 
         debug {
-            versionNameSuffix = " debug"
+            versionNameSuffix = ".debug"
+            applicationIdSuffix = ".debug"
         }
     }
     compileOptions {

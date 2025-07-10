@@ -59,4 +59,5 @@ To format all Kotlin code:
 1. Go to [Firebase Console](https://console.firebase.google.com)
 2. Create a new project with package name: `ap.panini.procrastaint`
 3. Follow the steps to obtain your `google-services.json` file
-4. Place the file inside the `/androidApp` directory
+4. Place the file inside the `/androidApp/release` directory
+5. Repeat steps 1-4 for the debug build with package name `ap.panini.procrastaint.debug` at location `/androidApp/debug`
