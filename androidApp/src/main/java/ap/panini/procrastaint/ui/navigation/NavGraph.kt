@@ -1,17 +1,13 @@
-package ap.panini.procrastaint.ui
+package ap.panini.procrastaint.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideIn
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,33 +20,35 @@ import ap.panini.procrastaint.ui.settings.groups.AboutLibrariesScreen
 import ap.panini.procrastaint.ui.settings.sync.SyncScreen
 import ap.panini.procrastaint.ui.tag.TagScreen
 import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
-import kotlinx.serialization.Serializable
-import kotlin.reflect.KClass
+
+private const val AnimationSpeed = 300
 
 @Composable
 fun NavGraph(navController: NavHostController, startDestination: Route) {
     NavHost(
-        navController = navController, startDestination = startDestination,
+        navController = navController,
+        startDestination = startDestination,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
-                    300, easing = LinearEasing
+                    AnimationSpeed, easing = LinearEasing
                 )
             ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
+                animationSpec = tween(AnimationSpeed, easing = EaseIn),
                 towards = AnimatedContentTransitionScope.SlideDirection.Start
             )
         },
         exitTransition = {
             fadeOut(
                 animationSpec = tween(
-                    300, easing = LinearEasing
+                    AnimationSpeed, easing = LinearEasing
                 )
             ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseOut),
+                animationSpec = tween(AnimationSpeed, easing = EaseOut),
                 towards = AnimatedContentTransitionScope.SlideDirection.End
             )
-        }) {
+        }
+    ) {
         composable<Route.OnBoarding> { OnBoardingScreen() }
 
         composable<Route.Calendar> { CalendarScreen() }
@@ -89,35 +87,4 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
             )
         }
     }
-}
-
-fun List<KClass<out Route>>.isEntryIn(navDestination: NavDestination?): Boolean {
-    return any { navDestination?.hasRoute(it) == true }
-}
-
-sealed interface Route {
-
-    @Serializable
-    object OnBoarding : Route
-
-    @Serializable
-    object Calendar : Route
-
-    @Serializable
-    object Upcoming : Route
-
-    @Serializable
-    object Library : Route
-
-    @Serializable
-    object Settings : Route
-
-    @Serializable
-    class Tag(val tagId: Long) : Route
-
-    @Serializable
-    object AboutLibraries : Route
-
-    @Serializable
-    object Sync : Route
 }

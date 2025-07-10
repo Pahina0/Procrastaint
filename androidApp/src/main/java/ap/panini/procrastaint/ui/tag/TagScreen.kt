@@ -26,9 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
-import ap.panini.procrastaint.ui.Route
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
+import ap.panini.procrastaint.ui.navigation.Route
 import ap.panini.procrastaint.ui.tag.components.DeleteConfirmationDialog
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf

@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -42,6 +41,9 @@ import androidx.navigation.toRoute
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.crash.GlobalExceptionHandler
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
+import ap.panini.procrastaint.ui.navigation.NavGraph
+import ap.panini.procrastaint.ui.navigation.Route
+import ap.panini.procrastaint.ui.navigation.isEntryIn
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import kotlinx.coroutines.flow.first
