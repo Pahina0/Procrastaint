@@ -18,33 +18,6 @@ import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
-sealed interface Route {
-
-    @Serializable
-    object OnBoarding : Route
-
-    @Serializable
-    object Calendar : Route
-
-    @Serializable
-    object Upcoming : Route
-
-    @Serializable
-    object Library : Route
-
-    @Serializable
-    object Settings : Route
-
-    @Serializable
-    class Tag(val tagId: Long) : Route
-
-    @Serializable
-    object AboutLibraries : Route
-
-    @Serializable
-    object Sync : Route
-}
-
 @Composable
 fun NavGraph(navController: NavHostController, startDestination: Route) {
     NavHost(navController = navController, startDestination = startDestination) {
@@ -90,4 +63,31 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
 
 fun List<KClass<out Route>>.isEntryIn(navDestination: NavDestination?): Boolean {
     return any { navDestination?.hasRoute(it) == true }
+}
+
+sealed interface Route {
+
+    @Serializable
+    object OnBoarding : Route
+
+    @Serializable
+    object Calendar : Route
+
+    @Serializable
+    object Upcoming : Route
+
+    @Serializable
+    object Library : Route
+
+    @Serializable
+    object Settings : Route
+
+    @Serializable
+    class Tag(val tagId: Long) : Route
+
+    @Serializable
+    object AboutLibraries : Route
+
+    @Serializable
+    object Sync : Route
 }

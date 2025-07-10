@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -89,7 +88,6 @@ class MainActivity : ComponentActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-
         val showBottomBar by remember(currentDestination) {
             mutableStateOf(
                 BottomBarDestination.entries.map { it.direction::class }
@@ -99,10 +97,10 @@ class MainActivity : ComponentActivity() {
 
         val showFab by remember(currentDestination) {
             mutableStateOf(
-                ( // all the bottom sheet stuff + tag
-                        BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                                Route.Tag::class
-                        )
+                ( // all the bottom sheet stuff + tag, besides settings
+                    BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
+                        Route.Tag::class
+                    )
                     .isEntryIn(currentDestination)
             )
         }
@@ -117,31 +115,22 @@ class MainActivity : ComponentActivity() {
 
             floatingActionButton = {
                 AnimatedVisibility(showFab) {
-                    FloatingActionButton(onClick = {
-                        if (listOf(Route.Tag::class).isEntryIn(currentDestination)) {
-                            val tagId = navBackStackEntry?.toRoute<Route.Tag>()?.tagId
-                            viewModel.onShow(tagId = tagId)
-                        } else {
-                            viewModel.onShow()
+                    FloatingActionButton(
+                        onClick = {
+                            if (listOf(Route.Tag::class).isEntryIn(currentDestination)) {
+                                val tagId = navBackStackEntry?.toRoute<Route.Tag>()?.tagId
+                                viewModel.onShow(tagId = tagId)
+                            } else {
+                                viewModel.onShow()
+                            }
                         }
-                    }
-//                    when (curDestination) {
-//                        TagScreenDestination -> {
-//                            val tagId =
-//                                navController.currentBackStackEntry?.arguments?.getLong("tagId")
-//                            viewModel.onShow(tagId = tagId)
-//                        }
-//
-//                        else -> viewModel.onShow()
-//                    }
-                    )
-                    {
+                    ) {
                         Icon(imageVector = Icons.Outlined.Add, contentDescription = "New task")
                     }
                 }
             },
 
-            ) { it ->
+        ) { padding ->
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -155,14 +144,9 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
+            Box(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
                 NavGraph(navController, Route.Calendar)
             }
-//            DestinationsNavHost(
-//                navGraph = NavGraphs.root,
-//                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
-//                navController = navController
-//            )
         }
     }
 }
@@ -233,10 +217,7 @@ private fun BottomBar(navController: NavController) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                 }
@@ -244,72 +225,3 @@ private fun BottomBar(navController: NavController) {
         }
     }
 }
-//    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-//    @Composable
-//    private fun BottomBar(
-//        destinationsNavigator: DestinationsNavigator,
-//        curDestination: TypedDestinationSpec<out Any?>,
-//        modifier: Modifier = Modifier,
-//    ) {
-//        ShortNavigationBar(modifier = modifier) {
-//            BottomBarDestination.entries.forEach { destination ->
-//                ShortNavigationBarItem(
-//                    selected = curDestination == destination.direction,
-//                    onClick = {
-//                        destinationsNavigator.navigate(destination.direction) {
-//                            launchSingleTop = true
-//                            popUpTo(destination.direction) {
-//                                inclusive = true
-//                            }
-//                        }
-//                    },
-//                    icon = {
-//                        Icon(
-//                            if (curDestination == destination.direction) {
-//                                destination.iconSelected
-//                            } else {
-//                                destination.iconDeselected
-//                            },
-//                            contentDescription = stringResource(destination.label)
-//                        )
-//                    },
-//                    label = { Text(stringResource(destination.label)) },
-//                )
-//            }
-//        }
-//    }
-//
-//    private enum class BottomBarDestination(
-//        val direction: Direction,
-//        val iconSelected: ImageVector,
-//        val iconDeselected: ImageVector,
-//        @StringRes val label: Int
-//    ) {
-//        Calendar(
-//            CalendarScreenDestination,
-//            Icons.Default.CalendarMonth,
-//            Icons.Outlined.CalendarMonth,
-//            R.string.calendar
-//        ),
-//        Tasks(
-//            UpcomingScreenDestination,
-//            Icons.Default.Upcoming,
-//            Icons.Outlined.Upcoming,
-//            R.string.upcoming
-//        ),
-//
-//        Library(
-//            LibraryScreenDestination,
-//            Icons.Default.LibraryAddCheck,
-//            Icons.Outlined.LibraryAddCheck,
-//            R.string.library
-//        ),
-//
-//        Settings(
-//            SettingsScreenDestination,
-//            Icons.Default.Settings,
-//            Icons.Outlined.Settings,
-//            R.string.settings
-//        ),
-//    }
-// }
