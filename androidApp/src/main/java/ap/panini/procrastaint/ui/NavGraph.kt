@@ -1,5 +1,14 @@
 package ap.panini.procrastaint.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -20,7 +29,28 @@ import kotlin.reflect.KClass
 
 @Composable
 fun NavGraph(navController: NavHostController, startDestination: Route) {
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        navController = navController, startDestination = startDestination,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Start
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseOut),
+                towards = AnimatedContentTransitionScope.SlideDirection.End
+            )
+        }) {
         composable<Route.OnBoarding> { OnBoardingScreen() }
 
         composable<Route.Calendar> { CalendarScreen() }
