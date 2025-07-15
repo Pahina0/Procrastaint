@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "11263401852",
+    "project_id": "procrastaint-d5142",
+    "storage_bucket": "procrastaint-d5142.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11263401852:android:f1347d81b65789b177cef9",
+        "android_client_info": {
+          "package_name": "ap.panini.procrastaint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaK9dNayC1vG2HCX9KDM61m91YTIhtDeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11263401852:android:5fa720c2b7ba5e9477cef9",
+        "android_client_info": {
+          "package_name": "ap.panini.procrastaint.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaK9dNayC1vG2HCX9KDM61m91YTIhtDeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
