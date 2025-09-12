@@ -78,7 +78,7 @@ interface TaskDao {
     suspend fun getTaskOrNull(id: Long): Task?
 
     @Query("""SELECT * FROM TaskCompletion WHERE completionId = :id""")
-    fun getCompletion(id: Long): TaskCompletion
+    suspend fun getCompletion(id: Long): TaskCompletion
 
     @Query(
         """

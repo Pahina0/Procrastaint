@@ -3,6 +3,7 @@ package ap.panini.procrastaint.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlin.random.Random
 
@@ -102,7 +103,8 @@ data class TaskTag(
             childColumns = ["tagId"],
             onDelete = ForeignKey.CASCADE,
         )
-    ]
+    ],
+    indices = [Index("tagId")]
 )
 data class TaskTagCrossRef(
     val taskId: Long,
