@@ -35,6 +35,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     val database = getRoomDatabase(getDatabaseBuilder())
+    single { database }
     single { database.getTaskDao() }
     single { database.getNetworkSyncDao() }
     single { createDataStore() }

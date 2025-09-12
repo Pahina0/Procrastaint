@@ -59,6 +59,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        iosMain.dependencies {
+            implementation(libs.kotlinx.datetime)
+        }
     }
 
     tasks.register("testClasses")

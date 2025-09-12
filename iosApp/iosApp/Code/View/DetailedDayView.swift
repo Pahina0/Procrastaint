@@ -7,10 +7,12 @@
 //
 
 import SwiftUI
+import shared
 
 struct DetailedDayView: View {
     var month : String
     var day : String
+    var taskRepository: TaskRepository // Add this property
     @State private var tasksForTheDay: [HourlyTask] = [
         HourlyTask(hour: 9, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
             HourlyTask(hour: 14, tasks: [Task(title:"Task3",description: "")]),
@@ -22,7 +24,7 @@ struct DetailedDayView: View {
         ZStack{
             
             VStack {
-                // Title with today's date and weekday
+                // Title with today\'s date and weekday
                 HStack{
                     Text("Upcoming")
                         .font(.title)
@@ -59,7 +61,7 @@ struct DetailedDayView: View {
                 }
                 .listStyle(PlainListStyle())
             }
-            AddButtonView()
+            AddButtonView(taskRepository: taskRepository)
 
         }
 
@@ -131,5 +133,5 @@ struct TaskView: View {
 
 
 #Preview {
-    DetailedDayView(month: "Aug" , day: "15")
+    DetailedDayView(month: "Aug" , day: "15", taskRepository: DependencyProvider.shared.taskRepository)
 }

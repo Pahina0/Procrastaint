@@ -7,8 +7,10 @@
 //
 
 import SwiftUI
+import shared
 
 struct AddButtonView: View {
+    let taskRepository: TaskRepository
     
     @State private var isSheetPresented = false
     
@@ -33,7 +35,7 @@ struct AddButtonView: View {
                 .padding(.bottom, 20)
                 .padding(.trailing, 10)
                 .sheet(isPresented: $isSheetPresented, content: {
-                    BottomSheetView().presentationDetents([.fraction(0.38)])
+                    BottomSheetView(db: taskRepository).presentationDetents([.fraction(0.38)])
                 })
                 
             }
@@ -46,5 +48,5 @@ struct AddButtonView: View {
 }
 
 #Preview {
-    AddButtonView()
+    AddButtonView(taskRepository: DependencyProvider.shared.taskRepository)
 }
