@@ -14,7 +14,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Calendar repository used to access network api's of calendars
@@ -118,6 +119,7 @@ class NetworkCalendarRepository(
         // can have future calendars here
     )
 
+    @OptIn(ExperimentalTime::class)
     suspend fun createTask(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
 
@@ -145,6 +147,7 @@ class NetworkCalendarRepository(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun deleteTask(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         nsDao.deleteTask(task.taskInfo.taskId)
@@ -173,6 +176,7 @@ class NetworkCalendarRepository(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun addCompletion(task: Task, completion: TaskCompletion) {
         val now = Clock.System.now().toEpochMilliseconds()
         nsDao.deleteUnchecked(task.taskInfo.taskId, completion.metaId, now)
@@ -206,6 +210,7 @@ class NetworkCalendarRepository(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun removeCompletion(task: Task, completion: TaskCompletion) {
         val now = Clock.System.now().toEpochMilliseconds()
         nsDao.deleteChecked(task.taskInfo.taskId, completion.metaId, now)

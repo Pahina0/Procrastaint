@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import kotlin.time.ExperimentalTime
 
 class Parser(private val db: TaskRepository) {
     private var textParser = TimeParser()
@@ -55,6 +56,7 @@ class Parser(private val db: TaskRepository) {
         )
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun LocalDateTime.toMillisecondLocal() =
         toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 }

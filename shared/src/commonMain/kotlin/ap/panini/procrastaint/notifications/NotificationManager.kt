@@ -6,14 +6,16 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.toLocalDateTime
 import org.koin.mp.KoinPlatform.getKoin
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class NotificationManager {
     companion object {
@@ -73,6 +75,7 @@ class NotificationManager {
      *
      * @param task the task to get from
      */
+    @OptIn(ExperimentalTime::class)
     internal fun create(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
@@ -93,6 +96,7 @@ class NotificationManager {
      *
      * @param task
      */
+    @OptIn(ExperimentalTime::class)
     internal fun delete(task: Task) {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {
@@ -108,6 +112,7 @@ class NotificationManager {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun TaskMeta.generateUuid(eventTime: Long): Int {
         val time =
             buildString {
@@ -115,7 +120,7 @@ class NotificationManager {
                     Instant.fromEpochMilliseconds(eventTime).toLocalDateTime(TimeZone.UTC)
                         .format(
                             LocalDateTime.Format {
-                                dayOfMonth()
+                                day(padding = Padding.ZERO)
                                 hour()
                                 minute()
                                 second()
@@ -133,6 +138,7 @@ class NotificationManager {
      * Get next day notifications and calls callback
      *
      */
+    @OptIn(ExperimentalTime::class)
     fun getNextDayNotifications() {
         val now = Clock.System.now().toEpochMilliseconds()
         val tasks = runBlocking {

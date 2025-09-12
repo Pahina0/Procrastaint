@@ -2,9 +2,10 @@ package ap.panini.procrastaint.util
 
 import ap.panini.kwhen.TimeUnit
 import kotlinx.datetime.DateTimePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 enum class Time {
     SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR;
@@ -41,6 +42,7 @@ enum class Time {
         YEAR -> "YEARLY"
     }
 
+    @OptIn(ExperimentalTime::class)
     fun incrementBy(curTime: Instant, amount: Int) = when (this) {
         SECOND -> curTime.plus(
             DateTimePeriod(seconds = amount),
