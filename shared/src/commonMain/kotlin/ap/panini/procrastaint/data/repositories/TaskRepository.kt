@@ -16,8 +16,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlin.math.min
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class TaskRepository(
     private val taskDao: TaskDao,
@@ -172,6 +173,7 @@ class TaskRepository(
      * @param completed
      * @return the list of all tasks that can be generated from that 1 task
      */
+    @OptIn(ExperimentalTime::class)
     private fun TaskSingle.getAllTasks(
         from: Long,
         to: Long,

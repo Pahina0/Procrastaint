@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import shared
 
 struct HourlyTask: Identifiable {
     let id = UUID()
@@ -22,6 +23,7 @@ struct Task: Identifiable,Hashable {
 
 
 struct TodayViews: View {
+    var taskRepository: TaskRepository
     //for UI testing only
     @State private var tasksForTheDay: [HourlyTask] = [
         HourlyTask(hour: 7, tasks: [Task(title:"Task1",description: "This is task #1"), Task(title:"Task2",description: "This is task #1")]),
@@ -34,7 +36,7 @@ struct TodayViews: View {
         ZStack{
             
             VStack {
-                // Title with today's date and weekday
+                // Title with today\'s date and weekday
                 HStack{
                     Text("Today")
                         .font(.title)
@@ -75,7 +77,7 @@ struct TodayViews: View {
                 }
                 .listStyle(PlainListStyle())
             }
-            AddButtonView()
+            AddButtonView(taskRepository: taskRepository)
 
         }
 
@@ -151,5 +153,6 @@ struct TaskRowView: View {
 
 
 #Preview {
-    TodayViews()
+    TodayViews(taskRepository: DependencyProvider.shared.taskRepository)
 }
+

@@ -23,7 +23,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Procrastaint"
+            baseName = "shared"
             isStatic = true
             // Required when using NativeSQLiteDriver
             linkerOpts.add("-lsqlite3")
@@ -59,10 +59,14 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        iosMain.dependencies {
+            implementation(libs.kotlinx.datetime)
+        }
     }
 
     tasks.register("testClasses")
 }
+
 android {
     namespace = "ap.panini.procrastaint"
     compileSdk = 36

@@ -7,14 +7,17 @@
 //
 
 import SwiftUI
+import shared
 
 struct BottomNavigation: View {
+    var taskRepository: TaskRepository
+
     var body: some View {
         ZStack{
             TabView{
-                CalendarView()
+                CalendarView(taskRepository: taskRepository)
                     .tabItem { Label("Schedule", systemImage: "calendar") }
-                TodayViews()
+                TodayViews(taskRepository: taskRepository)
                     .tabItem { Label("Today", systemImage: "list.bullet.clipboard") }
                 LibraryViews()
                     .tabItem{ Label("Library", systemImage: "building.columns")}
@@ -29,5 +32,5 @@ struct BottomNavigation: View {
 }
 
 #Preview {
-    BottomNavigation()
+    BottomNavigation(taskRepository: DependencyProvider.shared.taskRepository)
 }

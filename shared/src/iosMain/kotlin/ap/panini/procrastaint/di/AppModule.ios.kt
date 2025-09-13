@@ -2,13 +2,25 @@ package ap.panini.procrastaint.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import ap.panini.procrastaint.data.database.ProcrastaintDatabase
+import platform.Foundation.NSHomeDirectory
+import org.koin.core.context.startKoin
+
+fun initialize() {
+    startKoin {
+        modules(appModule)
+    }
+}
 
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase> {
-    TODO("Not yet implemented")
+    val dbFilePath = NSHomeDirectory() + "/procrastaint.db"
+    return Room.databaseBuilder<ProcrastaintDatabase>(
+        name = dbFilePath,
+    )
 }
 
 actual fun createDataStore(): DataStore<Preferences> {
-    TODO("Not yet implemented")
+    return createDataStore(producePath = { NSHomeDirectory() + "/" + DataStoreFileName })
 }

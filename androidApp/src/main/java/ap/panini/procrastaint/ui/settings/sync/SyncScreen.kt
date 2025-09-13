@@ -34,6 +34,7 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
+import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +100,7 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
         onDismiss = {
             if (it == SwipeToDismissBoxValue.EndToStart) {
                 deleteItem(item)
-                swipeToDismissBoxState.reset()
+                runBlocking {  swipeToDismissBoxState.reset() }
             }
         },
         backgroundContent = {

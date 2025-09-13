@@ -1,7 +1,5 @@
 package ap.panini.procrastaint.util
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -16,24 +14,30 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 const val StartOfWeek = 2
 const val EndOfWeek = 6
 
+@OptIn(ExperimentalTime::class)
 fun Instant.toLocalDate(): LocalDate {
     return this.toLocalDateTime(TimeZone.currentSystemDefault()).date
 }
 
 object Date {
     private const val ROUND_NUMBER = 100000
+    @OptIn(ExperimentalTime::class)
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
+    @OptIn(ExperimentalTime::class)
     fun getTime(
         year: Int = now().year,
-        month: Int = now().monthNumber,
-        dayOfMonth: Int = now().dayOfMonth,
+        month: Int = now().month.ordinal,
+        dayOfMonth: Int = now().day,
         hour: Int = now().hour,
         minute: Int = now().minute
     ): Long = LocalDateTime(
@@ -46,6 +50,7 @@ object Date {
         0
     ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
+    @OptIn(ExperimentalTime::class)
     fun getTodayStart(): Long =
         Clock.System
             .now()
@@ -56,6 +61,7 @@ object Date {
             .toEpochMilliseconds()
             .let { (it / ROUND_NUMBER) * ROUND_NUMBER }
 
+    @OptIn(ExperimentalTime::class)
     fun Long.toDayOfWeek(): String {
         val time =
             Instant.fromEpochMilliseconds(this)
@@ -72,6 +78,7 @@ object Date {
      * @param smart If true, displays more information based on mismatched month, day, or year
      * @param useAbbreviated whether or not to use abbreviated text for month
      */
+    @OptIn(ExperimentalTime::class)
     fun Long.formatMilliseconds(
         known: Set<Time> = emptySet(),
         smart: Boolean = true,
@@ -95,7 +102,7 @@ object Date {
         val year = known.contains(Time.YEAR) || (smart && time.year != now.year)
         val month = known.contains(Time.MONTH) || (smart && time.month != now.month)
         val week = known.contains(Time.WEEK)
-        val day = known.contains(Time.DAY) || (smart && time.dayOfMonth != now.dayOfMonth)
+        val day = known.contains(Time.DAY) || (smart && time.day != now.day)
         val hour = known.contains(Time.HOUR)
         val minute = known.contains(Time.MINUTE)
 
@@ -135,7 +142,7 @@ object Date {
                 if (useAbbreviated) {
                     monthName(monthFormat)
                     char(' ')
-                    dayOfMonth(padding = Padding.NONE)
+                    day(padding = Padding.NONE)
                     return
                 }
 
@@ -157,7 +164,7 @@ object Date {
                     else -> {
                         monthName(monthFormat)
                         char(' ')
-                        dayOfMonth(padding = Padding.NONE)
+                        day(padding = Padding.NONE)
                     }
                 }
             }
@@ -173,7 +180,7 @@ object Date {
         } else if (week) {
             monthName(monthFormat)
             char(' ')
-            dayOfMonth(padding = Padding.NONE)
+            day(padding = Padding.NONE)
         }
     }
 
@@ -194,27 +201,34 @@ object Date {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 fun Long.year() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).year
 
+@OptIn(ExperimentalTime::class)
 fun Long.month() =
     Instant.fromEpochMilliseconds(this)
-        .toLocalDateTime(TimeZone.currentSystemDefault()).monthNumber
+        .toLocalDateTime(TimeZone.currentSystemDefault()).month.ordinal
 
+@OptIn(ExperimentalTime::class)
 fun Long.dayOfMonth() =
     Instant.fromEpochMilliseconds(this)
-        .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfMonth
+        .toLocalDateTime(TimeZone.currentSystemDefault()).day
 
+@OptIn(ExperimentalTime::class)
 fun Long.hour() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).hour
 
+@OptIn(ExperimentalTime::class)
 fun Long.minute() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).minute
 
+@OptIn(ExperimentalTime::class)
 fun Long.dayOfWeek() =
     Instant.fromEpochMilliseconds(this)
         .toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek.isoDayNumber
 
+@OptIn(ExperimentalTime::class)
 fun Long.toRFC3339(includeFiller: Boolean = true) =
     Instant.fromEpochMilliseconds(this).format(
         DateTimeComponents.Format {
@@ -227,7 +241,7 @@ fun Long.toRFC3339(includeFiller: Boolean = true) =
             if (includeFiller) {
                 char('-')
             }
-            dayOfMonth()
+            day()
 
             char('T')
             hour()

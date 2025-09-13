@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,7 +11,6 @@ import androidx.compose.ui.platform.LocalContext
 import ap.panini.procrastaint.ui.settings.components.Section
 import ap.panini.procrastaint.ui.settings.components.SettingsItem
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Sync(
     onNavigateToSync: () -> Unit,

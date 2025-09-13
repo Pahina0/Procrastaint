@@ -3,12 +3,12 @@ package ap.panini.procrastaint.data.entities.google
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
-import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.toRFC3339
-import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
 
 @Serializable
 internal data class GoogleEvent(
@@ -53,6 +53,7 @@ internal data class GoogleEvent(
         private fun TaskMeta.getGoogleId(preferences: PreferenceRepository) =
             "$taskId${preferences.getUuid()}$metaId"
 
+        @OptIn(ExperimentalTime::class)
         internal fun getGoogleEvents(task: Task, preferences: PreferenceRepository): List<GoogleEvent> {
             if (task.meta.isEmpty()) return emptyList()
 

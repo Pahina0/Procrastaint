@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19063BF42C6A9B87009DBDAC /* ActionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF32C6A9B87009DBDAC /* ActionListView.swift */; };
+		19063BF42C6A9B87009DBDAB /* TimeChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF32C6A9B87009DBDAB /* TimeChipsView.swift */; };
+		19063BF42C6A9B87009DBDAF /* ParsedTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF32C6A9B87009DBDAF /* ParsedTextView.swift */; };
+		19063BF42C6A9B87009DBDAE /* TaskTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF32C6A9B87009DBDAE /* TaskTextFieldView.swift */; };
+		19063BF42C6A9B87009DBDAA /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BF32C6A9B87009DBDAA /* ViewModel.swift */; };
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		19063BF02C6A47CF009DBDA9 /* AddButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19063BEF2C6A47CF009DBDA9 /* AddButtonView.swift */; };
@@ -49,6 +54,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		19063BF32C6A9B87009DBDAC /* ActionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp/Code/View/ActionListView.swift; sourceTree = "<group>"; };
+		19063BF32C6A9B87009DBDAB /* TimeChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp/Code/View/TimeChipsView.swift; sourceTree = "<group>"; };
+		19063BF32C6A9B87009DBDAF /* ParsedTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp/Code/View/ParsedTextView.swift; sourceTree = "<group>"; };
+		19063BF32C6A9B87009DBDAE /* TaskTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp/Code/View/TaskTextFieldView.swift; sourceTree = "<group>"; };
+		19063BF32C6A9B87009DBDAA /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp/Code/ViewModel.swift; sourceTree = "<group>"; };
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		19063BEF2C6A47CF009DBDA9 /* AddButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButtonView.swift; sourceTree = "<group>"; };
@@ -275,6 +285,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19063BF42C6A9B87009DBDAC /* ActionListView.swift in Sources */,
+				19063BF42C6A9B87009DBDAB /* TimeChipsView.swift in Sources */,
+				19063BF42C6A9B87009DBDAF /* ParsedTextView.swift in Sources */,
+				19063BF42C6A9B87009DBDAE /* TaskTextFieldView.swift in Sources */,
+				19063BF42C6A9B87009DBDAA /* ViewModel.swift in Sources */,
 				19063BF02C6A47CF009DBDA9 /* AddButtonView.swift in Sources */,
 				19063BFA2C6F615C009DBDA9 /* DetailedDayView.swift in Sources */,
 				19063BF22C6A645B009DBDA9 /* BottomSheetView.swift in Sources */,

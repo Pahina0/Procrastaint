@@ -8,10 +8,10 @@
 //
 
 import SwiftUI
-
-
+import shared
 
 struct CalendarView: View {
+    var taskRepository: TaskRepository // Add this property
     @State private var currentMonthOffset: Int = 0
 		//allows state to change and swift UI to re-render
 	@State private var selectedTab = 0
@@ -43,7 +43,7 @@ struct CalendarView: View {
 				/*
 				read in the current month and present initially,
 				swipe left, goes left
-				swipe right, goes right 
+					swipe right, goes right 
 				 */
 				TabView(selection: $selectedTab){
 					//iterates over 0,1,2
@@ -104,7 +104,7 @@ struct CalendarView: View {
 						//change to 25 allows for year in andvance and previous to be seen
                         ForEach(0..<numMonths, id: \.self) { offset in
 							//note that definition of struct is below
-                            MonthView(monthOffset: offset - (numMonths/2))
+                            MonthView(monthOffset: offset - (numMonths/2), taskRepository: taskRepository) // Pass taskRepository
                         }
                     }
                 }
@@ -139,6 +139,7 @@ func monthYearString(monthOffset: Int) -> String {
 //Month View Structs
 struct MonthView: View {
     let monthOffset: Int
+    var taskRepository: TaskRepository // Add this property
 
 
 	//specifies layout for each month
@@ -156,7 +157,7 @@ struct MonthView: View {
                             }
                             if(Int(day) == Calendar.current.component(.day, from: Date()) && monthOffset == 0){
                                 NavigationLink{
-                                    DetailedDayView(month: monthString, day: day)
+                                    DetailedDayView(month: monthString, day: day, taskRepository: taskRepository) // Pass taskRepository
                                 }label:{
                                     Text(day)
                                         .frame(width: 23, height: 23)
@@ -168,7 +169,7 @@ struct MonthView: View {
                                 
                             }else{
                                 NavigationLink{
-                                    DetailedDayView(month: monthString, day: day)
+                                    DetailedDayView(month: monthString, day: day, taskRepository: taskRepository) // Pass taskRepository
                                 }label:{
                                     Text(day)
                                         .frame(width: 23, height: 23)
@@ -226,6 +227,5 @@ struct MonthView: View {
 
 
 #Preview {
-    CalendarView()
+    CalendarView(taskRepository: DependencyProvider.shared.taskRepository)
 }
-
