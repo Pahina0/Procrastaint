@@ -47,10 +47,5 @@ fun About(
             onNavigateToAboutLibraries()
         })
 
-        SettingsItem(
-            Icons.Outlined.AlternateEmail,
-            "Username: pahina",
-            subtext = "Add me on Discord! (I don't have a server)"
-        )
     }
 }
