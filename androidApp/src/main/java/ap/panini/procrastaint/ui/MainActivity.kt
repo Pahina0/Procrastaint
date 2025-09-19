@@ -61,6 +61,10 @@ class MainActivity : ComponentActivity() {
 
         Thread.setDefaultUncaughtExceptionHandler(GlobalExceptionHandler(this))
 
+        if (intent?.getStringExtra("action") == "add_task") {
+            viewModel.onShow()
+        }
+
         setContent {
             ProcrastaintTheme {
                 // determine which page to go to

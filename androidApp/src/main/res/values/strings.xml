@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Procrastaint</string>
+    <string name="shortcut_add_task_short_label">Add task</string>
+    <string name="shortcut_add_task_long_label">Add a new task</string>
+    <string name="shortcut_add_task_disabled_message">Shortcut to add a task is disabled.</string>
 
+    <string name="add_button_widget_description">Add a new task</string>
 </resources>

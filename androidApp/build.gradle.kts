@@ -95,4 +95,8 @@ dependencies {
     implementation(libs.firebase.analytics)
 
     implementation(libs.compose.colorpicker)
+
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+
 }
