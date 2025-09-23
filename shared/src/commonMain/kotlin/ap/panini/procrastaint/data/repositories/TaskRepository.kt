@@ -20,13 +20,13 @@ import kotlin.math.min
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-class TaskRepository(
+open class TaskRepository(
     private val taskDao: TaskDao,
     private val calendar: NetworkCalendarRepository,
     private val notificationManager: NotificationManager
 ) {
 
-    suspend fun insertTask(tasks: Task): Boolean {
+    open suspend fun insertTask(tasks: Task): Boolean {
         val id = taskDao.insertTaskInfo(tasks.taskInfo)
 
         tasks.tags.forEach {
@@ -77,7 +77,7 @@ class TaskRepository(
         taskDao.deleteTag(tag)
     }
 
-    suspend fun deleteTagWithTasks(tag: TaskTag) {
+    open suspend fun deleteTagWithTasks(tag: TaskTag) {
         val tasks = taskDao.getTaskTagCrossRef(tag.tagId)
         deleteTag(tag)
 
@@ -86,19 +86,19 @@ class TaskRepository(
         }
     }
 
-    suspend fun editTask(newTask: Task) {
+    open suspend fun editTask(newTask: Task) {
         deleteTask(newTask)
 
         insertTask(newTask)
     }
 
-    suspend fun editTask(oldTask: Task, newTask: Task) {
+    open suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
 
         insertTask(newTask)
     }
 
-    suspend fun deleteTask(task: Task) {
+    open suspend fun deleteTask(task: Task) {
         taskDao.deleteTask(task.taskInfo)
         taskDao.deleteTagsCrossRef(task.taskInfo.taskId) // deletes tags
 
@@ -110,11 +110,11 @@ class TaskRepository(
 
     suspend fun getTagStartingWith(title: String) = taskDao.getTagsStarting(title)
 
-    suspend fun deleteTask(taskId: Long) {
+    open suspend fun deleteTask(taskId: Long) {
         deleteTask(getTask(taskId))
     }
 
-    suspend fun addCompletion(taskCompletion: TaskCompletion) {
+    open suspend fun addCompletion(taskCompletion: TaskCompletion) {
         val id = taskDao.insertTaskCompletion(
             taskCompletion
         )
@@ -132,7 +132,7 @@ class TaskRepository(
         }
     }
 
-    suspend fun removeCompletion(taskCompletion: TaskCompletion) {
+    open suspend fun removeCompletion(taskCompletion: TaskCompletion) {
         taskDao.deleteTaskCompletion(
             taskCompletion
         )

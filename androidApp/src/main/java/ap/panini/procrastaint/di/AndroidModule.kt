@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.di
 
+import ap.panini.procrastaint.data.repositories.TaskRepository
+import ap.panini.procrastaint.data.repositories.WidgetUpdatingTaskRepository
 import ap.panini.procrastaint.services.NotificationWorker
 import ap.panini.procrastaint.services.SyncWorker
 import ap.panini.procrastaint.ui.MainActivityViewModel
@@ -28,6 +30,15 @@ val androidModule = module {
     viewModel { AddButtonWidgetViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }
+    single { WidgetUpdater(androidApplication()) }
+    single<TaskRepository> {
+        WidgetUpdatingTaskRepository(
+            taskDao = get(),
+            calendar = get(),
+            notificationManager = get(),
+            widgetUpdater = get()
+        )
+    }
 
     worker { SyncWorker(get(), get(), it.get()) }
     worker { NotificationWorker(get(), get(), it.get()) }

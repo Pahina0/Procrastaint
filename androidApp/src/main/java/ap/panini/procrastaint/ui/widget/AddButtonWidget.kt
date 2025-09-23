@@ -21,13 +21,12 @@ import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.Button
-//import androidx.glance.action.actionRunCallback
 import ap.panini.procrastaint.data.entities.TaskSingle
 import kotlinx.coroutines.flow.first
-import org.koin.core.context.GlobalContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AddButtonWidget : GlanceAppWidget() {
+class AddButtonWidget(private val viewModel: AddButtonWidgetViewModel) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -41,7 +40,6 @@ class AddButtonWidget : GlanceAppWidget() {
 
     @Composable
     private fun GlanceContent() {
-        val viewModel: AddButtonWidgetViewModel = GlobalContext.get().get()
         val tasks by viewModel.upcomingTasks.collectAsState()
         Column(
             modifier = GlanceModifier
@@ -75,6 +73,9 @@ class AddButtonWidget : GlanceAppWidget() {
     }
 }
 
-class AddButtonWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = AddButtonWidget()
+class AddButtonWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
+    override val glanceAppWidget: GlanceAppWidget by lazy {
+        val viewModel: AddButtonWidgetViewModel by inject()
+        AddButtonWidget(viewModel)
+    }
 }
