@@ -23,7 +23,8 @@ import kotlin.time.Instant
 open class TaskRepository(
     private val taskDao: TaskDao,
     private val calendar: NetworkCalendarRepository,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val callbacks: List<RepositoryCallback> = emptyList()
 ) {
 
     open suspend fun insertTask(tasks: Task): Boolean {
@@ -42,6 +43,7 @@ open class TaskRepository(
             val updatedTask = getTask(id)
             notificationManager.create(updatedTask)
             calendar.createTask(updatedTask)
+            callbacks.forEach { it.onDataChanged() }
         }
 
         return true
@@ -75,6 +77,7 @@ open class TaskRepository(
 
     suspend fun deleteTag(tag: TaskTag) {
         taskDao.deleteTag(tag)
+        callbacks.forEach { it.onDataChanged() }
     }
 
     open suspend fun deleteTagWithTasks(tag: TaskTag) {
@@ -84,18 +87,21 @@ open class TaskRepository(
         for (task in tasks) {
             deleteTask(task.taskId)
         }
+        callbacks.forEach { it.onDataChanged() }
     }
 
     open suspend fun editTask(newTask: Task) {
         deleteTask(newTask)
 
         insertTask(newTask)
+        callbacks.forEach { it.onDataChanged() }
     }
 
     open suspend fun editTask(oldTask: Task, newTask: Task) {
         deleteTask(oldTask)
 
         insertTask(newTask)
+        callbacks.forEach { it.onDataChanged() }
     }
 
     open suspend fun deleteTask(task: Task) {
@@ -105,6 +111,7 @@ open class TaskRepository(
         CoroutineScope(Dispatchers.IO).launch {
             notificationManager.delete(task)
             calendar.deleteTask(task)
+            callbacks.forEach { it.onDataChanged() }
         }
     }
 
@@ -112,6 +119,7 @@ open class TaskRepository(
 
     open suspend fun deleteTask(taskId: Long) {
         deleteTask(getTask(taskId))
+        callbacks.forEach { it.onDataChanged() }
     }
 
     open suspend fun addCompletion(taskCompletion: TaskCompletion) {
@@ -129,6 +137,7 @@ open class TaskRepository(
                 notificationManager.delete(it)
             }
             calendar.addCompletion(task, taskCompletion.copy(completionId = id))
+            callbacks.forEach { it.onDataChanged() }
         }
     }
 
@@ -147,6 +156,7 @@ open class TaskRepository(
                 notificationManager.create(it)
             }
             calendar.removeCompletion(task, taskCompletion)
+            callbacks.forEach { it.onDataChanged() }
         }
     }
 

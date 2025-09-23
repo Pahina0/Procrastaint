@@ -41,7 +41,7 @@ val appModule = module {
     single { createDataStore() }
 
     single { NotificationManager() }
-    single { TaskRepository(get(), get(), get()) }
+    single { TaskRepository(get(), get(), get(), getAll()) }
     single { PreferenceRepository(get()) }
 
     single {
