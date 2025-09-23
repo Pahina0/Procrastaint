@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,8 @@ fun TaskView(
     onCheck: (TaskSingle) -> Unit,
     onEdit: (taskId: Long) -> Unit,
     modifier: Modifier = Modifier,
-    showFullDate: Boolean = false
+    showFullDate: Boolean = false,
+    recentlyCompleted: Set<Long> = emptySet()
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -69,7 +71,7 @@ fun TaskView(
 
             leadingContent = {
                 Checkbox(
-                    checked = task.completed != null,
+                    checked = task.completed != null || recentlyCompleted.contains(task.taskId),
                     onCheckedChange = {
                         onCheck(task)
                     },
@@ -135,7 +137,12 @@ fun TaskView(
             },
 
             headlineContent = {
-                Text(task.title)
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        textDecoration = if (task.completed != null || recentlyCompleted.contains(task.taskId)) TextDecoration.LineThrough else TextDecoration.None
+                    )
+                )
             }
         )
         HorizontalDivider(

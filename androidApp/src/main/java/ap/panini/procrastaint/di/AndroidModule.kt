@@ -26,7 +26,7 @@ val androidModule = module {
     viewModel { LibraryViewModel(get()) }
     viewModel { TagViewModel(it[0], get()) }
 
-    viewModel { AddButtonWidgetViewModel(get()) }
+    single { AddButtonWidgetViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }
 

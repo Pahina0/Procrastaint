@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ fun UpcomingScreen(
 
 //    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val recentlyCompleted by viewModel.recentlyCompleted.collectAsStateWithLifecycle()
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -65,6 +67,7 @@ fun UpcomingScreen(
             state.taskInfos,
             viewModel::checkTask,
             activityViewModel::editCreatedTask,
+            recentlyCompleted,
             modifier = Modifier.padding(padding)
         )
     }
@@ -75,6 +78,7 @@ private fun Tasks(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
     onEdit: (Long) -> Unit,
+    recentlyCompleted: Set<Long>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.padding(10.dp)) {
@@ -102,7 +106,8 @@ private fun Tasks(
                 task = task,
                 modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
                 onCheck = onCheck,
-                onEdit = onEdit
+                onEdit = onEdit,
+                recentlyCompleted = recentlyCompleted
             )
         }
     }
