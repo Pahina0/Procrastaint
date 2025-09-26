@@ -11,7 +11,7 @@ import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
 import ap.panini.procrastaint.ui.settings.sync.SyncViewModel
 import ap.panini.procrastaint.ui.tag.TagViewModel
 import ap.panini.procrastaint.ui.upcoming.UpcomingViewModel
-import ap.panini.procrastaint.ui.widget.AddButtonWidgetViewModel
+import ap.panini.procrastaint.ui.widget.UpcomingWidgetViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.module.dsl.viewModel
@@ -26,7 +26,7 @@ val androidModule = module {
     viewModel { LibraryViewModel(get()) }
     viewModel { TagViewModel(it[0], get()) }
 
-    single { AddButtonWidgetViewModel(get()) }
+    single { UpcomingWidgetViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }
 

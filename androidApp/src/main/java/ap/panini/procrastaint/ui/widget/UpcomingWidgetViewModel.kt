@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class AddButtonWidgetViewModel(
+class UpcomingWidgetViewModel(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 

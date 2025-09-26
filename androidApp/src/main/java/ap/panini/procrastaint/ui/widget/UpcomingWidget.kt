@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -26,10 +27,12 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
+import ap.panini.procrastaint.util.Date.formatMilliseconds
+import ap.panini.procrastaint.util.Time
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class AddButtonWidget(private val viewModel: AddButtonWidgetViewModel) : GlanceAppWidget() {
+class AddButtonWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -78,13 +81,32 @@ class AddButtonWidget(private val viewModel: AddButtonWidgetViewModel) : GlanceA
                             ),
                             modifier = GlanceModifier.padding(end = 8.dp)
                         )
-                        Text(
-                            text = task.title,
-                            style = TextStyle(
-                                color = GlanceTheme.colors.onSurface,
-                                textDecoration = if (task.completed != null || recentlyCompleted.contains(task.taskId)) TextDecoration.LineThrough else TextDecoration.None
-                            ),
-                        )
+                        Column(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = task.title,
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.onSurface,
+                                    textDecoration = if (task.completed != null || recentlyCompleted.contains(
+                                            task.taskId
+                                        )
+                                    ) TextDecoration.LineThrough else TextDecoration.None
+                                ),
+                                modifier = GlanceModifier.defaultWeight()
+                            )
+                            Text(
+                                text = task.currentEventTime.formatMilliseconds(
+                                    setOf(
+                                        Time.HOUR,
+                                        Time.MINUTE
+                                    )
+                                ),
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.onSurface,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Medium,
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -94,7 +116,7 @@ class AddButtonWidget(private val viewModel: AddButtonWidgetViewModel) : GlanceA
 
 class AddButtonWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     override val glanceAppWidget: GlanceAppWidget by lazy {
-        val viewModel: AddButtonWidgetViewModel by inject()
+        val viewModel: UpcomingWidgetViewModel by inject()
         AddButtonWidget(viewModel)
     }
 }
