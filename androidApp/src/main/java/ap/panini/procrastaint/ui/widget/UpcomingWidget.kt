@@ -7,10 +7,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.action.actionParametersOf
+import androidx.glance.action.actionStartActivity
 import androidx.glance.appwidget.CheckBox
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -20,18 +22,16 @@ import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
 import androidx.glance.layout.padding
-import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
+import ap.panini.procrastaint.ui.AddTaskActivity
 import ap.panini.procrastaint.ui.widget.components.HorizontalDivider
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
@@ -40,7 +40,7 @@ import org.koin.core.component.inject
 import java.util.Calendar
 import java.util.Date
 
-class AddButtonWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
+class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
 
@@ -70,14 +70,11 @@ class AddButtonWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAp
             verticalAlignment = Alignment.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Upcoming tasks",
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.onSurface,
 
-                ),
-                modifier = GlanceModifier.padding(bottom = 8.dp)
+            Button(
+                text = "Add task",
+                onClick = actionStartActivity<AddTaskActivity>(),
+                modifier = GlanceModifier.fillMaxWidth()
             )
 
 
@@ -153,9 +150,10 @@ class AddButtonWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAp
     }
 }
 
-class AddButtonWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
+class UpcomingWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     override val glanceAppWidget: GlanceAppWidget by lazy {
         val viewModel: UpcomingWidgetViewModel by inject()
-        AddButtonWidget(viewModel)
+        UpcomingWidget(viewModel)
     }
 }
+

@@ -27,6 +27,12 @@
         </activity>
 
 
+        <activity android:name=".ui.AddTaskActivity"
+            android:theme="@style/Theme.Transparent"
+            android:exported="true"
+            />
+
+
         <activity android:name=".ui.settings.auth.AuthActivity" />
 
         <activity
@@ -59,7 +65,7 @@
         </receiver>
 
         <receiver
-            android:name=".ui.widget.AddButtonWidgetReceiver"
+            android:name=".ui.widget.UpcomingWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
