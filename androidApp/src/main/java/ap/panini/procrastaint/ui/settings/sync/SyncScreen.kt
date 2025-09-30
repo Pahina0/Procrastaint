@@ -62,7 +62,7 @@ fun SyncScreen(
             )
         }
     ) { padding ->
-        PullToRefreshBox(
+        PullToRefreshBox (
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.sync() },
             modifier = Modifier

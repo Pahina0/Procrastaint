@@ -6,28 +6,27 @@ core = "2.2.0"
 datastorePreferences = "1.1.7"
 detekt = "1.23.8"
 detektRules = "0.4.27"
-firebaseBom = "34.2.0"
+firebaseBom = "34.3.0"
 glanceAppwidget = "1.1.1"
 glanceMaterial3 = "1.1.1"
 koin = "4.1.1"
 kotlin = "2.2.20"
-compose = "1.9.1"
-compose-material3 = "1.4.0-rc01"
+compose = "1.9.2"
+compose-material3 = "1.5.0-alpha04"
 androidx-activityCompose = "1.11.0"
 kotlinxDatetime = "0.7.1"
-androidx-room = "2.8.0"
+androidx-room = "2.8.1"
 kotlinxSerializationJson = "1.9.0"
 ksp = "2.2.20-2.0.3"
 ktor = "3.3.0"
 ktorfitConvertersFlow = "2.6.4"
 ktorfitLib = "2.6.4"
 kwhen = "0.1.1"
-material = "1.9.1"
-navigationCompose = "2.9.4"
+navigationCompose = "2.9.5"
 pagingCompose = "3.3.6"
-sqliteBundled = "2.6.0"
-sqliteBundledAndroid = "2.6.0"
-workRuntimeKtx = "2.10.4"
+sqliteBundled = "2.6.1"
+sqliteBundledAndroid = "2.6.1"
+workRuntimeKtx = "2.10.5"
 materialicons = "1.7.8"
 aboutLibraries = "12.2.4"
 serialization = "2.2.20"
@@ -41,7 +40,6 @@ androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "d
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceMaterial3" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
-androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialicons" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
@@ -49,8 +47,6 @@ androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", v
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqliteBundled" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 appauth = { module = "net.openid:appauth", version.ref = "appauth" }
-destinations-bottom-sheet = { module = "io.github.raamcosta.compose-destinations:bottom-sheet", version.ref = "core" }
-destinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
 detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRules" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -72,7 +68,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-sqlite-bundled-android = { group = "androidx.sqlite", name = "sqlite-bundled-android", version.ref = "sqliteBundledAndroid" }
-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "core" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

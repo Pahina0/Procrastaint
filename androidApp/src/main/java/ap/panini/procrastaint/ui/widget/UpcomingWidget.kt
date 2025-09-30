@@ -78,7 +78,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun DateHeader(date: Date) {
         Text(
-            text = DateFormat.format("EEEE, MMMM d", date).toString(),
+            text = DateFormat.format("EEEE, MMM d", date).toString(),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 color = GlanceTheme.colors.onSurface
