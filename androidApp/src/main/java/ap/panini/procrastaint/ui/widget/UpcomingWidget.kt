@@ -31,6 +31,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.AddTaskActivity
 import ap.panini.procrastaint.ui.widget.components.HorizontalDivider
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -47,13 +48,117 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
 
         provideContent {
             GlanceTheme {
-                GlanceContent(context)
+                GlanceContent()
             }
         }
     }
 
     @Composable
-    private fun GlanceContent(context: Context) {
+    private fun TaskList(groupedTasks: Map<Int, List<TaskSingle>>, recentlyCompleted: Set<Long>) {
+        LazyColumn(modifier = GlanceModifier.fillMaxWidth()) {
+            groupedTasks.forEach { (_, tasks) ->
+                item {
+                    DateHeader(date = Date(tasks.first().currentEventTime))
+                }
+
+                item {
+                    HorizontalDivider(height = 2.dp)
+                }
+                items(tasks) { task ->
+                    TaskItem(task, recentlyCompleted)
+                }
+
+                item {
+                    HorizontalDivider(height = 1.dp)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun DateHeader(date: Date) {
+        Text(
+            text = DateFormat.format("EEEE, MMMM d", date).toString(),
+            style = TextStyle(
+                fontWeight = FontWeight.Bold,
+                color = GlanceTheme.colors.onSurface
+            ),
+            modifier = GlanceModifier.padding(vertical = 8.dp)
+        )
+    }
+
+    @Composable
+    private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Long>) {
+        Row(
+            modifier = GlanceModifier.padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CheckBox(
+                checked = task.completed != null || recentlyCompleted.contains(task.taskId),
+                onCheckedChange = actionRunCallback<ToggleTaskAction>(
+                    parameters = actionParametersOf(
+                        taskIdKey to task.taskId,
+                        completedKey to (task.completed != null),
+                        completionId to task.completionId
+                    )
+                ),
+                modifier = GlanceModifier.padding(end = 8.dp)
+            )
+            Column(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = task.title,
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface,
+                        textDecoration = if (task.completed != null || recentlyCompleted.contains(
+                                task.taskId
+                            )
+                        ) TextDecoration.LineThrough else TextDecoration.None
+                    ),
+                    modifier = GlanceModifier.defaultWeight()
+                )
+                Text(
+                    text = task.currentEventTime.formatMilliseconds(
+                        setOf(
+                            Time.HOUR,
+                            Time.MINUTE
+                        )
+                    ),
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                )
+
+            }
+        }
+    }
+
+    @Composable
+    private fun NoTasksView() {
+        Column(
+            modifier = GlanceModifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = ";-;",
+                style = TextStyle(
+                    fontSize = 48.sp,
+                    color = GlanceTheme.colors.onSurface
+                )
+            )
+            Text(
+                text = "no upcoming tasks",
+                style = TextStyle(
+                    color = GlanceTheme.colors.onSurface
+                )
+            )
+        }
+    }
+
+    @Composable
+    private fun GlanceContent() {
         val tasks by viewModel.upcomingTasks.collectAsState()
         val recentlyCompleted by viewModel.recentlyCompleted.collectAsState()
         val groupedTasks = tasks.groupBy {
@@ -78,73 +183,10 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
             )
 
 
-            LazyColumn(modifier = GlanceModifier.fillMaxWidth()) {
-                groupedTasks.forEach { (_, tasks) ->
-                    item {
-                        val date = Date(tasks.first().currentEventTime)
-                        Text(
-                            text = DateFormat.format("EEEE, MMMM d", date).toString(),
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                color = GlanceTheme.colors.onSurface
-                            ),
-                            modifier = GlanceModifier.padding(vertical = 8.dp)
-                        )
-                    }
-
-                    item {
-                        HorizontalDivider(height = 2.dp)
-                    }
-                    items(tasks) { task ->
-                        Row(
-                            modifier = GlanceModifier.padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CheckBox(
-                                checked = task.completed != null || recentlyCompleted.contains(task.taskId),
-                                onCheckedChange = actionRunCallback<ToggleTaskAction>(
-                                    parameters = actionParametersOf(
-                                        taskIdKey to task.taskId,
-                                        completedKey to (task.completed != null),
-                                        completionId to task.completionId
-                                    )
-                                ),
-                                modifier = GlanceModifier.padding(end = 8.dp)
-                            )
-                            Column(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = task.title,
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.onSurface,
-                                        textDecoration = if (task.completed != null || recentlyCompleted.contains(
-                                                task.taskId
-                                            )
-                                        ) TextDecoration.LineThrough else TextDecoration.None
-                                    ),
-                                    modifier = GlanceModifier.defaultWeight()
-                                )
-                                Text(
-                                    text = task.currentEventTime.formatMilliseconds(
-                                        setOf(
-                                            Time.HOUR,
-                                            Time.MINUTE
-                                        )
-                                    ),
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.onSurface,
-                                        fontSize = 8.sp,
-                                        fontWeight = FontWeight.Medium,
-                                    )
-                                )
-
-                            }
-                        }
-                    }
-
-                    item {
-                        HorizontalDivider(height = 1.dp)
-                    }
-                }
+            if (tasks.isEmpty()) {
+                NoTasksView()
+            } else {
+                TaskList(groupedTasks, recentlyCompleted)
             }
         }
     }

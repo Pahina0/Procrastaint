@@ -72,7 +72,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/add_button_widget_info" />
+                android:resource="@xml/upcoming_widget" />
         </receiver>
     </application>
 </manifest>
