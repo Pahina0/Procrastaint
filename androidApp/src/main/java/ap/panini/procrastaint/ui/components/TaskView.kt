@@ -39,7 +39,7 @@ fun TaskView(
     onEdit: (taskId: Long) -> Unit,
     modifier: Modifier = Modifier,
     showFullDate: Boolean = false,
-    recentlyCompleted: Set<Long> = emptySet()
+    recentlyCompleted: Set<Pair<Long, Long>> = emptySet()
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -71,7 +71,7 @@ fun TaskView(
 
             leadingContent = {
                 Checkbox(
-                    checked = task.completed != null || recentlyCompleted.contains(task.taskId),
+                    checked = task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime)),
                     onCheckedChange = {
                         onCheck(task)
                     },
@@ -140,10 +140,11 @@ fun TaskView(
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = if (task.completed != null || recentlyCompleted.contains(task.taskId)) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime))) TextDecoration.LineThrough else TextDecoration.None
                     )
                 )
             }
+
         )
         HorizontalDivider(
             modifier = Modifier.padding(bottom = 5.dp, start = 80.dp, end = 80.dp),
