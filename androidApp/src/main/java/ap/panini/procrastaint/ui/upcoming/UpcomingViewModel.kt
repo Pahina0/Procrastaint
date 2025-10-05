@@ -25,8 +25,8 @@ class UpcomingViewModel(
     private val _uiState = MutableStateFlow(UpcomingUiState())
     val uiState: StateFlow<UpcomingUiState> = _uiState.asStateFlow()
 
-    private val _recentlyCompleted = MutableStateFlow<Set<Long>>(setOf())
-    val recentlyCompleted: StateFlow<Set<Long>> = _recentlyCompleted
+    private val _recentlyCompleted = MutableStateFlow<Set<Pair<Long, Long>>>(setOf())
+    val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = _recentlyCompleted
 
     init {
         getAllTasks()
@@ -39,7 +39,12 @@ class UpcomingViewModel(
                 maxRepetition = 6,
                 includeNoTimeTasks = true
             ).flowOn(Dispatchers.IO).combine(_recentlyCompleted) { taskInfos, recentlyCompleted ->
-                taskInfos.filter { f -> f.completed == null || f.taskId in recentlyCompleted }
+                taskInfos.filter { f ->
+                    f.completed == null || Pair(
+                        f.taskId,
+                        f.currentEventTime
+                    ) in recentlyCompleted
+                }
             }.collectLatest { taskInfos: List<TaskSingle> ->
                 _uiState.update {
                     it.copy(
@@ -65,7 +70,8 @@ class UpcomingViewModel(
                 )
             } else {
                 // Add to recently completed and then mark as complete after a delay
-                _recentlyCompleted.value += task.taskId
+                val id = Pair(task.taskId, task.currentEventTime)
+                _recentlyCompleted.value += id
                 delay(1500)
                 db.addCompletion(
                     TaskCompletion(
@@ -75,7 +81,7 @@ class UpcomingViewModel(
                         metaId = task.metaId
                     )
                 )
-                _recentlyCompleted.value -= task.taskId
+                _recentlyCompleted.value -= id
             }
         }
     }

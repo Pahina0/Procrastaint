@@ -1,5 +1,8 @@
 package ap.panini.procrastaint.ui.widget
 
+import android.annotation.SuppressLint
+import androidx.glance.unit.ColorProvider
+import androidx.compose.ui.graphics.Color
 import android.content.Context
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
@@ -78,7 +81,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun DateHeader(date: Date) {
         Text(
-            text = DateFormat.format("EEEE, MMMM d", date).toString(),
+            text = DateFormat.format("EEEE, MMM d", date).toString(),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 color = GlanceTheme.colors.onSurface
@@ -87,6 +90,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
         )
     }
 
+    @SuppressLint("RestrictedApi")
     @Composable
     private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Long>) {
         Row(
@@ -104,7 +108,10 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 ),
                 modifier = GlanceModifier.padding(end = 8.dp)
             )
-            Column(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = GlanceModifier.defaultWeight()
+            ) {
                 Text(
                     text = task.title,
                     style = TextStyle(
@@ -113,8 +120,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                                 task.taskId
                             )
                         ) TextDecoration.LineThrough else TextDecoration.None
-                    ),
-                    modifier = GlanceModifier.defaultWeight()
+                    )
                 )
                 Text(
                     text = task.currentEventTime.formatMilliseconds(
@@ -130,6 +136,33 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                     )
                 )
 
+                if (task.tags.isNotEmpty()) {
+                    Row(modifier = GlanceModifier.padding(top = 2.dp)) {
+                        task.tags.forEach { tag ->
+                            Row(modifier = GlanceModifier.padding(end = 4.dp)) {
+                                Text(
+                                    text = "#",
+                                    style = TextStyle(
+                                        color = tag.toRgb()
+                                            .let {
+                                                ColorProvider(Color(it.first, it.second, it.third))
+                                            },
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                )
+                                Text(
+                                    text = tag.displayTitle,
+                                    style = TextStyle(
+                                        color = GlanceTheme.colors.onSurface,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Medium,
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

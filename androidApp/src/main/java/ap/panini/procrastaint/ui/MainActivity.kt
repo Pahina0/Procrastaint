@@ -18,8 +18,10 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Upcoming
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ShortNavigationBar
 import androidx.compose.material3.ShortNavigationBarItem
@@ -86,6 +88,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     @Composable
     private fun MainContent(viewModel: MainActivityViewModel) {
         val navController = rememberNavController()
@@ -120,7 +123,7 @@ class MainActivity : ComponentActivity() {
 
             floatingActionButton = {
                 AnimatedVisibility(showFab) {
-                    FloatingActionButton(
+                    MediumFloatingActionButton(
                         onClick = {
                             if (listOf(Route.Tag::class).isEntryIn(currentDestination)) {
                                 val tagId = navBackStackEntry?.toRoute<Route.Tag>()?.tagId

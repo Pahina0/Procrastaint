@@ -78,7 +78,8 @@ fun LibraryScreen(
         if (tags.isEmpty()) {
             EmptyPage(
                 Icons.Outlined.Tag,
-                "No tags\nWrite a #tag in your next task to get started!"
+                "No tags\nWrite a #tag in your next task to get started!",
+                modifier = Modifier.padding(padding)
             )
         }
 

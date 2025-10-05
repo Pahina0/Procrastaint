@@ -78,7 +78,7 @@ private fun Tasks(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
     onEdit: (Long) -> Unit,
-    recentlyCompleted: Set<Long>,
+    recentlyCompleted: Set<Pair<Long, Long>>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.padding(10.dp)) {
