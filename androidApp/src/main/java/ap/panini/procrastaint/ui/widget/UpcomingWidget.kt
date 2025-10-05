@@ -57,7 +57,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     }
 
     @Composable
-    private fun TaskList(groupedTasks: Map<Int, List<TaskSingle>>, recentlyCompleted: Set<Long>) {
+    private fun TaskList(groupedTasks: Map<Int, List<TaskSingle>>, recentlyCompleted: Set<Pair<Long, Long>>) {
         LazyColumn(modifier = GlanceModifier.fillMaxWidth()) {
             groupedTasks.forEach { (_, tasks) ->
                 item {
@@ -92,13 +92,14 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
 
     @SuppressLint("RestrictedApi")
     @Composable
-    private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Long>) {
+    private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Pair<Long, Long>>) {
+        val isCompleted = task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime))
         Row(
             modifier = GlanceModifier.padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CheckBox(
-                checked = task.completed != null || recentlyCompleted.contains(task.taskId),
+                checked = isCompleted,
                 onCheckedChange = actionRunCallback<ToggleTaskAction>(
                     parameters = actionParametersOf(
                         taskIdKey to task.taskId,
@@ -116,10 +117,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                     text = task.title,
                     style = TextStyle(
                         color = GlanceTheme.colors.onSurface,
-                        textDecoration = if (task.completed != null || recentlyCompleted.contains(
-                                task.taskId
-                            )
-                        ) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     )
                 )
                 Text(
