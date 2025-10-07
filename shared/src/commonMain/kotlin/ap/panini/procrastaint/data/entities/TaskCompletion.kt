@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
             entity = TaskMeta::class,
             childColumns = ["metaId"],
             parentColumns = ["metaId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.SET_NULL
         )
     ]
 )
@@ -30,7 +30,7 @@ data class TaskCompletion(
     val taskId: Long = 0,
 
     @ColumnInfo(index = true)
-    val metaId: Long = 0,
+    val metaId: Long? = 0,
 
     @PrimaryKey(autoGenerate = true)
     val completionId: Long = 0,

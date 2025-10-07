@@ -106,9 +106,9 @@ class MainActivity : ComponentActivity() {
         val showFab by remember(currentDestination) {
             mutableStateOf(
                 ( // all the bottom sheet stuff + tag, besides settings
-                    BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                        Route.Tag::class
-                    )
+                        BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
+                                Route.Tag::class
+                        )
                     .isEntryIn(currentDestination)
             )
         }
@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
                 }
             },
 
-        ) { padding ->
+            ) { padding ->
             if (state.visible) {
                 TaskBottomSheet(
                     state,
@@ -148,7 +148,8 @@ class MainActivity : ComponentActivity() {
                     viewModel::onHide,
                     viewModel::getTagsStarting,
                     viewModel::save,
-                    viewModel::deleteEditTask
+                    viewModel::deleteEditTask,
+                    viewModel::completeEditTaskForever
                 )
             }
 

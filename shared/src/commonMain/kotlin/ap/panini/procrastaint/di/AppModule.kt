@@ -4,6 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import ap.panini.procrastaint.data.database.ProcrastaintDatabase
 import ap.panini.procrastaint.data.network.GoogleAuth
@@ -104,9 +106,21 @@ private fun getKtor(
 
 private fun getRoomDatabase(builder: RoomDatabase.Builder<ProcrastaintDatabase>): ProcrastaintDatabase {
     return builder
+        .addMigrations(MIGRATION_3_4)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
+}
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE TABLE `TaskCompletion_new` (`completionTime` INTEGER NOT NULL, `forTime` INTEGER NOT NULL, `taskId` INTEGER NOT NULL, `metaId` INTEGER, `completionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON DELETE CASCADE, FOREIGN KEY(`metaId`) REFERENCES `TaskMeta`(`metaId`) ON DELETE SET NULL )")
+        db.execSQL("INSERT INTO TaskCompletion_new (completionTime, forTime, taskId, metaId, completionId) SELECT completionTime, forTime, taskId, metaId, completionId FROM TaskCompletion")
+        db.execSQL("DROP TABLE TaskCompletion")
+        db.execSQL("ALTER TABLE TaskCompletion_new RENAME TO TaskCompletion")
+        db.execSQL("CREATE INDEX `index_TaskCompletion_taskId` ON `TaskCompletion` (`taskId`)")
+        db.execSQL("CREATE INDEX `index_TaskCompletion_metaId` ON `TaskCompletion` (`metaId`)")
+    }
 }
 
 internal expect fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase>

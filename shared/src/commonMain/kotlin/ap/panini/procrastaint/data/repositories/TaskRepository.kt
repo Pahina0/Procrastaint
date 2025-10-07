@@ -91,18 +91,30 @@ open class TaskRepository(
     }
 
     open suspend fun editTask(newTask: Task) {
-        deleteTask(newTask)
+        taskDao.updateTaskInfo(newTask.taskInfo)
 
-        insertTask(newTask)
-        callbacks.forEach { it.onDataChanged() }
+        taskDao.deleteTagsCrossRef(newTask.taskInfo.taskId)
+        newTask.tags.forEach {
+            val tagId = upsertTaskTag(it)
+            upsertTaskTagCrossRef(TaskTagCrossRef(newTask.taskInfo.taskId, tagId))
+        }
+
+        taskDao.deleteMetasForTask(newTask.taskInfo.taskId)
+        newTask.meta.forEach {
+            taskDao.insertTaskMeta(it.copy(taskId = newTask.taskInfo.taskId))
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val updatedTask = getTask(newTask.taskInfo.taskId)
+            // TODO this is inefficient
+            notificationManager.delete(updatedTask)
+            notificationManager.create(updatedTask)
+            calendar.deleteTask(updatedTask)
+            calendar.createTask(updatedTask)
+            callbacks.forEach { it.onDataChanged() }
+        }
     }
 
-    open suspend fun editTask(oldTask: Task, newTask: Task) {
-        deleteTask(oldTask)
-
-        insertTask(newTask)
-        callbacks.forEach { it.onDataChanged() }
-    }
 
     open suspend fun deleteTask(task: Task) {
         taskDao.deleteTask(task.taskInfo)
@@ -158,6 +170,24 @@ open class TaskRepository(
             calendar.removeCompletion(task, taskCompletion)
             callbacks.forEach { it.onDataChanged() }
         }
+    }
+
+    open suspend fun completeForever(task: Task) {
+        val time = Date.getTime()
+        val newTask = task.copy(
+            meta = task.meta.map {
+                it.copy(endTime = time)
+            }
+        )
+        editTask(newTask)
+
+        addCompletion(
+            TaskCompletion(
+                taskId = task.taskInfo.taskId,
+                forTime = time,
+                completionTime = Date.getTime()
+            )
+        )
     }
 
     fun getTasks(

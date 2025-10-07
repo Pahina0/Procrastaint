@@ -22,14 +22,16 @@ class AddTaskActivity : ComponentActivity() {
                     updateDescription = viewModel::updateDescription,
                     viewNextParsed = viewModel::viewNextParsed,
                     onDismissRequest = { finishAndRemoveTask() },
-                    getTagsStarting = viewModel::getTagsStarting,
-                    saveTask = {
+                    getTagsStarting = viewModel::getTagsStarting, saveTask = {
                         viewModel.save()
                         finishAndRemoveTask()
                     },
                     deleteTask = {
                         viewModel.deleteEditTask()
                         finishAndRemoveTask()
+                    },
+                    completeForever = {
+                        viewModel
                     }
                 )
             }

@@ -30,6 +30,15 @@ interface TaskDao {
     @Insert
     suspend fun insertTaskInfo(taskInfo: TaskInfo): Long
 
+    @Update
+    suspend fun updateTaskInfo(taskInfo: TaskInfo)
+
+    @Update
+    suspend fun updateTaskMeta(taskMeta: TaskMeta)
+
+    @Query("DELETE FROM TaskMeta WHERE taskId = :taskId")
+    suspend fun deleteMetasForTask(taskId: Long)
+
     @Insert
     suspend fun insertTaskMeta(taskMeta: TaskMeta): Long
 

@@ -23,9 +23,10 @@ import ap.panini.procrastaint.data.entities.TaskTagCrossRef
         TaskTagCrossRef::class,
         NetworkSyncItem::class
     ],
-    version = 2,
+    version = 4,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3)
     ]
 )
 @ConstructedBy(ProcrastaintDatabaseConstructor::class)
