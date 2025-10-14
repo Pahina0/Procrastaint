@@ -126,18 +126,8 @@ open class TaskRepository(
      * must be a repeating task
      * @param task
      */
-    open suspend fun completeForever(task: Task) {
-        val now = Date.getTime()
-
-        task.meta.forEach {
-            taskDao.updateTaskMeta(it.copy(endTime = now))
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // TODO: create a calendar callback to update task meta to end at sed time
-//            calendar.createTask(updatedTask)
-            callbacks.forEach { it.onDataChanged() }
-        }
+    open suspend fun completeForever(task: Task, from: Long = Date.getTime()) {
+        editTask(task.copy(meta = task.meta.map { it.copy(endTime = from) }))
     }
 
     open suspend fun deleteTask(task: Task) {
