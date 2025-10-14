@@ -28,7 +28,8 @@ data class NetworkSyncItem(
         CHECK,
         UNCHECK,
         CREATE_TASK,
-        DELETE_TASK
+        UPDATE_TASK,
+        DELETE_TASK,
     }
 
     enum class SyncData {
