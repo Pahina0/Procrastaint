@@ -148,7 +148,8 @@ class MainActivity : ComponentActivity() {
                     viewModel::onHide,
                     viewModel::getTagsStarting,
                     viewModel::save,
-                    viewModel::deleteEditTask
+                    viewModel::deleteEditTask,
+                    viewModel::completeForeverEditTask
                 )
             }
 

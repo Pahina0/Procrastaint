@@ -34,7 +34,7 @@ class MainActivityViewModel(
     ) {
         sealed interface Mode {
             data object Create : Mode
-            class Edit(val taskId: Long) : Mode
+            data class Edit(val taskId: Long, val repeated: Boolean) : Mode
         }
     }
 
@@ -51,7 +51,7 @@ class MainActivityViewModel(
                 uiState.value.copy(
                     task = task.generateOriginalText(),
                     description = task.taskInfo.description,
-                    mode = MainUiState.Mode.Edit(taskId)
+                    mode = MainUiState.Mode.Edit(taskId, task.meta.any { it.repeatOften != null })
                 )
             }
 
@@ -66,6 +66,16 @@ class MainActivityViewModel(
         viewModelScope.launch {
             val id = (uiState.value.mode as? MainUiState.Mode.Edit)?.taskId ?: return@launch
             db.deleteTask(id)
+        }
+        onHide()
+    }
+
+    fun completeForeverEditTask() {
+        if (uiState.value.mode !is MainUiState.Mode.Edit) return
+
+        viewModelScope.launch {
+            val id = (uiState.value.mode as? MainUiState.Mode.Edit)?.taskId ?: return@launch
+            db.completeForever(task = db.getTask(id))
         }
         onHide()
     }

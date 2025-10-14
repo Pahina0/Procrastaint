@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -49,7 +50,8 @@ fun TaskBottomSheet(
     onDismissRequest: () -> Unit,
     getTagsStarting: (String) -> List<TaskTag>,
     saveTask: () -> Unit,
-    deleteTask: () -> Unit
+    deleteTask: () -> Unit,
+    completeForeverTask: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState()
@@ -135,16 +137,30 @@ fun TaskBottomSheet(
             )
 
             if (state.mode is MainActivityViewModel.MainUiState.Mode.Edit) {
-                OutlinedButton(
-                    onClick = {
-                        deleteTask()
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors().copy(
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    modifier = Modifier.align(Alignment.End)
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("Delete task")
+                    if (state.mode.repeated) {
+                        OutlinedButton(
+                            onClick = {
+                                completeForeverTask()
+                            },
+                        ) {
+                            Text("Complete Forever")
+                        }
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            deleteTask()
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors().copy(
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                    ) {
+                        Text("Delete task")
+                    }
                 }
             }
 

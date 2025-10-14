@@ -33,6 +33,9 @@ interface TaskDao {
     @Insert
     suspend fun insertTaskMeta(taskMeta: TaskMeta): Long
 
+    @Update
+    suspend fun updateTaskMeta(taskMeta: TaskMeta)
+
     @Insert
     suspend fun insertTaskCompletion(taskCompletion: TaskCompletion): Long
 
