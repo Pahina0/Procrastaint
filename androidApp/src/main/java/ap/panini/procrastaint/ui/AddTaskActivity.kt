@@ -32,7 +32,7 @@ class AddTaskActivity : ComponentActivity() {
                         finishAndRemoveTask()
                     },
                     completeForeverTask = {
-                        viewModel.completeForeverEditTask()
+                        viewModel.removeFutureRepeatsEditTask()
                         finishAndRemoveTask()
                     }
                 )

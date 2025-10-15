@@ -3,6 +3,7 @@ package ap.panini.procrastaint.ui
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Parsed
@@ -34,24 +35,26 @@ class MainActivityViewModel(
     ) {
         sealed interface Mode {
             data object Create : Mode
-            data class Edit(val taskId: Long, val repeated: Boolean) : Mode
+            data class Edit(val task: TaskSingle, val repeated: Boolean) : Mode
         }
     }
 
     /**
      * Edit created task launches the bottom sheet and puts you in the state to edit a task
      *
-     * @param taskId
+     * @param taskSingle the task
      */
-    fun editCreatedTask(taskId: Long) {
+    fun editCreatedTask(taskSingle: TaskSingle) {
         viewModelScope.launch {
-            val task = db.getTask(taskId)
+            val task = db.getTask(taskSingle.taskId)
 
             _uiState.update {
                 uiState.value.copy(
                     task = task.generateOriginalText(),
                     description = task.taskInfo.description,
-                    mode = MainUiState.Mode.Edit(taskId, task.meta.any { it.repeatOften != null })
+                    mode = MainUiState.Mode.Edit(
+                        taskSingle,
+                        task.meta.any { it.repeatOften != null })
                 )
             }
 
@@ -64,18 +67,17 @@ class MainActivityViewModel(
         if (uiState.value.mode !is MainUiState.Mode.Edit) return
 
         viewModelScope.launch {
-            val id = (uiState.value.mode as? MainUiState.Mode.Edit)?.taskId ?: return@launch
+            val id = (uiState.value.mode as? MainUiState.Mode.Edit)?.task?.taskId ?: return@launch
             db.deleteTask(id)
         }
         onHide()
     }
 
-    fun completeForeverEditTask() {
-        if (uiState.value.mode !is MainUiState.Mode.Edit) return
+    fun removeFutureRepeatsEditTask() {
+        val task = (uiState.value.mode as? MainUiState.Mode.Edit)?.task ?: return
 
         viewModelScope.launch {
-            val id = (uiState.value.mode as? MainUiState.Mode.Edit)?.taskId ?: return@launch
-            db.completeForever(task = db.getTask(id))
+            db.removeFutureRepeats(task = db.getTask(task.taskId), from = task.currentEventTime + 1)
         }
         onHide()
     }
@@ -122,7 +124,7 @@ class MainActivityViewModel(
 
                 is MainUiState.Mode.Edit -> {
                     val idCorrected = task.taskInfo.copy(
-                        taskId = (uiState.value.mode as MainUiState.Mode.Edit).taskId
+                        taskId = (uiState.value.mode as MainUiState.Mode.Edit).task.taskId
                     )
 
                     db.editTask(

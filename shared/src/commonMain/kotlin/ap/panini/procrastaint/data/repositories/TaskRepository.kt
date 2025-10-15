@@ -126,7 +126,7 @@ open class TaskRepository(
      * must be a repeating task
      * @param task
      */
-    open suspend fun completeForever(task: Task, from: Long = Date.getTime()) {
+    open suspend fun removeFutureRepeats(task: Task, from: Long = Date.getTime()) {
         editTask(task.copy(meta = task.meta.map { it.copy(endTime = from) }))
     }
 

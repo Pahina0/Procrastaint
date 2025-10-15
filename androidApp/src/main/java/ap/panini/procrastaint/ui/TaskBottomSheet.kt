@@ -147,7 +147,7 @@ fun TaskBottomSheet(
                                 completeForeverTask()
                             },
                         ) {
-                            Text("Complete Forever")
+                            Text("End future Repeats")
                         }
                     }
 
