@@ -6,6 +6,7 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import kotlinx.coroutines.CoroutineScope
@@ -94,6 +95,11 @@ class NetworkCalendarRepository(
                         item.taskId,
                         item.metaId!!,
                     ),
+                )
+
+            NetworkSyncItem.SyncAction.UPDATE_TASK ->
+                repo.updateTask(
+                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
                 )
         }
 
@@ -238,6 +244,34 @@ class NetworkCalendarRepository(
                         )
                     } catch (_: Exception) {
                     }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    suspend fun updateTask(task: Task) {
+        val now = Clock.System.now().toEpochMilliseconds()
+
+        calendars.forEach { (calendar, loc) ->
+            val response = if (!calendar.isLoggedIn().first()) {
+                CalendarRepository.Response.Error(
+                    Throwable("Not logged in")
+                )
+            } else {
+                calendar.updateTask(task)
+            }
+
+            if (response is CalendarRepository.Response.Error) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    nsDao.insertNetworkSyncItem(
+                        NetworkSyncItem(
+                            time = now,
+                            location = loc,
+                            action = NetworkSyncItem.SyncAction.UPDATE_TASK,
+                            taskId = task.taskInfo.taskId
+                        )
+                    )
                 }
             }
         }

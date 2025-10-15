@@ -36,7 +36,7 @@ import ap.panini.procrastaint.util.Time
 fun TaskView(
     task: TaskSingle,
     onCheck: (TaskSingle) -> Unit,
-    onEdit: (taskId: Long) -> Unit,
+    onEdit: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier,
     showFullDate: Boolean = false,
     recentlyCompleted: Set<Pair<Long, Long>> = emptySet()
@@ -47,7 +47,7 @@ fun TaskView(
         ListItem(
             modifier = Modifier
                 .combinedClickable(
-                    onLongClick = { onEdit(task.taskId) },
+                    onLongClick = { onEdit(task) },
                     onClick = { onCheck(task) }
                 ),
 
@@ -71,7 +71,12 @@ fun TaskView(
 
             leadingContent = {
                 Checkbox(
-                    checked = task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime)),
+                    checked = task.completed != null || recentlyCompleted.contains(
+                        Pair(
+                            task.taskId,
+                            task.currentEventTime
+                        )
+                    ),
                     onCheckedChange = {
                         onCheck(task)
                     },
@@ -116,9 +121,9 @@ fun TaskView(
                                 withStyle(
                                     style = SpanStyle(
                                         color =
-                                        v.toRgb().let {
-                                            Color(it.first, it.second, it.third)
-                                        }
+                                            v.toRgb().let {
+                                                Color(it.first, it.second, it.third)
+                                            }
                                     )
                                 ) {
                                     if (i != 0) {
@@ -140,7 +145,10 @@ fun TaskView(
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = if (task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime))) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (task.completed != null || recentlyCompleted.contains(
+                                Pair(task.taskId, task.currentEventTime)
+                            )
+                        ) TextDecoration.LineThrough else TextDecoration.None
                     )
                 )
             }

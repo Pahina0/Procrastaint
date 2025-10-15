@@ -24,6 +24,10 @@ interface TaskDao {
     @Update
     suspend fun updateTag(taskTag: TaskTag)
 
+    @Update
+    suspend fun updateTaskInfo(taskInfo: TaskInfo)
+
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long
 
@@ -32,6 +36,9 @@ interface TaskDao {
 
     @Insert
     suspend fun insertTaskMeta(taskMeta: TaskMeta): Long
+
+    @Update
+    suspend fun updateTaskMeta(taskMeta: TaskMeta)
 
     @Insert
     suspend fun insertTaskCompletion(taskCompletion: TaskCompletion): Long
@@ -138,4 +145,5 @@ interface TaskDao {
         tagId: Long? = null,
         includeNoTimeTasks: Boolean = false
     ): Flow<List<TaskSingle>>
+
 }

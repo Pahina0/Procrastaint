@@ -14,6 +14,7 @@ import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.format.format
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
@@ -38,7 +39,7 @@ object Date {
     @OptIn(ExperimentalTime::class)
     fun getTime(
         year: Int = now().year,
-        month: Int = now().month.ordinal,
+        month: Int = now().month.number,
         dayOfMonth: Int = now().day,
         hour: Int = now().hour,
         minute: Int = now().minute

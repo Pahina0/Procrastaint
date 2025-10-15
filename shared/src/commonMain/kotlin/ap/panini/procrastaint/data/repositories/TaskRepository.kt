@@ -91,17 +91,43 @@ open class TaskRepository(
     }
 
     open suspend fun editTask(newTask: Task) {
-        deleteTask(newTask)
-
-        insertTask(newTask)
-        callbacks.forEach { it.onDataChanged() }
+        val oldTask = getTask(newTask.taskInfo.taskId)
+        editTask(oldTask, newTask)
     }
 
     open suspend fun editTask(oldTask: Task, newTask: Task) {
-        deleteTask(oldTask)
 
-        insertTask(newTask)
+        if (oldTask.meta.size != newTask.meta.size || oldTask.meta.zip(newTask.meta).any { (o, n) ->
+                o.repeatOften != n.repeatOften || o.repeatTag != n.repeatTag || o.startTime != n.startTime
+            }) {
+            deleteTask(oldTask)
+            insertTask(newTask)
+            callbacks.forEach { it.onDataChanged() }
+            return
+        }
+
+        if (oldTask.taskInfo != newTask.taskInfo) {
+            taskDao.updateTaskInfo(newTask.taskInfo)
+        }
+
+        oldTask.meta.zip(newTask.meta) { old, new ->
+            if (old != new) {
+                taskDao.updateTaskMeta(new)
+            }
+        }
+
+        calendar.updateTask(newTask)
+
         callbacks.forEach { it.onDataChanged() }
+    }
+
+    /**
+     * Complete forever
+     * must be a repeating task
+     * @param task
+     */
+    open suspend fun removeFutureRepeats(task: Task, from: Long = Date.getTime()) {
+        editTask(task.copy(meta = task.meta.map { it.copy(endTime = from) }))
     }
 
     open suspend fun deleteTask(task: Task) {

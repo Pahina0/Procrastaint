@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.Scaffold
@@ -148,7 +147,8 @@ class MainActivity : ComponentActivity() {
                     viewModel::onHide,
                     viewModel::getTagsStarting,
                     viewModel::save,
-                    viewModel::deleteEditTask
+                    viewModel::deleteEditTask,
+                    viewModel::removeFutureRepeatsEditTask
                 )
             }
 

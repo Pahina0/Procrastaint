@@ -77,7 +77,7 @@ fun UpcomingScreen(
 private fun Tasks(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
-    onEdit: (Long) -> Unit,
+    onEdit: (TaskSingle) -> Unit,
     recentlyCompleted: Set<Pair<Long, Long>>,
     modifier: Modifier = Modifier
 ) {
