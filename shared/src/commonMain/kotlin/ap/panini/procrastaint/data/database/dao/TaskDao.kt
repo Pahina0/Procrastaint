@@ -25,7 +25,7 @@ interface TaskDao {
     suspend fun updateTag(taskTag: TaskTag)
 
     @Update
-    fun updateTaskInfo(taskInfo: TaskInfo)
+    suspend fun updateTaskInfo(taskInfo: TaskInfo)
 
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

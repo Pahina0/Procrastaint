@@ -104,7 +104,7 @@ class MainActivityViewModel(
 
     fun save() {
         viewModelScope.launch {
-            val task = with(uiState.value) {
+            var task = with(uiState.value) {
                 parsed?.toTask(
                     timeIndex = viewing,
                     description = description
@@ -123,8 +123,18 @@ class MainActivityViewModel(
                 }
 
                 is MainUiState.Mode.Edit -> {
+                    val taskSingle = (uiState.value.mode as MainUiState.Mode.Edit).task
+
+                    val oldTask = db.getTask(taskSingle.taskId)
+
+                    // don't want to update meta if not needed
+                    if (oldTask.taskInfo.extractedTimePhrase.trim() == task.taskInfo.extractedTimePhrase.trim()) {
+                        task = task.copy(meta = oldTask.meta, completions = oldTask.completions)
+                    }
+
+
                     val idCorrected = task.taskInfo.copy(
-                        taskId = (uiState.value.mode as MainUiState.Mode.Edit).task.taskId
+                        taskId = taskSingle.taskId
                     )
 
                     db.editTask(
