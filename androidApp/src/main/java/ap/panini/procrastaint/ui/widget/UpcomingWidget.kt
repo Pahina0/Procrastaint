@@ -16,6 +16,7 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckBox
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -95,7 +96,13 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Pair<Long, Long>>) {
         val isCompleted = task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime))
         Row(
-            modifier = GlanceModifier.padding(vertical = 4.dp),
+            modifier = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp).clickable(
+                actionStartActivity<AddTaskActivity>(
+                    parameters = actionParametersOf(
+                        taskIdKey to task.taskId
+                    )
+                )
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CheckBox(

@@ -13,6 +13,12 @@ class AddTaskActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        intent.getLongExtra("taskId", -1L).takeIf { it != -1L }?.let {
+            viewModel.editCreatedTask(it)
+        }
+
         setContent {
             ProcrastaintTheme {
                 val state by viewModel.uiState.collectAsState()
