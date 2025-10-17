@@ -3,12 +3,15 @@ package ap.panini.procrastaint.data.entities
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Time
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
  * flattened task for displaying
  */
+@Serializable
 data class TaskSingle(
     val taskId: Long,
     val metaId: Long,
@@ -26,8 +29,10 @@ data class TaskSingle(
     val currentEventTime: Long, // make sure not -1 when accessing
 
 ) : KoinComponent {
+    @Transient
     private val db: TaskRepository by inject()
 
+    @Transient
     val tags: List<TaskTag>
         get() = runBlocking { db.getTask(taskId).tags }
 }

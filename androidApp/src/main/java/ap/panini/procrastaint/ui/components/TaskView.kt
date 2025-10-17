@@ -36,7 +36,7 @@ import ap.panini.procrastaint.util.Time
 fun TaskView(
     task: TaskSingle,
     onCheck: (TaskSingle) -> Unit,
-    onEdit: (taskId: Long) -> Unit,
+    onEdit: (taskId: TaskSingle) -> Unit,
     modifier: Modifier = Modifier,
     showFullDate: Boolean = false,
     recentlyCompleted: Set<Pair<Long, Long>> = emptySet()
@@ -47,7 +47,7 @@ fun TaskView(
         ListItem(
             modifier = Modifier
                 .combinedClickable(
-                    onClick = { onEdit(task.taskId) }
+                    onClick = { onEdit(task) }
                 ),
 
             trailingContent = {

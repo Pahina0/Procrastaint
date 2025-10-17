@@ -5,7 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
+import ap.panini.procrastaint.ui.widget.taskSingleKey
+import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AddTaskActivity : ComponentActivity() {
@@ -14,9 +17,9 @@ class AddTaskActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        intent.getLongExtra("taskId", -1L).takeIf { it != -1L }?.let {
-            viewModel.editCreatedTask(it)
+        intent.getStringExtra(taskSingleKey.name)?.let {
+            val task = Json.decodeFromString<TaskSingle>(it)
+            viewModel.editCreatedTask(task)
         }
 
         setContent {

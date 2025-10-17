@@ -1,19 +1,19 @@
 package ap.panini.procrastaint.ui.widget
 
 import android.annotation.SuppressLint
-import androidx.glance.unit.ColorProvider
-import androidx.compose.ui.graphics.Color
 import android.content.Context
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
@@ -35,15 +35,19 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.AddTaskActivity
 import ap.panini.procrastaint.ui.widget.components.HorizontalDivider
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
+import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.Calendar
 import java.util.Date
+
+val taskSingleKey = ActionParameters.Key<String>("taskSingle")
 
 class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
@@ -99,7 +103,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
             modifier = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp).clickable(
                 actionStartActivity<AddTaskActivity>(
                     parameters = actionParametersOf(
-                        taskIdKey to task.taskId
+                        taskSingleKey to Json.encodeToString(task)
                     )
                 )
             ),
