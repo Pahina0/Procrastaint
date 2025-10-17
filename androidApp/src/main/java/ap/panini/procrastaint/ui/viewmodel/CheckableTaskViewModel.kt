@@ -10,11 +10,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+private const val UndoDelay = 1500L
+
 open class CheckableTaskViewModel(
     protected val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    protected val _recentlyCompleted = MutableStateFlow<Set<Pair<Long, Long>>>(setOf())
+    protected val recentlyCompletedInternal = MutableStateFlow<Set<Pair<Long, Long>>>(setOf())
 
     fun checkTask(task: TaskSingle) {
         viewModelScope.launch {
@@ -30,11 +32,11 @@ open class CheckableTaskViewModel(
                         metaId = task.metaId
                     )
                 )
-                _recentlyCompleted.value -= id
+                recentlyCompletedInternal.value -= id
             } else {
                 // Add to recently completed and then mark as complete after a delay
-                _recentlyCompleted.value += id
-                delay(1500)
+                recentlyCompletedInternal.value += id
+                delay(UndoDelay)
                 taskRepository.addCompletion(
                     TaskCompletion(
                         completionTime = Date.getTime(),
@@ -43,7 +45,7 @@ open class CheckableTaskViewModel(
                         metaId = task.metaId
                     )
                 )
-                _recentlyCompleted.value -= id
+                recentlyCompletedInternal.value -= id
             }
         }
     }

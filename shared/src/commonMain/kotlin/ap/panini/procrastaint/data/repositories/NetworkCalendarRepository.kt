@@ -6,7 +6,6 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
-import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.repositories.calendars.CalendarRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import kotlinx.coroutines.CoroutineScope
@@ -48,59 +47,17 @@ class NetworkCalendarRepository(
             NetworkSyncItem.SyncData.GOOGLE -> googleCalendarRepository
         }
 
-        if (!repo.isLoggedIn()
-                .first()
-        ) {
+        if (!repo.isLoggedIn().first()) {
             return CalendarRepository.Response.Error(Throwable("Not logged in"))
         }
 
-        // if a id doesn't exist anymore can prob skip it, like trying to
         val response = when (item.action) {
             NetworkSyncItem.SyncAction.CREATE_CALENDAR -> repo.createCalendar()
-
-            NetworkSyncItem.SyncAction.CREATE_TASK -> repo.createTask(
-                taskDao.getTask(
-                    item.taskId ?: return CalendarRepository.Response.Success
-                ),
-            )
-
-            NetworkSyncItem.SyncAction.DELETE_TASK -> repo.deleteTask(
-                Task(
-                    TaskInfo(
-                        taskId = item.taskId ?: return CalendarRepository.Response.Success,
-                        title = ""
-                    ),
-                    meta = listOf()
-                )
-            )
-
-            NetworkSyncItem.SyncAction.CHECK ->
-                repo.addCompletion(
-                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success),
-                    TaskCompletion(
-                        0,
-                        item.time,
-                        item.taskId,
-                        item.metaId!!,
-                        item.completionId!!
-                    ),
-                )
-
-            NetworkSyncItem.SyncAction.UNCHECK ->
-                repo.removeCompletion(
-                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success),
-                    TaskCompletion(
-                        0,
-                        item.time,
-                        item.taskId,
-                        item.metaId!!,
-                    ),
-                )
-
-            NetworkSyncItem.SyncAction.UPDATE_TASK ->
-                repo.updateTask(
-                    taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
-                )
+            NetworkSyncItem.SyncAction.CREATE_TASK -> handleCreateTask(repo, item)
+            NetworkSyncItem.SyncAction.DELETE_TASK -> handleDeleteTask(repo, item)
+            NetworkSyncItem.SyncAction.CHECK -> handleCheckTask(repo, item)
+            NetworkSyncItem.SyncAction.UNCHECK -> handleUncheckTask(repo, item)
+            NetworkSyncItem.SyncAction.UPDATE_TASK -> handleUpdateTask(repo, item)
         }
 
         if (response is CalendarRepository.Response.Success) {
@@ -112,6 +69,55 @@ class NetworkCalendarRepository(
         }
 
         return response
+    }
+
+    private suspend fun handleCreateTask(
+        repo: CalendarRepository,
+        item: NetworkSyncItem
+    ): CalendarRepository.Response {
+        val task = taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
+        return repo.createTask(task)
+    }
+
+    private suspend fun handleDeleteTask(
+        repo: CalendarRepository,
+        item: NetworkSyncItem
+    ): CalendarRepository.Response {
+        val task = Task(
+            TaskInfo(
+                taskId = item.taskId ?: return CalendarRepository.Response.Success,
+                title = ""
+            ),
+            meta = listOf()
+        )
+        return repo.deleteTask(task)
+    }
+
+    private suspend fun handleCheckTask(
+        repo: CalendarRepository,
+        item: NetworkSyncItem
+    ): CalendarRepository.Response {
+        val task = taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
+        val completion =
+            TaskCompletion(0, item.time, item.taskId, item.metaId!!, item.completionId!!)
+        return repo.addCompletion(task, completion)
+    }
+
+    private suspend fun handleUncheckTask(
+        repo: CalendarRepository,
+        item: NetworkSyncItem
+    ): CalendarRepository.Response {
+        val task = taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
+        val completion = TaskCompletion(0, item.time, item.taskId, item.metaId!!)
+        return repo.removeCompletion(task, completion)
+    }
+
+    private suspend fun handleUpdateTask(
+        repo: CalendarRepository,
+        item: NetworkSyncItem
+    ): CalendarRepository.Response {
+        val task = taskDao.getTask(item.taskId ?: return CalendarRepository.Response.Success)
+        return repo.updateTask(task)
     }
 
     fun deleteSyncItem(item: NetworkSyncItem) {

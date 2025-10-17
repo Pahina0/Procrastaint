@@ -26,8 +26,8 @@ private const val WeightOne = 1f
 @Composable
 fun ColorPicker(
     color: String,
-    modifier: Modifier = Modifier,
-    onColorChange: (String) -> Unit
+    onColorChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val controller = rememberColorPickerController()
 

@@ -2,7 +2,6 @@ package ap.panini.procrastaint.util
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.format
@@ -33,6 +32,7 @@ fun Instant.toLocalDate(): LocalDate {
 
 object Date {
     private const val ROUND_NUMBER = 100000
+
     @OptIn(ExperimentalTime::class)
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 

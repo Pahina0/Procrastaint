@@ -96,10 +96,10 @@ open class TaskRepository(
     }
 
     open suspend fun editTask(oldTask: Task, newTask: Task) {
-
         if (oldTask.meta.size != newTask.meta.size || oldTask.meta.zip(newTask.meta).any { (o, n) ->
                 o.repeatOften != n.repeatOften || o.repeatTag != n.repeatTag || o.startTime != n.startTime
-            }) {
+            }
+        ) {
             deleteTask(oldTask)
             insertTask(newTask)
             callbacks.forEach { it.onDataChanged() }

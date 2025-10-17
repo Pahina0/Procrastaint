@@ -5,8 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import ap.panini.procrastaint.data.database.ProcrastaintDatabase
-import platform.Foundation.NSHomeDirectory
 import org.koin.core.context.startKoin
+import platform.Foundation.NSHomeDirectory
 
 fun initialize() {
     startKoin {

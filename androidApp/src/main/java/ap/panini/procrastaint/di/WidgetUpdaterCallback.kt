@@ -13,7 +13,9 @@ class WidgetUpdaterCallback(private val context: Context) : RepositoryCallback {
         val intent = Intent(context, UpcomingWidgetReceiver::class.java).apply {
             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         }
-        val ids = AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, UpcomingWidgetReceiver::class.java))
+        val ids = AppWidgetManager.getInstance(
+            context
+        ).getAppWidgetIds(ComponentName(context, UpcomingWidgetReceiver::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         context.sendBroadcast(intent)
     }

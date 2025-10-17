@@ -9,4 +9,3 @@ object DependencyProvider : KoinComponent {
     val database: ProcrastaintDatabase by inject()
     val taskRepository: TaskRepository by inject()
 }
-

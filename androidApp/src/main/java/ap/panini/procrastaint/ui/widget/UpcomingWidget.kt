@@ -52,8 +52,6 @@ val taskSingleKey = ActionParameters.Key<String>("taskSingle")
 class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-
-
         provideContent {
             GlanceTheme {
                 GlanceContent()
@@ -113,9 +111,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 checked = isCompleted,
                 onCheckedChange = actionRunCallback<ToggleTaskAction>(
                     parameters = actionParametersOf(
-                        taskIdKey to task.taskId,
-                        completedKey to (task.completed != null),
-                        completionId to task.completionId
+                        taskIdKey to task.taskId
                     )
                 ),
                 modifier = GlanceModifier.padding(end = 8.dp)
@@ -217,13 +213,11 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
             verticalAlignment = Alignment.Top,
             horizontalAlignment = Alignment.Start
         ) {
-
             Button(
                 text = "Add task",
                 onClick = actionStartActivity<AddTaskActivity>(),
                 modifier = GlanceModifier.fillMaxWidth()
             )
-
 
             if (tasks.isEmpty()) {
                 NoTasksView()
@@ -240,4 +234,3 @@ class UpcomingWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
         UpcomingWidget(viewModel)
     }
 }
-

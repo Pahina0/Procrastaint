@@ -15,14 +15,14 @@ class UpcomingWidgetViewModel(
     taskRepository: TaskRepository
 ) : CheckableTaskViewModel(taskRepository) {
 
-    val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = _recentlyCompleted
+    val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = recentlyCompletedInternal
 
     val upcomingTasks: StateFlow<List<TaskSingle>> =
         taskRepository.getTasks(
             from = Date.getTodayStart(),
             to = Date.getTodayStart() + 7 * 24 * 60 * 60 * 1000L
         )
-            .combine(_recentlyCompleted) { tasks, completed ->
+            .combine(recentlyCompletedInternal) { tasks, completed ->
                 tasks.filter { task ->
                     task.completed == null || Pair(task.taskId, task.currentEventTime) in completed
                 }
@@ -33,7 +33,7 @@ class UpcomingWidgetViewModel(
                 initialValue = emptyList()
             )
 
-    fun toggleTaskCompletion(taskId: Long, completed: Boolean, completionId: Long) {
+    fun toggleTaskCompletion(taskId: Long) {
         viewModelScope.launch {
             val task = upcomingTasks.value.find { it.taskId == taskId } ?: return@launch
             checkTask(task)

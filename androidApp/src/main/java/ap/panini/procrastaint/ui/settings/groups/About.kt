@@ -1,7 +1,6 @@
 package ap.panini.procrastaint.ui.settings.groups
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Attribution
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Code
@@ -46,6 +45,5 @@ fun About(
         SettingsItem(Icons.Outlined.Attribution, "Open source libraries", onClick = {
             onNavigateToAboutLibraries()
         })
-
     }
 }

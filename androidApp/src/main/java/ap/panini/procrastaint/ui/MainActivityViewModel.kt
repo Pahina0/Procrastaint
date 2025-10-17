@@ -54,7 +54,8 @@ class MainActivityViewModel(
                     description = task.taskInfo.description,
                     mode = MainUiState.Mode.Edit(
                         taskSingle,
-                        task.meta.any { it.repeatOften != null })
+                        task.meta.any { it.repeatOften != null }
+                    )
                 )
             }
 
@@ -131,7 +132,6 @@ class MainActivityViewModel(
                     if (oldTask.taskInfo.extractedTimePhrase.trim() == task.taskInfo.extractedTimePhrase.trim()) {
                         task = task.copy(meta = oldTask.meta, completions = oldTask.completions)
                     }
-
 
                     val idCorrected = task.taskInfo.copy(
                         taskId = taskSingle.taskId

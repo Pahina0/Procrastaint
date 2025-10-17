@@ -12,7 +12,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 
 @Composable
-fun HorizontalDivider(height: Dp = 1.dp, modifier: GlanceModifier = GlanceModifier) {
+fun HorizontalDivider(modifier: GlanceModifier = GlanceModifier, height: Dp = 1.dp) {
     val context = LocalContext.current
 
     Box(
@@ -21,5 +21,4 @@ fun HorizontalDivider(height: Dp = 1.dp, modifier: GlanceModifier = GlanceModifi
             .height(height)
             .background(GlanceTheme.colors.onSurface.getColor(context).copy(alpha = 0.12f))
     ) {}
-
 }

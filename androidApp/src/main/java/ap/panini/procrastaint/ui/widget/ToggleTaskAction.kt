@@ -9,8 +9,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 val taskIdKey = ActionParameters.Key<Long>("taskId")
-val completedKey = ActionParameters.Key<Boolean>("completed")
-val completionId = ActionParameters.Key<Long>("completionId")
 
 class ToggleTaskAction : ActionCallback, KoinComponent {
     private val viewModel: UpcomingWidgetViewModel by inject()
@@ -22,12 +20,9 @@ class ToggleTaskAction : ActionCallback, KoinComponent {
         parameters: ActionParameters
     ) {
         val taskId = parameters[taskIdKey] ?: return
-        val completed = parameters[completedKey] ?: return
-        val completionId = parameters[completionId] ?: return
 
-        viewModel.toggleTaskCompletion(taskId, completed, completionId)
+        viewModel.toggleTaskCompletion(taskId)
 
         widgetUpdater.onDataChanged()
     }
-
 }

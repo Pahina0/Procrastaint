@@ -120,9 +120,9 @@ fun TaskView(
                                 withStyle(
                                     style = SpanStyle(
                                         color =
-                                            v.toRgb().let {
-                                                Color(it.first, it.second, it.third)
-                                            }
+                                        v.toRgb().let {
+                                            Color(it.first, it.second, it.third)
+                                        }
                                     )
                                 ) {
                                     if (i != 0) {
@@ -147,7 +147,11 @@ fun TaskView(
                         textDecoration = if (task.completed != null || recentlyCompleted.contains(
                                 Pair(task.taskId, task.currentEventTime)
                             )
-                        ) TextDecoration.LineThrough else TextDecoration.None
+                        ) {
+                            TextDecoration.LineThrough
+                        } else {
+                            TextDecoration.None
+                        }
                     )
                 )
             }

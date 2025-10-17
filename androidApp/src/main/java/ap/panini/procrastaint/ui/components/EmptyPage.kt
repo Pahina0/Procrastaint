@@ -36,7 +36,6 @@ fun EmptyPage(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier

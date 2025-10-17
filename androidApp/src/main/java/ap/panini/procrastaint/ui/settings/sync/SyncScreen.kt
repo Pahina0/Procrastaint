@@ -62,7 +62,7 @@ fun SyncScreen(
             )
         }
     ) { padding ->
-        PullToRefreshBox (
+        PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = { viewModel.sync() },
             modifier = Modifier
@@ -100,7 +100,7 @@ private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Uni
         onDismiss = {
             if (it == SwipeToDismissBoxValue.EndToStart) {
                 deleteItem(item)
-                runBlocking {  swipeToDismissBoxState.reset() }
+                runBlocking { swipeToDismissBoxState.reset() }
             }
         },
         backgroundContent = {

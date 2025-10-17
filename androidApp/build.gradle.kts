@@ -15,8 +15,8 @@ android {
         applicationId = "ap.panini.procrastaint"
         minSdk = 24
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.0.5"
+        versionCode = 7
+        versionName = "0.0.6"
     }
     buildFeatures {
         buildConfig = true
@@ -99,5 +99,4 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.kotlinx.serialization.json)
-
 }

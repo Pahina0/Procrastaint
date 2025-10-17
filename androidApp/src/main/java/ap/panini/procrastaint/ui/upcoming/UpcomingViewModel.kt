@@ -23,7 +23,7 @@ class UpcomingViewModel(
     private val _uiState = MutableStateFlow(UpcomingUiState())
     val uiState: StateFlow<UpcomingUiState> = _uiState.asStateFlow()
 
-    val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = _recentlyCompleted
+    val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = recentlyCompletedInternal
 
     init {
         getAllTasks()
@@ -35,7 +35,7 @@ class UpcomingViewModel(
                 Date.getTodayStart(),
                 maxRepetition = 6,
                 includeNoTimeTasks = true
-            ).flowOn(Dispatchers.IO).combine(_recentlyCompleted) { taskInfos, recentlyCompleted ->
+            ).flowOn(Dispatchers.IO).combine(recentlyCompletedInternal) { taskInfos, recentlyCompleted ->
                 taskInfos.filter { f ->
                     f.completed == null || Pair(
                         f.taskId,

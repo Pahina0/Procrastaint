@@ -2,8 +2,6 @@ package ap.panini.procrastaint.data.repositories.calendars
 
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
-import ap.panini.procrastaint.data.entities.TaskInfo
-import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.google.GoogleCalendar
 import ap.panini.procrastaint.data.entities.google.GoogleEvent
 import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoogleEvents
@@ -128,7 +126,6 @@ class GoogleCalendarRepository internal constructor(
         )
     }
 
-
     override suspend fun updateTask(
         task: Task,
     ): CalendarRepository.Response {
@@ -146,7 +143,6 @@ class GoogleCalendarRepository internal constructor(
 
         return CalendarRepository.Response.Success
     }
-
 
     /**
      * Update completion
