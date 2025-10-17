@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import ap.panini.procrastaint.data.database.MIGRATION_2_3
 import ap.panini.procrastaint.data.database.ProcrastaintDatabase
 import ap.panini.procrastaint.data.network.GoogleAuth
 import ap.panini.procrastaint.data.network.api.GoogleCalendarApi
@@ -34,7 +35,11 @@ import okio.Path.Companion.toPath
 import org.koin.dsl.module
 
 val appModule = module {
-    val database = getRoomDatabase(getDatabaseBuilder())
+    val database = getRoomDatabase(
+        getDatabaseBuilder()
+            .addMigrations(MIGRATION_2_3)
+    )
+
     single { database }
     single { database.getTaskDao() }
     single { database.getNetworkSyncDao() }
