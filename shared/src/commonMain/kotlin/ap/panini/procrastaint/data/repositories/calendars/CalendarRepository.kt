@@ -2,6 +2,8 @@ package ap.panini.procrastaint.data.repositories.calendars
 
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 import kotlinx.coroutines.flow.Flow
 
 sealed interface CalendarRepository {
@@ -47,5 +49,9 @@ sealed interface CalendarRepository {
     suspend fun removeCompletion(
         task: Task,
         completion: TaskCompletion,
+    ): Response
+
+    suspend fun updateTask(
+        task: Task,
     ): Response
 }

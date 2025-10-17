@@ -38,7 +38,7 @@ private const val HOURS = 24
 fun DayView(
     tasks: List<TaskSingle>,
     onCheck: (TaskSingle) -> Unit,
-    onEdit: (Long) -> Unit,
+    onEdit: (TaskSingle) -> Unit,
     isToday: Boolean,
     modifier: Modifier = Modifier,
 ) {

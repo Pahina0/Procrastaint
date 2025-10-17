@@ -2,6 +2,8 @@ package ap.panini.procrastaint.data.repositories.calendars
 
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.google.GoogleCalendar
 import ap.panini.procrastaint.data.entities.google.GoogleEvent
 import ap.panini.procrastaint.data.entities.google.GoogleEvent.Companion.getGoogleEvents
@@ -125,6 +127,26 @@ class GoogleCalendarRepository internal constructor(
             completion,
         )
     }
+
+
+    override suspend fun updateTask(
+        task: Task,
+    ): CalendarRepository.Response {
+        var error = Throwable("Unknown error occurred")
+
+        val events = getGoogleEvents(task, preference)
+        for (event in events) {
+            gcApi.updateEvent(
+                event,
+                preference.getString(PreferenceRepository.GOOGLE_CALENDAR_ID).first(),
+                event.id
+            ).catch { error = it }
+                .firstOrNull() ?: return CalendarRepository.Response.Error(error)
+        }
+
+        return CalendarRepository.Response.Success
+    }
+
 
     /**
      * Update completion
