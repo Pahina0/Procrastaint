@@ -1,13 +1,17 @@
 package ap.panini.procrastaint.ui.calendar
 
 
+import MonthlyScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.ui.calendar.components.CalendarFilterBottomSheet
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -19,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.calendar.daily.DailyScreen
-import ap.panini.procrastaint.ui.calendar.monthly.MonthlyScreen
 import ap.panini.procrastaint.ui.calendar.weekly.WeeklyScreen
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import org.koin.androidx.compose.koinViewModel
@@ -36,6 +39,8 @@ fun CalendarScreen(
 
 
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
+
+    val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 
     var showFilterSheet by remember { mutableStateOf(false) }
 
@@ -55,15 +60,28 @@ fun CalendarScreen(
 
 
 
+    val onTodayClick: () -> Unit = {
+        viewModel.setSelectedTime(today)
+    }
+
     ScreenScaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Calendar")
+                    Text(state.title)
                 },
                 actions = {
                     IconButton(onClick = { showFilterSheet = true }) {
                         Icon(Icons.Outlined.FilterList, contentDescription = "Filter calendar view")
+                    }
+                    IconButton(
+                        onClick = {
+                            viewModel.setSelectedTime(
+                                today
+                            )
+                        }
+                    ) {
+                        Icon(Icons.Outlined.Today, contentDescription = "Today")
                     }
 
                 }
@@ -72,9 +90,9 @@ fun CalendarScreen(
     ) { padding ->
         ScreenScaffold(modifier = Modifier.padding(padding)) {
             when (state.displayMode) {
-                CalendarDisplayMode.DAILY -> DailyScreen()
-                CalendarDisplayMode.WEEKLY -> WeeklyScreen()
-                CalendarDisplayMode.MONTHLY -> MonthlyScreen()
+                CalendarDisplayMode.DAILY -> DailyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
+                CalendarDisplayMode.WEEKLY -> WeeklyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
+                CalendarDisplayMode.MONTHLY -> MonthlyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
             }
         }
     }

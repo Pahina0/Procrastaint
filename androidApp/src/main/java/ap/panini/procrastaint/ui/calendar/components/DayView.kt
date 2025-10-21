@@ -1,124 +1,112 @@
 package ap.panini.procrastaint.ui.calendar.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.ui.components.TaskView
-import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
+import ap.panini.procrastaint.util.Date.toDayOfWeek
 import ap.panini.procrastaint.util.Time
-import ap.panini.procrastaint.util.hour
-import kotlin.time.Duration.Companion.hours
+import ap.panini.procrastaint.util.dayOfWeek
 
-private const val HOURS = 24
-
-/**
- * Day view
- *
- * @param tasks tasks must be all in 1 single day of time. from 00:00 to 24:00.
- * make sure its not the next day
- * @param modifier
- */
 @Composable
 fun DayView(
-    tasks: Map<Int, List<TaskSingle>>,
-    onCheck: (TaskSingle) -> Unit,
-    onEdit: (TaskSingle) -> Unit,
-    isToday: Boolean,
+    date: Long,
+    tasks: List<TaskSingle>,
+    dateType: ViewingType,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
-    val listState = rememberLazyListState()
-
-    val curHour by remember { mutableIntStateOf(Date.getTime().hour()) }
-
-    LazyColumn(
-        modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        state = listState
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(10.dp),
     ) {
-        for (hour in 0 until HOURS) {
-            item {
-                DividerText(
-                    (Date.getTodayStart() + hour.hours.inWholeMilliseconds).formatMilliseconds(
-                        setOf(Time.HOUR, Time.MINUTE),
-                        smart = false
-                    ),
-                    highlight = isToday && hour == curHour
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    date.formatMilliseconds(setOf(Time.DAY), useAbbreviated = true),
+                    color = dateType.getTextColor()
                 )
-            }
+                val remaining = tasks.filter { it.completed == null }.size
 
-            val tasksForHour = tasks[hour]
-
-            if (tasksForHour.isNullOrEmpty()) {
-                item { Spacer(modifier = Modifier.height(20.dp)) }
-            } else {
-                items(tasksForHour) { task ->
-                    TaskView(task, onCheck, onEdit)
+                if (remaining > 0) {
+                    Badge(
+                        containerColor = dateType.getBadgeColor()
+                    ) {
+                        Text(
+                            remaining.toString(),
+                            color = dateType.getBadgeContentColor()
+                        )
+                    }
                 }
             }
-        }
-    }
 
-    LaunchedEffect(isToday) {
-        if (isToday) {
-            listState.animateScrollToItem(curHour * 2)
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun DayViewPreview() {
-    DayView(
-        mapOf(
-            4 to listOf(
-                TaskSingle(
-                    0,
-                    0,
-                    0,
-                    "IDK",
-                    "HII",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    4.3.hours.inWholeMilliseconds
-                )
-            ),
-            8 to listOf(
-                TaskSingle(
-                    0,
-                    0,
-                    0,
-                    "num 2",
-                    "desc",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    8.hours.inWholeMilliseconds
-                )
+            Text(
+                date.toDayOfWeek(),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (date.dayOfWeek() == 6 || date.dayOfWeek() == 7) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    Color.Unspecified
+                }
             )
-        ),
-        {},
-        {},
-        false,
-        modifier = Modifier.fillMaxSize()
-    )
+        }
+    }
 }
+
+sealed interface ViewingType {
+    data object Selected : ViewingType
+    data object Past : ViewingType
+    data object Future : ViewingType
+    data object Today : ViewingType
+}
+
+@Composable
+private fun ViewingType.getTextColor() = with(MaterialTheme.colorScheme) {
+    when (this@getTextColor) {
+        is ViewingType.Past, ViewingType.Future -> onSurface
+        is ViewingType.Today -> primary
+        is ViewingType.Selected -> tertiary
+    }
+}
+
+@Composable
+private fun ViewingType.getBadgeColor() =
+    with(MaterialTheme.colorScheme) {
+        when (this@getBadgeColor) {
+            is ViewingType.Past -> secondaryContainer
+            is ViewingType.Future -> primaryContainer
+            is ViewingType.Today -> errorContainer
+            is ViewingType.Selected -> tertiaryContainer
+        }
+    }
+
+@Composable
+private fun ViewingType.getBadgeContentColor() =
+    with(MaterialTheme.colorScheme) {
+        when (this@getBadgeContentColor) {
+            is ViewingType.Past -> onSecondaryContainer
+            is ViewingType.Future -> onPrimaryContainer
+            is ViewingType.Today -> onErrorContainer
+            is ViewingType.Selected -> onTertiaryContainer
+        }
+    }
