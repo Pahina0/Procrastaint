@@ -1,15 +1,15 @@
-package ap.panini.procrastaint.ui.calendar
+package ap.panini.procrastaint.ui.calendar.daily
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.TaskRepository
+import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
+import ap.panini.procrastaint.ui.calendar.CalendarPagingSource
 import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,13 +17,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CalendarViewModel(
+class DailyViewModel(
     private val db: TaskRepository
 ) : ViewModel() {
     private val today = Date.getTodayStart()
 
-    private val _uiState = MutableStateFlow(CalendarUiState(today))
-    val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(DailyUiState(today))
+    val uiState: StateFlow<DailyUiState> = _uiState.asStateFlow()
 
     val dateState = Pager(
         PagingConfig(
@@ -35,10 +35,6 @@ class CalendarViewModel(
         CalendarPagingSource(today)
     }.flow
         .cachedIn(viewModelScope)
-
-    fun setDisplayMode(displayMode: CalendarDisplayMode) {
-        _uiState.update { it.copy(displayMode = displayMode) }
-    }
 
     fun setSelectedTime(time: Long) {
         _uiState.update { it.copy(selectedTime = time) }
@@ -66,9 +62,7 @@ class CalendarViewModel(
         }
     }
 
-    @Immutable
-    data class CalendarUiState(
-        val selectedTime: Long,
-        val displayMode: CalendarDisplayMode = CalendarDisplayMode.DAILY
+    data class DailyUiState(
+        val selectedTime: Long
     )
 }
