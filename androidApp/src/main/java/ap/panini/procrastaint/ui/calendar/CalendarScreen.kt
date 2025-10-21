@@ -146,10 +146,11 @@ fun CalendarScreen(
                         key = dateState.itemKey { it.first }
                     ) { i ->
                         val (time, item) = dateState[i]!!
-                        val itemState = item.collectAsStateWithLifecycle(listOf()).value
+                        val itemState = item.collectAsStateWithLifecycle(mapOf()).value
+
                         TasksMiniPreview(
                             time,
-                            itemState,
+                            itemState.values.flatten(),
                             dateType =
                             when (time) {
                                 state.selectedTime -> ViewingType.Selected
@@ -178,7 +179,7 @@ fun CalendarScreen(
                 ) { i ->
 
                     val (time, item) = dateState[i]!!
-                    val itemState = item.collectAsStateWithLifecycle(listOf()).value
+                    val itemState = item.collectAsStateWithLifecycle(mapOf()).value
 
                     DayView(
                         itemState,
