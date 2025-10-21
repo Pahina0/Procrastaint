@@ -12,10 +12,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -34,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.ui.calendar.components.CalendarFilterBottomSheet
 import ap.panini.procrastaint.ui.calendar.components.DayView
 import ap.panini.procrastaint.ui.calendar.components.TasksMiniPreview
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
@@ -63,6 +68,9 @@ fun CalendarScreen(
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var displayMode by remember { mutableStateOf(CalendarDisplayMode.DAILY) }
 
     val selectableListState = rememberLazyListState()
     val pagerState = rememberPagerState { dateState.itemCount }
@@ -103,6 +111,19 @@ fun CalendarScreen(
         }
     }
 
+    if (showFilterSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilterSheet = false },
+        ) {
+            CalendarFilterBottomSheet(
+                displayMode = displayMode,
+                onDisplayModeChange = {
+                    displayMode = it
+                }
+            )
+        }
+    }
+
     ScreenScaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -119,6 +140,9 @@ fun CalendarScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = { showFilterSheet = true }) {
+                        Icon(Icons.Outlined.FilterList, contentDescription = "Filter calendar view")
+                    }
                     IconButton(
                         onClick = {
                             viewModel.setSelectedTime(
