@@ -40,8 +40,10 @@ fun MonthlyScreen(
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        lazyPagingItems[pagerState.currentPage]?.let {
-            onTitleChange(it.time.formatMilliseconds(setOf(Time.MONTH)))
+        if (pagerState.currentPage < lazyPagingItems.itemCount) {
+            lazyPagingItems[pagerState.currentPage]?.let {
+                onTitleChange(it.time.formatMilliseconds(setOf(Time.MONTH)))
+            }
         }
     }
 
@@ -49,7 +51,8 @@ fun MonthlyScreen(
         state = pagerState,
         modifier = modifier.fillMaxSize(),
     ) { page ->
-        val monthData = lazyPagingItems[page]
+        val monthData = if (page < lazyPagingItems.itemCount) lazyPagingItems[page] else null
+
         if (monthData != null) {
             when (monthData) {
                 is CalendarPageData.Monthly -> {
