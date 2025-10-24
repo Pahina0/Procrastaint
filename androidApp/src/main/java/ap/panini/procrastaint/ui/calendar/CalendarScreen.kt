@@ -2,6 +2,9 @@ package ap.panini.procrastaint.ui.calendar
 
 
 import MonthlyScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
@@ -36,8 +39,6 @@ fun CalendarScreen(
 ) {
 
 
-
-
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
@@ -56,8 +57,6 @@ fun CalendarScreen(
             )
         }
     }
-
-
 
 
     val onTodayClick: () -> Unit = {
@@ -88,11 +87,25 @@ fun CalendarScreen(
             )
         }
     ) { padding ->
-        ScreenScaffold(modifier = Modifier.padding(padding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .consumeWindowInsets(padding)) {
             when (state.displayMode) {
-                CalendarDisplayMode.DAILY -> DailyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
-                CalendarDisplayMode.WEEKLY -> WeeklyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
-                CalendarDisplayMode.MONTHLY -> MonthlyScreen(onTodayClick = onTodayClick, onTitleChange = viewModel::setTitle)
+                CalendarDisplayMode.DAILY -> DailyScreen(
+                    onTodayClick = onTodayClick,
+                    onTitleChange = viewModel::setTitle
+                )
+
+                CalendarDisplayMode.WEEKLY -> WeeklyScreen(
+                    onTodayClick = onTodayClick,
+                    onTitleChange = viewModel::setTitle
+                )
+
+                CalendarDisplayMode.MONTHLY -> MonthlyScreen(
+                    onTodayClick = onTodayClick,
+                    onTitleChange = viewModel::setTitle
+                )
             }
         }
     }

@@ -42,7 +42,12 @@ fun MonthlyScreen(
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage < lazyPagingItems.itemCount) {
             lazyPagingItems[pagerState.currentPage]?.let {
-                onTitleChange(it.time.formatMilliseconds(setOf(Time.MONTH)))
+                onTitleChange(
+                    it.time.formatMilliseconds(
+                        known = setOf(Time.MONTH),
+                        smart = false
+                    )
+                )
             }
         }
     }
@@ -60,6 +65,7 @@ fun MonthlyScreen(
 
                     MonthGrid(month = monthData.time, tasks = tasks)
                 }
+
                 else -> {
                     Box(
                         modifier = modifier.fillMaxSize(),
