@@ -12,13 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
+import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.components.DayView
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
 import kotlinx.coroutines.launch
 
 @Composable
 fun DailyCalendarView(
-    dateState: LazyPagingItems<Pair<Long, kotlinx.coroutines.flow.Flow<Map<Int, List<ap.panini.procrastaint.data.entities.TaskSingle>>>>>,
+    dateState: LazyPagingItems<CalendarPageData>,
     selectableListState: LazyListState,
     selectedTime: Long,
     today: Long,
@@ -35,33 +36,40 @@ fun DailyCalendarView(
     ) {
         items(
             count = dateState.itemCount,
-            key = dateState.itemKey { it.first }
+            key = dateState.itemKey { it.time }
         ) { i ->
-            val (time, item) = dateState[i]!!
-            val itemState = item.collectAsStateWithLifecycle(mapOf()).value
+            val dayData = dateState[i]
+            if (dayData != null) {
+                when (dayData) {
+                    is CalendarPageData.Daily -> {
+                        val itemState = dayData.tasks.collectAsStateWithLifecycle(mapOf()).value
 
-            DayView(
-                time,
-                itemState.values.flatten(),
-                dateType =
-                when (time) {
-                    selectedTime -> ViewingType.Selected
-                    today -> ViewingType.Today
-                    else -> {
-                        if (time < today) {
-                            ViewingType.Past
-                        } else {
-                            ViewingType.Future
-                        }
-                    }
-                },
+                        DayView(
+                            dayData.time,
+                            itemState.values.flatten(),
+                            dateType =
+                            when (dayData.time) {
+                                selectedTime -> ViewingType.Selected
+                                today -> ViewingType.Today
+                                else -> {
+                                    if (dayData.time < today) {
+                                        ViewingType.Past
+                                    } else {
+                                        ViewingType.Future
+                                    }
+                                }
+                            },
 
-                onClick = {
-                    coroutineScope.launch {
-                        viewModel.setSelectedTime(time)
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.setSelectedTime(dayData.time)
+                                }
+                            }
+                        )
                     }
+                    else -> {}
                 }
-            )
+            }
         }
     }
 }

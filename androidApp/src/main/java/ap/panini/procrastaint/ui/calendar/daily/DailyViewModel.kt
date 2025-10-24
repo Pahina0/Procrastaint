@@ -32,7 +32,7 @@ class DailyViewModel(
             pageSize = 2,
         )
     ) {
-        CalendarPagingSource(today)
+        CalendarPagingSource(today, CalendarDisplayMode.DAILY)
     }.flow
         .cachedIn(viewModelScope)
 

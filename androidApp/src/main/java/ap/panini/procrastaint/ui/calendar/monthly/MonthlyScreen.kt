@@ -1,12 +1,22 @@
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.paging.compose.collectAsLazyPagingItems
+import ap.panini.procrastaint.ui.calendar.CalendarPageData
+import ap.panini.procrastaint.ui.calendar.monthly.MonthGrid
 import ap.panini.procrastaint.ui.calendar.monthly.MonthlyViewModel
+import ap.panini.procrastaint.util.Date.formatMilliseconds
+import ap.panini.procrastaint.util.Time
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -16,14 +26,53 @@ fun MonthlyScreen(
     onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        onTitleChange("Monthly View")
+    val lazyPagingItems = viewModel.dateState.collectAsLazyPagingItems()
+
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { lazyPagingItems.itemCount }
+    )
+
+    LaunchedEffect(lazyPagingItems.itemCount) {
+        if (lazyPagingItems.itemCount > 0) {
+            pagerState.scrollToPage(lazyPagingItems.itemCount / 2)
+        }
     }
 
-    Box(
+    LaunchedEffect(pagerState.currentPage) {
+        lazyPagingItems[pagerState.currentPage]?.let {
+            onTitleChange(it.time.formatMilliseconds(setOf(Time.MONTH)))
+        }
+    }
+
+    HorizontalPager(
+        state = pagerState,
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Monthly Screen Placeholder")
+    ) { page ->
+        val monthData = lazyPagingItems[page]
+        if (monthData != null) {
+            when (monthData) {
+                is CalendarPageData.Monthly -> {
+                    val tasks by monthData.tasks.collectAsState(initial = emptyList())
+
+                    MonthGrid(month = monthData.time, tasks = tasks)
+                }
+                else -> {
+                    Box(
+                        modifier = modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Loading...")
+                    }
+                }
+            }
+        } else {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Loading...")
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ class CalendarViewModel(
             pageSize = 2,
         )
     ) {
-        CalendarPagingSource(today)
+        CalendarPagingSource(today, _uiState.value.displayMode)
     }.flow
         .cachedIn(viewModelScope)
 

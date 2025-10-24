@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.components.SingleDayView
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -92,7 +93,7 @@ fun DailyScreen(
 
             var index =
 
-                max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.selectedTime }, 0)
 
             pagerState.animateScrollToPage(index)
 
@@ -102,7 +103,7 @@ fun DailyScreen(
 
             index =
 
-                max(dateState.itemSnapshotList.indexOfFirst { it?.first == state.selectedTime }, 0)
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.selectedTime }, 0)
 
             pagerState.animateScrollToPage(index)
 
@@ -122,7 +123,7 @@ fun DailyScreen(
 
             viewModel.setSelectedTime(
 
-                dateState[pagerState.targetPage]?.first ?: return@LaunchedEffect
+                dateState[pagerState.targetPage]?.time ?: return@LaunchedEffect
 
             )
 
@@ -151,19 +152,25 @@ fun DailyScreen(
 
         HorizontalPager(
             state = pagerState,
-            key = dateState.itemKey { it.first }
+            key = dateState.itemKey { it.time }
         ) { i ->
+            val dayData = dateState[i]
+            if (dayData != null) {
+                when (dayData) {
+                    is CalendarPageData.Daily -> {
+                        val itemState = dayData.tasks.collectAsStateWithLifecycle(mapOf()).value
 
-            val (time, item) = dateState[i]!!
-            val itemState = item.collectAsStateWithLifecycle(mapOf()).value
-
-            SingleDayView(
-                itemState,
-                viewModel::checkTask,
-                onEdit = activityViewModel::editCreatedTask,
-                isToday = time == today,
-                modifier = Modifier.fillMaxSize()
-            )
+                        SingleDayView(
+                            itemState,
+                            viewModel::checkTask,
+                            onEdit = activityViewModel::editCreatedTask,
+                            isToday = dayData.time == today,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 }
