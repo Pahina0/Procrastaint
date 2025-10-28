@@ -1,7 +1,6 @@
 package ap.panini.procrastaint.ui.calendar
 
 
-import MonthlyScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,12 +25,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.calendar.daily.DailyScreen
+import ap.panini.procrastaint.ui.calendar.monthly.MonthlyScreen
 import ap.panini.procrastaint.ui.calendar.weekly.WeeklyScreen
 import ap.panini.procrastaint.ui.components.ScreenScaffold
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.ExperimentalTime
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
@@ -87,24 +91,36 @@ fun CalendarScreen(
             )
         }
     ) { padding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .consumeWindowInsets(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+        ) {
             when (state.displayMode) {
                 CalendarDisplayMode.DAILY -> DailyScreen(
                     onTodayClick = onTodayClick,
-                    onTitleChange = viewModel::setTitle
+                    onTitleChange = viewModel::setTitle,
+                    viewModel = viewModel
                 )
 
                 CalendarDisplayMode.WEEKLY -> WeeklyScreen(
                     onTodayClick = onTodayClick,
-                    onTitleChange = viewModel::setTitle
+                    onTitleChange = viewModel::setTitle,
+                    viewModel = viewModel
                 )
 
                 CalendarDisplayMode.MONTHLY -> MonthlyScreen(
                     onTodayClick = onTodayClick,
-                    onTitleChange = viewModel::setTitle
+                    onTitleChange = viewModel::setTitle,
+                    onDateClick = { date ->
+                        viewModel.setDisplayMode(CalendarDisplayMode.DAILY)
+                        viewModel.setSelectedTime(
+                            date.atStartOfDayIn(TimeZone.currentSystemDefault())
+                                .toEpochMilliseconds()
+                        )
+                    },
+                    viewModel = viewModel
                 )
             }
         }

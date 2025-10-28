@@ -42,11 +42,8 @@ class CalendarPagingSource(
                     .atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
                 val tasks = db.getTasks(fromDayStart, toDayEnd)
-                    .map { list ->
-                        list.groupBy { it.currentEventTime.hour() }
-                    }
 
-                Triple(CalendarPageData.Daily(from, tasks), prevKey, nextKey)
+                Triple(CalendarPageData(from, tasks), prevKey, nextKey)
             }
 
             CalendarDisplayMode.MONTHLY -> {
@@ -65,7 +62,7 @@ class CalendarPagingSource(
                 val tasks = db.getTasks(fromMonthStart, toMonthEnd)
 
                 Triple(
-                    CalendarPageData.Monthly(fromMonthStart, tasks),
+                    CalendarPageData(fromMonthStart, tasks),
                     prevMonth.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
                     nextMonth.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
                 )

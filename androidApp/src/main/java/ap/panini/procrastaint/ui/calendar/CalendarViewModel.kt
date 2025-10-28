@@ -11,9 +11,11 @@ import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.util.Date
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,16 +31,18 @@ class CalendarViewModel(
         _uiState.update { it.copy(title = title) }
     }
 
-    val dateState = Pager(
-        PagingConfig(
-            initialLoadSize = 10,
-            enablePlaceholders = false,
-            pageSize = 2,
-        )
-    ) {
-        CalendarPagingSource(today, _uiState.value.displayMode)
-    }.flow
-        .cachedIn(viewModelScope)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val dateState = uiState.flatMapLatest { state ->
+        Pager(
+            PagingConfig(
+                initialLoadSize = 60,
+                enablePlaceholders = false,
+                pageSize = 2,
+            )
+        ) {
+            CalendarPagingSource(today, state.displayMode)
+        }.flow
+    }.cachedIn(viewModelScope)
 
     fun setDisplayMode(displayMode: CalendarDisplayMode) {
         _uiState.update { it.copy(displayMode = displayMode) }

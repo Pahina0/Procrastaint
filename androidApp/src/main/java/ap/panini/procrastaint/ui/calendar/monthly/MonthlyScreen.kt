@@ -1,7 +1,7 @@
+package ap.panini.procrastaint.ui.calendar.monthly
+
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
@@ -13,18 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
 import ap.panini.procrastaint.ui.calendar.CalendarPageData
-import ap.panini.procrastaint.ui.calendar.monthly.MonthGrid
-import ap.panini.procrastaint.ui.calendar.monthly.MonthlyViewModel
+import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import org.koin.androidx.compose.koinViewModel
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun MonthlyScreen(
     modifier: Modifier = Modifier,
-    viewModel: MonthlyViewModel = koinViewModel(),
+    viewModel: CalendarViewModel,
     onTodayClick: () -> Unit,
-    onTitleChange: (String) -> Unit
+    onTitleChange: (String) -> Unit,
+    onDateClick: (LocalDate) -> Unit
 ) {
     val lazyPagingItems = viewModel.dateState.collectAsLazyPagingItems()
 
@@ -59,22 +59,9 @@ fun MonthlyScreen(
         val monthData = if (page < lazyPagingItems.itemCount) lazyPagingItems[page] else null
 
         if (monthData != null) {
-            when (monthData) {
-                is CalendarPageData.Monthly -> {
-                    val tasks by monthData.tasks.collectAsState(initial = emptyList())
+            val tasks by monthData.tasks.collectAsState(initial = emptyList())
 
-                    MonthGrid(month = monthData.time, tasks = tasks)
-                }
-
-                else -> {
-                    Box(
-                        modifier = modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Loading...")
-                    }
-                }
-            }
+            MonthGrid(month = monthData.time, tasks = tasks, onDateClick = onDateClick)
         } else {
             Box(
                 modifier = modifier.fillMaxSize(),

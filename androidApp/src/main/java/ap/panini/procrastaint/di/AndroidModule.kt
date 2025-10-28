@@ -5,9 +5,6 @@ import ap.panini.procrastaint.services.NotificationWorker
 import ap.panini.procrastaint.services.SyncWorker
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
-import ap.panini.procrastaint.ui.calendar.daily.DailyViewModel
-import ap.panini.procrastaint.ui.calendar.monthly.MonthlyViewModel
-import ap.panini.procrastaint.ui.calendar.weekly.WeeklyViewModel
 import ap.panini.procrastaint.ui.library.LibraryViewModel
 import ap.panini.procrastaint.ui.settings.SettingsViewModel
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
@@ -28,9 +25,6 @@ val androidModule = module {
     viewModel { CalendarViewModel(get()) }
     viewModel { LibraryViewModel(get()) }
     viewModel { TagViewModel(it[0], get()) }
-    viewModel { DailyViewModel(get()) }
-    viewModel { MonthlyViewModel() }
-    viewModel { WeeklyViewModel() }
 
     single { UpcomingWidgetViewModel(get()) }
 
