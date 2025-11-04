@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,8 +18,14 @@ import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.calendar.components.DayView
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
+import ap.panini.procrastaint.util.hour
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DailyCalendarView(
     dateState: LazyPagingItems<CalendarPageData>,
@@ -39,14 +46,18 @@ fun DailyCalendarView(
         items(
             count = dateState.itemCount,
             key = dateState.itemKey { it.time }
-        ) { i ->
-            val dayData = dateState[i]
+        ) {
+            val dayData = dateState[it]
             if (dayData != null) {
-                val itemState by dayData.tasks.collectAsStateWithLifecycle(listOf())
+                val tasksByDayMap by dayData.tasksByDay.collectAsStateWithLifecycle(mapOf())
+                val date = remember(dayData.time) {
+                    kotlin.time.Instant.fromEpochMilliseconds(dayData.time).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+                val tasksForThisDay = tasksByDayMap[date] ?: emptyList()
 
                 DayView(
                     dayData.time,
-                    itemState,
+                    tasksForThisDay,
                     dateType =
                         when (dayData.time) {
                             selectedTime -> ViewingType.Selected

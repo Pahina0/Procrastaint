@@ -19,7 +19,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.MainActivityViewModel
-import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.calendar.components.SingleDayView
 import ap.panini.procrastaint.util.Date
@@ -28,10 +27,13 @@ import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.hour
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.max
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DailyScreen(
     modifier: Modifier = Modifier,
@@ -105,7 +107,13 @@ fun DailyScreen(
         ) { i ->
             val dayData = dateState[i]
             if (dayData != null) {
-                val itemState = dayData.tasks.collectAsStateWithLifecycle(emptyList()).value.groupBy { it.currentEventTime.hour() }
+                val tasksByDay by dayData.tasksByDay.collectAsStateWithLifecycle(initialValue = emptyMap())
+                val date = remember(dayData.time) {
+                    kotlin.time.Instant.fromEpochMilliseconds(dayData.time)
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                }
+                val tasksForDay = tasksByDay[date] ?: emptyList()
+                val itemState = tasksForDay.groupBy { it.currentEventTime.hour() }
                 SingleDayView(
                     itemState,
                     viewModel::checkTask,

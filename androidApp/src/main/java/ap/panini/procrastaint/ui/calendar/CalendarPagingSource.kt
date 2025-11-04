@@ -27,10 +27,11 @@ class CalendarPagingSource(
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, CalendarPageData> {
         val from = params.key ?: from
 
-        val (pageData, prevKey, nextKey) = when (displayMode) {
+        val fromDate = kotlin.time.Instant.fromEpochMilliseconds(from)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+        val (fromRange, toRange, prevKey, nextKey, pageTime) = when (displayMode) {
             CalendarDisplayMode.DAILY -> {
-                val fromDate = kotlin.time.Instant.fromEpochMilliseconds(from)
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
                 val fromDayStart =
                     fromDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
                 val toDayEnd = fromDate.plus(1, DateTimeUnit.DAY)
@@ -41,14 +42,10 @@ class CalendarPagingSource(
                 val nextKey = fromDate.plus(1, DateTimeUnit.DAY)
                     .atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
-                val tasks = db.getTasks(fromDayStart, toDayEnd)
-
-                Triple(CalendarPageData(from, tasks), prevKey, nextKey)
+                CalendarPageLoadData(fromDayStart, toDayEnd, prevKey, nextKey, from)
             }
 
             CalendarDisplayMode.MONTHLY -> {
-                val fromDate = kotlin.time.Instant.fromEpochMilliseconds(from)
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
                 val monthStart = LocalDate(fromDate.year, fromDate.month, 1)
                 val fromMonthStart =
                     monthStart.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
@@ -59,20 +56,28 @@ class CalendarPagingSource(
 
                 val prevMonth = monthStart.minus(1, DateTimeUnit.MONTH)
 
-                val tasks = db.getTasks(fromMonthStart, toMonthEnd)
-
-                Triple(
-                    CalendarPageData(fromMonthStart, tasks),
+                CalendarPageLoadData(
+                    fromMonthStart,
+                    toMonthEnd,
                     prevMonth.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
-                    nextMonth.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                    nextMonth.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                    fromMonthStart
                 )
             }
 
             else -> throw IllegalArgumentException("Unsupported display mode: $displayMode")
         }
 
+        val tasksFlow = db.getTasks(fromRange, toRange)
+        val tasksByDayFlow = tasksFlow.map { tasks ->
+            tasks.groupBy {
+                kotlin.time.Instant.fromEpochMilliseconds(it.currentEventTime)
+                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            }
+        }
+
         return Page(
-            data = listOf(pageData),
+            data = listOf(CalendarPageData(pageTime, tasksByDayFlow)),
             prevKey = prevKey,
             nextKey = nextKey,
         )
@@ -85,3 +90,11 @@ class CalendarPagingSource(
         }
     }
 }
+
+data class CalendarPageLoadData(
+    val fromRange: Long,
+    val toRange: Long,
+    val prevKey: Long,
+    val nextKey: Long,
+    val pageTime: Long
+)

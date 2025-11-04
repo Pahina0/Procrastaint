@@ -59,7 +59,8 @@ fun MonthlyScreen(
         val monthData = if (page < lazyPagingItems.itemCount) lazyPagingItems[page] else null
 
         if (monthData != null) {
-            val tasks by monthData.tasks.collectAsState(initial = emptyList())
+            val tasksByDay by monthData.tasksByDay.collectAsState(initial = emptyMap())
+            val tasks = tasksByDay.values.flatten()
 
             MonthGrid(month = monthData.time, tasks = tasks, onDateClick = onDateClick)
         } else {
