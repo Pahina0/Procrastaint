@@ -64,18 +64,18 @@ fun DailyScreen(
             }
     }
 
-    LaunchedEffect(state.selectedTime) {
+    LaunchedEffect(state.focusedDate) {
+        if (pagerState.isScrollInProgress) return@LaunchedEffect
+
         coroutineScope.launch {
             if (pagerState.pageCount == 0) return@launch
 
-            var index =
-                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.selectedTime }, 0)
-            pagerState.animateScrollToPage(index)
-            selectableListState.animateScrollToItem(max(index - 1, 0))
+            val index =
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.focusedDate }, 0)
 
-            index =
-                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.selectedTime }, 0)
-            pagerState.animateScrollToPage(index)
+            if (pagerState.currentPage != index) {
+                pagerState.animateScrollToPage(index)
+            }
             selectableListState.animateScrollToItem(max(index - 1, 0))
         }
     }
@@ -83,14 +83,15 @@ fun DailyScreen(
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
         if (dateState.itemCount == 0) return@LaunchedEffect
         if (pagerState.isScrollInProgress) {
-            viewModel.setSelectedTime(
-                dateState[pagerState.targetPage]?.time ?: return@LaunchedEffect
-            )
+            val time = dateState[pagerState.targetPage]?.time ?: return@LaunchedEffect
+            if (state.focusedDate != time) {
+                viewModel.setFocusedDate(time)
+            }
         }
     }
 
-    LaunchedEffect(state.selectedTime) {
-        onTitleChange(state.selectedTime.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
+    LaunchedEffect(state.focusedDate) {
+        onTitleChange(state.focusedDate.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
     }
 
     Column(modifier = modifier) {

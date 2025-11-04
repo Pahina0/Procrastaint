@@ -24,7 +24,7 @@ class CalendarViewModel(
 ) : ViewModel() {
     private val today = Date.getTodayStart()
 
-    private val _uiState = MutableStateFlow(CalendarUiState(today, CalendarDisplayMode.DAILY, "Calendar"))
+    private val _uiState = MutableStateFlow(CalendarUiState(today, today, CalendarDisplayMode.DAILY, "Calendar"))
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
     fun setTitle(title: String) {
@@ -52,6 +52,10 @@ class CalendarViewModel(
         _uiState.update { it.copy(selectedTime = time) }
     }
 
+    fun setFocusedDate(time: Long) {
+        _uiState.update { it.copy(focusedDate = time) }
+    }
+
     fun checkTask(task: TaskSingle) {
         val completion =
             TaskCompletion(
@@ -77,6 +81,7 @@ class CalendarViewModel(
     @Immutable
     data class CalendarUiState(
         val selectedTime: Long,
+        val focusedDate: Long,
         val displayMode: CalendarDisplayMode = CalendarDisplayMode.DAILY,
         val title: String
     )
