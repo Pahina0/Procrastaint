@@ -65,40 +65,35 @@ fun DailyScreen(
     }
 
     LaunchedEffect(state.focusedDate) {
-        if (pagerState.isScrollInProgress) return@LaunchedEffect
 
         coroutineScope.launch {
             if (pagerState.pageCount == 0) return@launch
 
-            val index =
+            var index =
                 max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.focusedDate }, 0)
-
-            if (pagerState.currentPage != index) {
-                pagerState.animateScrollToPage(index)
-            }
+            pagerState.animateScrollToPage(index)
             selectableListState.animateScrollToItem(max(index - 1, 0))
+
+            index =
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.focusedDate }, 0)
+            pagerState.animateScrollToPage(index)
+            selectableListState.animateScrollToItem(max(index - 1, 0))
+            onTitleChange(state.focusedDate.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
         }
     }
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+    LaunchedEffect(pagerState.settledPage, dateState.itemCount) {
         if (dateState.itemCount == 0) return@LaunchedEffect
-        if (pagerState.isScrollInProgress) {
-            val time = dateState[pagerState.targetPage]?.time ?: return@LaunchedEffect
-            if (state.focusedDate != time) {
-                viewModel.setFocusedDate(time)
-            }
+        dateState[pagerState.settledPage]?.let {
+            viewModel.setFocusedDate(it.time)
         }
-    }
-
-    LaunchedEffect(state.focusedDate) {
-        onTitleChange(state.focusedDate.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
     }
 
     Column(modifier = modifier) {
         DailyCalendarView(
             dateState = dateState,
             selectableListState = selectableListState,
-            selectedTime = state.selectedTime,
+            selectedTime = state.focusedDate,
             today = today,
             viewModel = viewModel
         )

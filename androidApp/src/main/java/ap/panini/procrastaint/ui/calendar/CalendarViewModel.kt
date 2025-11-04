@@ -15,7 +15,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,7 +26,8 @@ class CalendarViewModel(
 ) : ViewModel() {
     private val today = Date.getTodayStart()
 
-    private val _uiState = MutableStateFlow(CalendarUiState(today, today, CalendarDisplayMode.DAILY, "Calendar"))
+    private val _uiState =
+        MutableStateFlow(CalendarUiState(today, CalendarDisplayMode.DAILY, "Calendar"))
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
     fun setTitle(title: String) {
@@ -32,15 +35,15 @@ class CalendarViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val dateState = uiState.flatMapLatest { state ->
+    val dateState = uiState.map { it.displayMode }.distinctUntilChanged().flatMapLatest { displayMode ->
         Pager(
             PagingConfig(
                 initialLoadSize = 60,
-                enablePlaceholders = false,
-                pageSize = 2,
+                enablePlaceholders = true,
+                pageSize = 30,
             )
         ) {
-            CalendarPagingSource(today, state.displayMode)
+            CalendarPagingSource(today, displayMode)
         }.flow
     }.cachedIn(viewModelScope)
 
@@ -48,9 +51,6 @@ class CalendarViewModel(
         _uiState.update { it.copy(displayMode = displayMode) }
     }
 
-    fun setSelectedTime(time: Long) {
-        _uiState.update { it.copy(selectedTime = time) }
-    }
 
     fun setFocusedDate(time: Long) {
         _uiState.update { it.copy(focusedDate = time) }
@@ -80,7 +80,6 @@ class CalendarViewModel(
 
     @Immutable
     data class CalendarUiState(
-        val selectedTime: Long,
         val focusedDate: Long,
         val displayMode: CalendarDisplayMode = CalendarDisplayMode.DAILY,
         val title: String

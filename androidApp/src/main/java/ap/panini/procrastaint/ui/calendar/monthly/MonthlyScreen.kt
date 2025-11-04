@@ -47,7 +47,7 @@ fun MonthlyScreen(
 
         val index = lazyPagingItems.itemSnapshotList.indexOfFirst {
             if (it == null) return@indexOfFirst false
-            val pageInstant = Instant.fromEpochMilliseconds(it.time)
+            val pageInstant = kotlin.time.Instant.fromEpochMilliseconds(it.time)
             val pageDate = pageInstant.toLocalDateTime(TimeZone.currentSystemDefault())
             pageDate.year == focusedDate.year && pageDate.month == focusedDate.month
         }

@@ -64,7 +64,7 @@ fun CalendarScreen(
 
 
     val onTodayClick: () -> Unit = {
-        viewModel.setSelectedTime(today)
+        viewModel.setFocusedDate(today)
     }
 
     ScreenScaffold(
@@ -79,7 +79,7 @@ fun CalendarScreen(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.setSelectedTime(
+                            viewModel.setFocusedDate(
                                 today
                             )
                         }
@@ -115,7 +115,7 @@ fun CalendarScreen(
                     onTitleChange = viewModel::setTitle,
                     onDateClick = { date ->
                         viewModel.setDisplayMode(CalendarDisplayMode.DAILY)
-                        viewModel.setSelectedTime(
+                        viewModel.setFocusedDate(
                             date.atStartOfDayIn(TimeZone.currentSystemDefault())
                                 .toEpochMilliseconds()
                         )

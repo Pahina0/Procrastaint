@@ -18,9 +18,7 @@ import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.calendar.components.DayView
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
-import ap.panini.procrastaint.util.hour
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -30,9 +28,9 @@ import kotlin.time.ExperimentalTime
 fun DailyCalendarView(
     dateState: LazyPagingItems<CalendarPageData>,
     selectableListState: LazyListState,
-    selectedTime: Long,
     today: Long,
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    selectedTime: Long,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -51,7 +49,8 @@ fun DailyCalendarView(
             if (dayData != null) {
                 val tasksByDayMap by dayData.tasksByDay.collectAsStateWithLifecycle(mapOf())
                 val date = remember(dayData.time) {
-                    kotlin.time.Instant.fromEpochMilliseconds(dayData.time).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    kotlin.time.Instant.fromEpochMilliseconds(dayData.time)
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
                 }
                 val tasksForThisDay = tasksByDayMap[date] ?: emptyList()
 
@@ -73,7 +72,7 @@ fun DailyCalendarView(
 
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.setSelectedTime(dayData.time)
+                            viewModel.setFocusedDate(dayData.time)
                         }
                     }
                 )
