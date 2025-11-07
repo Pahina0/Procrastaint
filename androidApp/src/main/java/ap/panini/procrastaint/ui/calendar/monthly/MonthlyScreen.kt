@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.ui.calendar.monthly
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -13,15 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
-import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
+import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.formatToMMDDYYYY
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.format
+import kotlinx.datetime.format.format
 import kotlinx.datetime.toLocalDateTime
+import org.koin.androidx.compose.koinViewModel
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -32,6 +37,9 @@ fun MonthlyScreen(
     onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit,
 ) {
+    val activityViewModel = koinViewModel<MainActivityViewModel>(
+        viewModelStoreOwner = LocalActivity.current as ComponentActivity
+    )
     val lazyPagingItems = viewModel.dateState.collectAsLazyPagingItems()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -96,9 +104,11 @@ fun MonthlyScreen(
             MonthGrid(
                 month = monthData.time,
                 tasks = tasks,
-                onDateClick = {
-                    viewModel.setDisplayMode(CalendarDisplayMode.DAILY)
-                    viewModel.setFocusedDate(it.atStartOfDayIn(TimeZone.currentSystemDefault()).epochSeconds)
+
+                onDateClick = { date ->
+                    val dayString = date.formatToMMDDYYYY()
+                    activityViewModel.updateTask("on $dayString")
+                    activityViewModel.onShow()
                 })
         } else {
             Box(

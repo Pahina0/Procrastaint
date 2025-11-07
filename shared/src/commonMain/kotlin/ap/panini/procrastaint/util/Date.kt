@@ -260,3 +260,17 @@ fun Long.toRFC3339(includeFiller: Boolean = true) =
             char('Z')
         },
     )
+
+fun LocalDate.formatToMMDDYYYY(): String {
+    val month = this.monthNumber.toString().padStart(2, '0')
+    val day = this.dayOfMonth.toString().padStart(2, '0')
+    val year = this.year.toString()
+    return "$month/$day/$year"
+}
+
+fun Int.toAmPmHour(): String {
+    require(this in 0..23) { "Hour must be between 0 and 23" }
+    val hour = if (this == 0) 12 else if (this > 12) this - 12 else this
+    val ampm = if (this < 12) "am" else "pm"
+    return "$hour$ampm"
+}

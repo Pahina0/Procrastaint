@@ -24,10 +24,16 @@ import ap.panini.procrastaint.ui.calendar.components.SingleDayView
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.formatToMMDDYYYY
 import ap.panini.procrastaint.util.hour
+import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.format
 import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.max
@@ -110,7 +116,7 @@ fun DailyScreen(
             if (dayData != null) {
                 val tasksByDay by dayData.tasksByDay.collectAsStateWithLifecycle(initialValue = emptyMap())
                 val date = remember(dayData.time) {
-                    kotlin.time.Instant.fromEpochMilliseconds(dayData.time)
+                    Instant.fromEpochMilliseconds(dayData.time)
                         .toLocalDateTime(TimeZone.currentSystemDefault()).date
                 }
                 val tasksForDay = tasksByDay[date] ?: emptyList()
@@ -120,7 +126,15 @@ fun DailyScreen(
                     viewModel::checkTask,
                     onEdit = activityViewModel::editCreatedTask,
                     isToday = dayData.time == today,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+
+                    onHourClick = { hour ->
+                        val day = Instant.fromEpochMilliseconds(dayData.time)
+                            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                        val dayString = day.formatToMMDDYYYY()
+                        activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
+                        activityViewModel.onShow()
+                    }
                 )
             }
         }

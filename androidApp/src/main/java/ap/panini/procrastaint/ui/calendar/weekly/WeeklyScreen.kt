@@ -19,13 +19,13 @@ import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
+import ap.panini.procrastaint.util.formatToMMDDYYYY
+import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
-import kotlinx.datetime.number
+import kotlinx.datetime.format
+import kotlinx.datetime.format.format
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
@@ -111,19 +111,13 @@ fun WeeklyScreen(
                 weekData = weekDates,
                 onCheck = viewModel::checkTask,
                 onEdit = activityViewModel::editCreatedTask,
-                onCellClick = { date, hour ->
 
-                    val amPmFormatter = LocalTime.Format {
-                        amPmHour(padding = Padding.NONE)
-                        amPmMarker("am", "pm")
-                    }
-                    val localTime = LocalTime(hour, 0, 0)
-                    val taskString = "on ${date.month.name} ${date.day} ${date.year} at ${
-                        amPmFormatter.format(localTime)
-                    }"
+                onCellClick = { date, hour ->
+                    val dayString = date.formatToMMDDYYYY()
+                    activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
                     activityViewModel.onShow()
-                    activityViewModel.updateTask(taskString)
                 },
+
                 modifier = Modifier.fillMaxSize()
             )
         } else {

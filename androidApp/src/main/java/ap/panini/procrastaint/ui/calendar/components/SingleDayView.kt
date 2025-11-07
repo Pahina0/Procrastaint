@@ -1,9 +1,12 @@
 package ap.panini.procrastaint.ui.calendar.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,6 +43,7 @@ fun SingleDayView(
     onEdit: (TaskSingle) -> Unit,
     isToday: Boolean,
     modifier: Modifier = Modifier,
+    onHourClick: (Int) -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -64,7 +68,12 @@ fun SingleDayView(
             val tasksForHour = tasks[hour]
 
             if (tasksForHour.isNullOrEmpty()) {
-                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(20.dp)
+                        .clickable { onHourClick(hour) })
+                }
             } else {
                 items(tasksForHour) { task ->
                     TaskView(task, onCheck, onEdit)
@@ -119,6 +128,7 @@ private fun DayViewPreview() {
         {},
         {},
         false,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        onHourClick = {}
     )
 }
