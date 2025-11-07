@@ -38,12 +38,17 @@ import kotlin.time.ExperimentalTime
 fun DailyScreen(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel,
+    initialDate: Long,
     onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit
 ) {
     val activityViewModel = koinViewModel<MainActivityViewModel>(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
+
+    LaunchedEffect(initialDate) {
+
+    }
 
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 

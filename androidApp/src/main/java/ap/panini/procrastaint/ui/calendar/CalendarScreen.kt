@@ -43,7 +43,7 @@ fun CalendarScreen(
 ) {
 
 
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 
@@ -101,7 +101,8 @@ fun CalendarScreen(
                 CalendarDisplayMode.DAILY -> DailyScreen(
                     onTodayClick = onTodayClick,
                     onTitleChange = viewModel::setTitle,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    initialDate = state.focusedDate
                 )
 
                 CalendarDisplayMode.WEEKLY -> WeeklyScreen(
@@ -113,13 +114,6 @@ fun CalendarScreen(
                 CalendarDisplayMode.MONTHLY -> MonthlyScreen(
                     onTodayClick = onTodayClick,
                     onTitleChange = viewModel::setTitle,
-                    onDateClick = { date ->
-                        viewModel.setDisplayMode(CalendarDisplayMode.DAILY)
-                        viewModel.setFocusedDate(
-                            date.atStartOfDayIn(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds()
-                        )
-                    },
                     viewModel = viewModel
                 )
             }

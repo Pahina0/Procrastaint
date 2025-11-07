@@ -13,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 
@@ -29,7 +31,6 @@ fun MonthlyScreen(
     viewModel: CalendarViewModel,
     onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onDateClick: (LocalDate) -> Unit
 ) {
     val lazyPagingItems = viewModel.dateState.collectAsLazyPagingItems()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,7 +93,13 @@ fun MonthlyScreen(
             val tasksByDay by monthData.tasksByDay.collectAsState(initial = emptyMap())
             val tasks = tasksByDay.values.flatten()
 
-            MonthGrid(month = monthData.time, tasks = tasks, onDateClick = onDateClick)
+            MonthGrid(
+                month = monthData.time,
+                tasks = tasks,
+                onDateClick = {
+                    viewModel.setDisplayMode(CalendarDisplayMode.DAILY)
+                    viewModel.setFocusedDate(it.atStartOfDayIn(TimeZone.currentSystemDefault()).epochSeconds)
+                })
         } else {
             Box(
                 modifier = modifier.fillMaxSize(),

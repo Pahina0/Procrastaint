@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.repositories.TaskRepository
