@@ -20,7 +20,12 @@ import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
@@ -66,7 +71,8 @@ fun WeeklyScreen(
         val startDate = Instant.fromEpochMilliseconds(time)
         val endDate = startDate + 6.days
         val startStr = time.formatMilliseconds(known = setOf(Time.MONTH, Time.DAY), smart = false)
-        val endStr = endDate.toEpochMilliseconds().formatMilliseconds(known = setOf(Time.DAY), smart = false)
+        val endStr =
+            endDate.toEpochMilliseconds().formatMilliseconds(known = setOf(Time.DAY), smart = false)
         onTitleChange("$startStr - $endStr")
     }
 
@@ -95,7 +101,8 @@ fun WeeklyScreen(
             val tasksByDay by weekData.tasksByDay.collectAsState(initial = emptyMap())
             val weekStartInstant = Instant.fromEpochMilliseconds(weekData.time)
             val weekDates = (0..6).map {
-                val date = (weekStartInstant + it.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                val date =
+                    (weekStartInstant + it.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
                 val tasks = tasksByDay.getOrElse(date) { emptyList() }
                 date to tasks
             }
@@ -105,7 +112,15 @@ fun WeeklyScreen(
                 onCheck = viewModel::checkTask,
                 onEdit = activityViewModel::editCreatedTask,
                 onCellClick = { date, hour ->
-                    val taskString = "New task on ${date.year}-${date.monthNumber.toString().padStart(2, '0')}-${date.dayOfMonth.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:00"
+
+                    val amPmFormatter = LocalTime.Format {
+                        amPmHour(padding = Padding.NONE)
+                        amPmMarker("am", "pm")
+                    }
+                    val localTime = LocalTime(hour, 0, 0)
+                    val taskString = "on ${date.month.name} ${date.day} ${date.year} at ${
+                        amPmFormatter.format(localTime)
+                    }"
                     activityViewModel.onShow()
                     activityViewModel.updateTask(taskString)
                 },
