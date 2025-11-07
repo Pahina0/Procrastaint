@@ -12,6 +12,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -45,6 +46,27 @@ class CalendarPagingSource(
                 CalendarPageLoadData(fromDayStart, toDayEnd, prevKey, nextKey, from)
             }
 
+            CalendarDisplayMode.WEEKLY -> {
+                val dayOfWeek = fromDate.dayOfWeek.isoDayNumber % 7 // Sun -> 0, Mon -> 1, ..., Sat -> 6
+                val weekStart = fromDate.minus(dayOfWeek, DateTimeUnit.DAY)
+                val fromWeekStart =
+                    weekStart.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+                val nextWeek = weekStart.plus(1, DateTimeUnit.WEEK)
+                val toWeekEnd =
+                    nextWeek.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+                val prevWeek = weekStart.minus(1, DateTimeUnit.WEEK)
+
+                CalendarPageLoadData(
+                    fromWeekStart,
+                    toWeekEnd,
+                    prevWeek.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                    nextWeek.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds(),
+                    fromWeekStart
+                )
+            }
+
             CalendarDisplayMode.MONTHLY -> {
                 val monthStart = LocalDate(fromDate.year, fromDate.month, 1)
                 val fromMonthStart =
@@ -64,8 +86,6 @@ class CalendarPagingSource(
                     fromMonthStart
                 )
             }
-
-            else -> throw IllegalArgumentException("Unsupported display mode: $displayMode")
         }
 
         val tasksFlow = db.getTasks(fromRange, toRange)
