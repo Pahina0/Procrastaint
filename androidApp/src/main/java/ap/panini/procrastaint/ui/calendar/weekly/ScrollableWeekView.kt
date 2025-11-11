@@ -1,6 +1,7 @@
 package ap.panini.procrastaint.ui.calendar.weekly
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,9 +38,8 @@ private val TIME_COL_WIDTH = 50.dp
 @Composable
 fun ScrollableWeekView(
     weekData: List<Pair<LocalDate, List<TaskSingle>>>,
-    onCheck: (TaskSingle) -> Unit,
-    onEdit: (TaskSingle) -> Unit,
-    onCellClick: (LocalDate, Int) -> Unit, // New parameter
+    onCellClick: (LocalDate, Int) -> Unit,
+    onCellFocused: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tasksByDayAndHour = remember(weekData) {
@@ -70,7 +70,7 @@ fun ScrollableWeekView(
             Spacer(modifier = Modifier.width(TIME_COL_WIDTH))
             weekData.forEach { (date, _) ->
                 Text(
-                    text = date.dayOfMonth.toString(),
+                    text = date.day.toString(),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )
@@ -110,8 +110,16 @@ fun ScrollableWeekView(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(HOUR_HEIGHT)
-                                .padding(1.dp), // Add some padding for card separation
-                            onClick = { onCellClick(date, hour) } // Call the new callback
+                                .padding(1.dp)
+                                .combinedClickable(
+                                    onClick = {
+                                        onCellClick(date, hour)
+                                    },
+                                    onLongClick = {
+                                        onCellFocused(date)
+                                    }
+                                ),
+
                         ) {
                             val tasks = tasksByDayAndHour[date]?.get(hour)
                             if (!tasks.isNullOrEmpty()) {

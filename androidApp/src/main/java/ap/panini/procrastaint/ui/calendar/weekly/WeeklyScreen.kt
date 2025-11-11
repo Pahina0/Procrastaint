@@ -24,6 +24,7 @@ import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format
 import kotlinx.datetime.format.format
 import kotlinx.datetime.plus
@@ -105,13 +106,17 @@ fun WeeklyScreen(
 
             ScrollableWeekView(
                 weekData = weekDates,
-                onCheck = viewModel::checkTask,
-                onEdit = activityViewModel::editCreatedTask,
 
                 onCellClick = { date, hour ->
                     val dayString = date.formatToMMDDYYYY()
                     activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
                     activityViewModel.onShow()
+                },
+
+                onCellFocused = { date ->
+                    viewModel.jumpToDate(
+                        date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                    )
                 },
 
                 modifier = Modifier.fillMaxSize()

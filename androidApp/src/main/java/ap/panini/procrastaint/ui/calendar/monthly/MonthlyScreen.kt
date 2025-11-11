@@ -23,6 +23,7 @@ import ap.panini.procrastaint.util.formatToMMDDYYYY
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format
 import kotlinx.datetime.format.format
 import kotlinx.datetime.toLocalDateTime
@@ -104,12 +105,17 @@ fun MonthlyScreen(
             MonthGrid(
                 month = monthData.time,
                 tasks = tasks,
-
+                onDateFocused = { date ->
+                    viewModel.jumpToDate(
+                        date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                    )
+                },
                 onDateClick = { date ->
                     val dayString = date.formatToMMDDYYYY()
                     activityViewModel.updateTask("on $dayString")
                     activityViewModel.onShow()
-                })
+                },
+            )
         } else {
             Box(
                 modifier = modifier.fillMaxSize(),

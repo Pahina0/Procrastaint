@@ -34,17 +34,29 @@ class CalendarViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val dateState = uiState.map { it.displayMode }.distinctUntilChanged().flatMapLatest { displayMode ->
-        Pager(
-            PagingConfig(
-                initialLoadSize = 60,
-                enablePlaceholders = true,
-                pageSize = 30,
+    val dateState =
+        uiState.map { Pair(it.initialDate, it.displayMode) }.distinctUntilChanged()
+            .flatMapLatest { (initialDate, displayMode) ->
+                Pager(
+                    PagingConfig(
+                        initialLoadSize = 100,
+                        enablePlaceholders = false,
+                        pageSize = 35,
+                    )
+                ) {
+                    CalendarPagingSource(initialDate, displayMode)
+                }.flow
+            }.cachedIn(viewModelScope)
+
+    fun jumpToDate(time: Long, displayMode: CalendarDisplayMode = CalendarDisplayMode.DAILY) {
+        _uiState.update {
+            it.copy(
+                focusedDate = time,
+                displayMode = displayMode,
+                initialDate = time
             )
-        ) {
-            CalendarPagingSource(today, displayMode)
-        }.flow
-    }.cachedIn(viewModelScope)
+        }
+    }
 
     fun setDisplayMode(displayMode: CalendarDisplayMode) {
         _uiState.update { it.copy(displayMode = displayMode) }
@@ -79,8 +91,9 @@ class CalendarViewModel(
 
     @Immutable
     data class CalendarUiState(
-        val focusedDate: Long,
+        val initialDate: Long,
         val displayMode: CalendarDisplayMode = CalendarDisplayMode.DAILY,
-        val title: String
+        val title: String,
+        val focusedDate: Long = initialDate,
     )
 }

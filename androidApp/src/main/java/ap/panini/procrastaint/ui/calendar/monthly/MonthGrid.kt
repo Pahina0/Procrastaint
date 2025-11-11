@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.calendar.monthly
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -46,7 +47,8 @@ import kotlin.time.ExperimentalTime
 fun MonthGrid(
     month: Long,
     tasks: List<TaskSingle>,
-    onDateClick: (LocalDate) -> Unit
+    onDateClick: (LocalDate) -> Unit,
+    onDateFocused: (LocalDate) -> Unit
 ) {
     val monthDate = kotlin.time.Instant.fromEpochMilliseconds(month)
         .toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -91,7 +93,10 @@ fun MonthGrid(
                             .padding(2.dp)
                             .height(cellHeight) // ⬅️ force equal height
                             .fillMaxWidth()
-                            .clickable { onDateClick(date) },
+                            .combinedClickable(
+                                onClick = { onDateClick(date) },
+                                onLongClick = { onDateFocused(date) }
+                            ),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
