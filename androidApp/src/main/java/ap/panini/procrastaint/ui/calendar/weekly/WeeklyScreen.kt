@@ -68,12 +68,8 @@ fun WeeklyScreen(
     }
 
     fun updateTitle(time: Long) {
-        val startDate = Instant.fromEpochMilliseconds(time)
-        val endDate = startDate + 6.days
-        val startStr = time.formatMilliseconds(known = setOf(Time.MONTH, Time.DAY), smart = false)
-        val endStr =
-            endDate.toEpochMilliseconds().formatMilliseconds(known = setOf(Time.DAY), smart = false)
-        onTitleChange("$startStr - $endStr")
+        val startStr = time.formatMilliseconds(known = setOf(Time.MONTH), useAbbreviated = false)
+        onTitleChange(startStr)
     }
 
     LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {

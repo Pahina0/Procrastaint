@@ -99,7 +99,9 @@ fun ScrollableWeekView(
                         modifier = Modifier
                             .width(TIME_COL_WIDTH)
                             .padding(end = 4.dp),
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     // Day cells

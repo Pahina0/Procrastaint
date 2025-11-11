@@ -262,8 +262,8 @@ fun Long.toRFC3339(includeFiller: Boolean = true) =
     )
 
 fun LocalDate.formatToMMDDYYYY(): String {
-    val month = this.monthNumber.toString().padStart(2, '0')
-    val day = this.dayOfMonth.toString().padStart(2, '0')
+    val month = month.number.toString().padStart(2, '0')
+    val day = day.toString().padStart(2, '0')
     val year = this.year.toString()
     return "$month/$day/$year"
 }

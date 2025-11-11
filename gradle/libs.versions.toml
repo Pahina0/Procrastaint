@@ -1,36 +1,36 @@
 [versions]
 accompanistPermissions = "0.37.3"
-agp = "8.13.0"
+agp = "8.13.1"
 appauth = "0.11.1"
 core = "2.2.0"
 datastorePreferences = "1.1.7"
 detekt = "1.23.8"
 detektRules = "0.4.27"
-firebaseBom = "34.3.0"
+firebaseBom = "34.5.0"
 glanceAppwidget = "1.1.1"
 glanceMaterial3 = "1.1.1"
 koin = "4.1.1"
-kotlin = "2.2.20"
-compose = "1.9.2"
-compose-material3 = "1.5.0-alpha04"
+kotlin = "2.2.21"
+compose = "1.9.4"
+compose-material3 = "1.5.0-alpha08"
 androidx-activityCompose = "1.11.0"
 kotlinxDatetime = "0.7.1"
-androidx-room = "2.8.1"
+androidx-room = "2.8.3"
 kotlinxSerializationJson = "1.9.0"
 ksp = "2.2.20-2.0.3"
-ktor = "3.3.0"
+ktor = "3.3.2"
 ktorfitConvertersFlow = "2.6.4"
 ktorfitLib = "2.6.4"
 kwhen = "0.1.1"
-navigationCompose = "2.9.5"
+navigationCompose = "2.9.6"
 pagingCompose = "3.3.6"
 sqliteBundled = "2.6.1"
 sqliteBundledAndroid = "2.6.1"
-workRuntimeKtx = "2.10.5"
+workRuntimeKtx = "2.11.0"
 materialicons = "1.7.8"
-aboutLibraries = "12.2.4"
-serialization = "2.2.20"
-google-services = "4.4.3"
+aboutLibraries = "13.1.0"
+serialization = "2.2.21"
+google-services = "4.4.4"
 crashalytics = "3.0.6"
 colorpicker = "1.1.2"
 
@@ -90,7 +90,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfitLib" }
-aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutLibraries" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 crashalytics = { id = "com.google.firebase.crashlytics", version.ref = "crashalytics" }
