@@ -29,15 +29,12 @@ import ap.panini.procrastaint.util.hour
 import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format
-import kotlinx.datetime.format.format
 import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.max
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -45,7 +42,6 @@ fun DailyScreen(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel,
     initialDate: Long,
-    onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit
 ) {
     val activityViewModel = koinViewModel<MainActivityViewModel>(
@@ -106,7 +102,7 @@ fun DailyScreen(
             selectableListState = selectableListState,
             selectedTime = state.focusedDate,
             today = today,
-            viewModel = viewModel
+            viewModel = viewModel,
         )
         HorizontalPager(
             state = pagerState,

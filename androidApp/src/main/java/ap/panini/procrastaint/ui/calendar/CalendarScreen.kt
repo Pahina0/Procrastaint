@@ -63,9 +63,6 @@ fun CalendarScreen(
     }
 
 
-    val onTodayClick: () -> Unit = {
-        viewModel.setFocusedDate(today)
-    }
 
     ScreenScaffold(
         topBar = {
@@ -79,8 +76,9 @@ fun CalendarScreen(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.setFocusedDate(
-                                today
+                            viewModel.jumpToDate(
+                                today,
+                                state.displayMode
                             )
                         }
                     ) {
@@ -99,20 +97,17 @@ fun CalendarScreen(
         ) {
             when (state.displayMode) {
                 CalendarDisplayMode.DAILY -> DailyScreen(
-                    onTodayClick = onTodayClick,
                     onTitleChange = viewModel::setTitle,
                     viewModel = viewModel,
                     initialDate = state.focusedDate
                 )
 
                 CalendarDisplayMode.WEEKLY -> WeeklyScreen(
-                    onTodayClick = onTodayClick,
                     onTitleChange = viewModel::setTitle,
                     viewModel = viewModel
                 )
 
                 CalendarDisplayMode.MONTHLY -> MonthlyScreen(
-                    onTodayClick = onTodayClick,
                     onTitleChange = viewModel::setTitle,
                     viewModel = viewModel
                 )

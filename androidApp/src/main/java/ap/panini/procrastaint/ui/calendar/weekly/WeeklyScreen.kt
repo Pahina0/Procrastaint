@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,24 +22,20 @@ import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.formatToMMDDYYYY
 import ap.panini.procrastaint.util.toAmPmHour
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.format
-import kotlinx.datetime.format.format
-import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 @Composable
 fun WeeklyScreen(
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel,
-    onTodayClick: () -> Unit,
     onTitleChange: (String) -> Unit,
 ) {
     val activityViewModel = koinViewModel<MainActivityViewModel>(
@@ -52,6 +49,16 @@ fun WeeklyScreen(
         initialPage = 0,
         pageCount = { lazyPagingItems.itemCount }
     )
+
+    LaunchedEffect(lazyPagingItems) {
+        snapshotFlow { lazyPagingItems.itemSnapshotList }
+            .map { it.items }
+            .collect { list ->
+                if (list.isNotEmpty()) {
+                    lazyPagingItems.peek(0)
+                }
+            }
+    }
 
     LaunchedEffect(state.focusedDate, lazyPagingItems.itemCount) {
         if (lazyPagingItems.itemCount == 0 || pagerState.isScrollInProgress) return@LaunchedEffect
