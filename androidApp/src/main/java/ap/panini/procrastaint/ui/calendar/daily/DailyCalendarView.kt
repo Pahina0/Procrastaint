@@ -15,7 +15,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import ap.panini.procrastaint.ui.calendar.CalendarPageData
-import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.calendar.components.DayView
 import ap.panini.procrastaint.ui.calendar.components.ViewingType
 import kotlinx.coroutines.launch
@@ -29,13 +28,14 @@ fun DailyCalendarView(
     dateState: LazyPagingItems<CalendarPageData>,
     selectableListState: LazyListState,
     today: Long,
-    viewModel: CalendarViewModel,
     selectedTime: Long,
+    setFocusedDate: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
 
     LazyRow(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -58,21 +58,21 @@ fun DailyCalendarView(
                     dayData.time,
                     tasksForThisDay,
                     dateType =
-                        when (dayData.time) {
-                            selectedTime -> ViewingType.Selected
-                            today -> ViewingType.Today
-                            else -> {
-                                if (dayData.time < today) {
-                                    ViewingType.Past
-                                } else {
-                                    ViewingType.Future
-                                }
+                    when (dayData.time) {
+                        selectedTime -> ViewingType.Selected
+                        today -> ViewingType.Today
+                        else -> {
+                            if (dayData.time < today) {
+                                ViewingType.Past
+                            } else {
+                                ViewingType.Future
                             }
-                        },
+                        }
+                    },
 
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.setFocusedDate(dayData.time)
+                            setFocusedDate(dayData.time)
                         }
                     }
                 )

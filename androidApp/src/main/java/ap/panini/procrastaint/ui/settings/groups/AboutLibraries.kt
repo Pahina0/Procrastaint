@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import ap.panini.procrastaint.R
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
-import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -13,13 +13,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.MainActivityViewModel
-import ap.panini.procrastaint.ui.calendar.CalendarViewModel
+import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.ui.calendar.components.SingleDayView
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
@@ -39,23 +41,25 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 @Composable
 fun DailyScreen(
-    modifier: Modifier = Modifier,
-    viewModel: CalendarViewModel,
+    focusedDate: Long,
+    dateState: LazyPagingItems<CalendarPageData>,
     initialDate: Long,
-    onTitleChange: (String) -> Unit
+    onTitleChange: (String) -> Unit,
+    setFocusedDate: (Long) -> Unit,
+    checkTask: (TaskSingle) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val activityViewModel = koinViewModel<MainActivityViewModel>(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
 
-    LaunchedEffect(initialDate) {
+    val currentOnTitleChange by rememberUpdatedState(onTitleChange)
+    val currentSetFocusedDate by rememberUpdatedState(setFocusedDate)
 
+    LaunchedEffect(initialDate) {
     }
 
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
-
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    val dateState = viewModel.dateState.collectAsLazyPagingItems()
 
     val selectableListState = rememberLazyListState()
     val pagerState = rememberPagerState { dateState.itemCount }
@@ -71,28 +75,29 @@ fun DailyScreen(
             }
     }
 
-    LaunchedEffect(state.focusedDate) {
-
+    LaunchedEffect(focusedDate) {
         coroutineScope.launch {
             if (pagerState.pageCount == 0) return@launch
 
             var index =
-                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.focusedDate }, 0)
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == focusedDate }, 0)
             pagerState.animateScrollToPage(index)
             selectableListState.animateScrollToItem(max(index - 1, 0))
 
             index =
-                max(dateState.itemSnapshotList.indexOfFirst { it?.time == state.focusedDate }, 0)
+                max(dateState.itemSnapshotList.indexOfFirst { it?.time == focusedDate }, 0)
             pagerState.animateScrollToPage(index)
             selectableListState.animateScrollToItem(max(index - 1, 0))
-            onTitleChange(state.focusedDate.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
+            currentOnTitleChange(focusedDate.formatMilliseconds(setOf(Time.MONTH, Time.DAY)))
         }
     }
 
     LaunchedEffect(pagerState.settledPage, dateState.itemCount) {
         if (dateState.itemCount == 0) return@LaunchedEffect
         dateState[pagerState.settledPage]?.let {
-            viewModel.setFocusedDate(it.time)
+            if (it.time != focusedDate) {
+                currentSetFocusedDate(it.time)
+            }
         }
     }
 
@@ -100,9 +105,9 @@ fun DailyScreen(
         DailyCalendarView(
             dateState = dateState,
             selectableListState = selectableListState,
-            selectedTime = state.focusedDate,
+            selectedTime = focusedDate,
             today = today,
-            viewModel = viewModel,
+            setFocusedDate = currentSetFocusedDate,
         )
         HorizontalPager(
             state = pagerState,
@@ -119,7 +124,7 @@ fun DailyScreen(
                 val itemState = tasksForDay.groupBy { it.currentEventTime.hour() }
                 SingleDayView(
                     itemState,
-                    viewModel::checkTask,
+                    checkTask,
                     onEdit = activityViewModel::editCreatedTask,
                     isToday = dayData.time == today,
                     modifier = Modifier.fillMaxSize(),

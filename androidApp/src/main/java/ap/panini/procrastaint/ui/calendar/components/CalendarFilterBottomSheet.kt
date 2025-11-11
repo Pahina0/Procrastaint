@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,13 +26,14 @@ import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 @Composable
 fun CalendarFilterBottomSheet(
     displayMode: CalendarDisplayMode,
-    onDisplayModeChange: (CalendarDisplayMode) -> Unit
+    onDisplayModeChange: (CalendarDisplayMode) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Display", "Filter")
 
-    Column {
-        TabRow(selectedTabIndex = tabIndex) {
+    Column(modifier = modifier) {
+        SecondaryTabRow(selectedTabIndex = tabIndex) {
             tabs.forEachIndexed { index, title ->
                 Tab(
                     selected = tabIndex == index,
@@ -59,7 +60,7 @@ private fun DisplayTabContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
         )
-        CalendarDisplayMode.values().forEach { mode ->
+        CalendarDisplayMode.entries.forEach { mode ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

@@ -3,9 +3,7 @@ package ap.panini.procrastaint.ui.calendar.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.components.TaskView
@@ -28,6 +25,8 @@ import ap.panini.procrastaint.util.hour
 import kotlin.time.Duration.Companion.hours
 
 private const val HOURS = 24
+private const val ScrollMultiplier = 2
+private val EmptyHourHeight = 20.dp
 
 /**
  * Day view
@@ -42,8 +41,8 @@ fun SingleDayView(
     onCheck: (TaskSingle) -> Unit,
     onEdit: (TaskSingle) -> Unit,
     isToday: Boolean,
-    modifier: Modifier = Modifier,
-    onHourClick: (Int) -> Unit
+    onHourClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
 
@@ -69,10 +68,12 @@ fun SingleDayView(
 
             if (tasksForHour.isNullOrEmpty()) {
                 item {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp)
-                        .clickable { onHourClick(hour) })
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(EmptyHourHeight)
+                            .clickable { onHourClick(hour) }
+                    )
                 }
             } else {
                 items(tasksForHour) { task ->
@@ -84,51 +85,7 @@ fun SingleDayView(
 
     LaunchedEffect(isToday) {
         if (isToday) {
-            listState.animateScrollToItem(curHour * 2)
+            listState.animateScrollToItem(curHour * ScrollMultiplier)
         }
     }
-}
-
-@Preview
-@Composable
-private fun DayViewPreview() {
-    SingleDayView(
-        mapOf(
-            4 to listOf(
-                TaskSingle(
-                    0,
-                    0,
-                    0,
-                    "IDK",
-                    "HII",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    4.3.hours.inWholeMilliseconds
-                )
-            ),
-            8 to listOf(
-                TaskSingle(
-                    0,
-                    0,
-                    0,
-                    "num 2",
-                    "desc",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    8.hours.inWholeMilliseconds
-                )
-            )
-        ),
-        {},
-        {},
-        false,
-        modifier = Modifier.fillMaxSize(),
-        onHourClick = {}
-    )
 }

@@ -62,7 +62,6 @@ class CalendarViewModel(
         _uiState.update { it.copy(displayMode = displayMode) }
     }
 
-
     fun setFocusedDate(time: Long) {
         _uiState.update { it.copy(focusedDate = time) }
     }

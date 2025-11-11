@@ -31,15 +31,16 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format.char
 
-private const val HOURS_IN_DAY = 24
-private val HOUR_HEIGHT = 60.dp
-private val TIME_COL_WIDTH = 50.dp
+private const val HoursInDay = 24
+private const val DayOfWeekAbbreviationLength = 3
+private val HourHeight = 60.dp
+private val TimeColWidth = 50.dp
 
 @Composable
 fun ScrollableWeekView(
     weekData: List<Pair<LocalDate, List<TaskSingle>>>,
     onCellClick: (LocalDate, Int) -> Unit,
-    onCellFocused: (LocalDate) -> Unit,
+    onCellFocus: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tasksByDayAndHour = remember(weekData) {
@@ -57,17 +58,17 @@ fun ScrollableWeekView(
     Column(modifier = modifier) {
         // Header Row
         Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.width(TIME_COL_WIDTH))
+            Spacer(modifier = Modifier.width(TimeColWidth))
             weekData.forEach { (date, _) ->
                 Text(
-                    text = date.dayOfWeek.name.take(3),
+                    text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f)
                 )
             }
         }
         Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.width(TIME_COL_WIDTH))
+            Spacer(modifier = Modifier.width(TimeColWidth))
             weekData.forEach { (date, _) ->
                 Text(
                     text = date.day.toString(),
@@ -78,18 +79,18 @@ fun ScrollableWeekView(
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(HOURS_IN_DAY) { hour ->
+            items(HoursInDay) { hour ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(HOUR_HEIGHT)
+                        .height(HourHeight)
                 ) {
                     // Time label
                     val amPmFormatter = LocalTime.Format {
-                        amPmHour();
-                        char(':');
-                        minute();
-                        char(' ');
+                        amPmHour()
+                        char(':')
+                        minute()
+                        char(' ')
                         amPmMarker("AM", "PM")
                     }
                     val localTime = LocalTime(hour, 0, 0)
@@ -97,7 +98,7 @@ fun ScrollableWeekView(
                     Text(
                         text = formattedTime,
                         modifier = Modifier
-                            .width(TIME_COL_WIDTH)
+                            .width(TimeColWidth)
                             .padding(end = 4.dp),
                         textAlign = TextAlign.End,
                         style = MaterialTheme.typography.labelSmall,
@@ -109,14 +110,14 @@ fun ScrollableWeekView(
                         Card( // Changed from Box to Card
                             modifier = Modifier
                                 .weight(1f)
-                                .height(HOUR_HEIGHT)
+                                .height(HourHeight)
                                 .padding(1.dp)
                                 .combinedClickable(
                                     onClick = {
                                         onCellClick(date, hour)
                                     },
                                     onLongClick = {
-                                        onCellFocused(date)
+                                        onCellFocus(date)
                                     }
                                 ),
 

@@ -11,7 +11,6 @@ import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
-import kotlinx.datetime.format.format
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
@@ -204,7 +203,6 @@ object Date {
     }
 }
 
-
 @OptIn(ExperimentalTime::class)
 fun Long.year() =
     Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).year
@@ -261,16 +259,21 @@ fun Long.toRFC3339(includeFiller: Boolean = true) =
         },
     )
 
+private const val PaddingLength = 2
+private const val PaddingChar = '0'
+private const val MaxHour = 23
+private const val NoonHour = 12
+
 fun LocalDate.formatToMMDDYYYY(): String {
-    val month = month.number.toString().padStart(2, '0')
-    val day = day.toString().padStart(2, '0')
+    val month = month.number.toString().padStart(PaddingLength, PaddingChar)
+    val day = day.toString().padStart(PaddingLength, PaddingChar)
     val year = this.year.toString()
     return "$month/$day/$year"
 }
 
 fun Int.toAmPmHour(): String {
-    require(this in 0..23) { "Hour must be between 0 and 23" }
-    val hour = if (this == 0) 12 else if (this > 12) this - 12 else this
-    val ampm = if (this < 12) "am" else "pm"
+    require(this in 0..MaxHour) { "Hour must be between 0 and 23" }
+    val hour = if (this == 0) NoonHour else if (this > NoonHour) this - NoonHour else this
+    val ampm = if (this < NoonHour) "am" else "pm"
     return "$hour$ampm"
 }

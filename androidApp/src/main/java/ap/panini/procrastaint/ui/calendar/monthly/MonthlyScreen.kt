@@ -3,7 +3,6 @@ package ap.panini.procrastaint.ui.calendar.monthly
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
@@ -11,13 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import ap.panini.procrastaint.ui.MainActivityViewModel
-import ap.panini.procrastaint.ui.calendar.CalendarViewModel
+import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.formatToMMDDYYYY
@@ -31,42 +30,73 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun MonthlyScreen(
-    modifier: Modifier = Modifier,
-    viewModel: CalendarViewModel,
+    dateState: LazyPagingItems<CalendarPageData>,
+    focusedDate: Long,
     onTitleChange: (String) -> Unit,
+    setFocusedDate: (Long) -> Unit,
+    jumpToDate: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val activityViewModel = koinViewModel<MainActivityViewModel>(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
-    val lazyPagingItems = viewModel.dateState.collectAsLazyPagingItems()
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val currentOnTitleChange by rememberUpdatedState(onTitleChange)
+    val currentSetFocusedDate by rememberUpdatedState(setFocusedDate)
+    val currentJumpToDate by rememberUpdatedState(jumpToDate)
 
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { lazyPagingItems.itemCount }
+        pageCount = { dateState.itemCount }
     )
 
-    LaunchedEffect(lazyPagingItems) {
-        snapshotFlow { lazyPagingItems.itemSnapshotList }
+    SetupMonthlyScreenEffects(
+        dateState = dateState,
+        focusedDate = focusedDate,
+        pagerState = pagerState,
+        currentOnTitleChange = currentOnTitleChange,
+        currentSetFocusedDate = currentSetFocusedDate
+    )
+
+    MonthlyPager(
+        pagerState = pagerState,
+        dateState = dateState,
+        activityViewModel = activityViewModel,
+        currentJumpToDate = currentJumpToDate,
+        modifier = modifier
+    )
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun SetupMonthlyScreenEffects(
+    dateState: LazyPagingItems<CalendarPageData>,
+    focusedDate: Long,
+    pagerState: androidx.compose.foundation.pager.PagerState,
+    currentOnTitleChange: (String) -> Unit,
+    currentSetFocusedDate: (Long) -> Unit
+) {
+    LaunchedEffect(dateState) {
+        snapshotFlow { dateState.itemSnapshotList }
             .map { it.items }
             .collect { list ->
                 if (list.isNotEmpty()) {
-                    lazyPagingItems.peek(0)
+                    dateState.peek(0)
                 }
             }
     }
 
-    LaunchedEffect(state.focusedDate, lazyPagingItems.itemCount) {
-        if (lazyPagingItems.itemCount == 0 || pagerState.isScrollInProgress) return@LaunchedEffect
+    LaunchedEffect(focusedDate, dateState.itemCount) {
+        if (dateState.itemCount == 0 || pagerState.isScrollInProgress) return@LaunchedEffect
 
-        val focusedInstant = kotlin.time.Instant.fromEpochMilliseconds(state.focusedDate)
-        val focusedDate = focusedInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+        val focusedInstant = kotlin.time.Instant.fromEpochMilliseconds(focusedDate)
+        val focusedLocalDate = focusedInstant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-        val index = lazyPagingItems.itemSnapshotList.indexOfFirst {
+        val index = dateState.itemSnapshotList.indexOfFirst {
             if (it == null) return@indexOfFirst false
             val pageInstant = kotlin.time.Instant.fromEpochMilliseconds(it.time)
             val pageDate = pageInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-            pageDate.year == focusedDate.year && pageDate.month == focusedDate.month
+            pageDate.year == focusedLocalDate.year && pageDate.month == focusedLocalDate.month
         }
 
         if (index != -1 && index != pagerState.currentPage) {
@@ -74,36 +104,54 @@ fun MonthlyScreen(
         }
     }
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (lazyPagingItems.itemCount == 0) return@LaunchedEffect
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress, currentOnTitleChange, currentSetFocusedDate) {
+        if (dateState.itemCount == 0) return@LaunchedEffect
 
         if (pagerState.isScrollInProgress) {
-            lazyPagingItems[pagerState.targetPage]?.let {
-                onTitleChange(
-                    it.time.formatMilliseconds(
-                        known = setOf(Time.MONTH),
-                        smart = false
-                    )
-                )
-            }
+            updateMonthlyTitle(
+                time = dateState[pagerState.targetPage]?.time,
+                currentOnTitleChange = currentOnTitleChange
+            )
         } else {
-            lazyPagingItems[pagerState.currentPage]?.let {
-                viewModel.setFocusedDate(it.time)
-                onTitleChange(
-                    it.time.formatMilliseconds(
-                        known = setOf(Time.MONTH),
-                        smart = false
-                    )
+            dateState[pagerState.currentPage]?.let {
+                if (it.time != focusedDate) {
+                    currentSetFocusedDate(it.time)
+                }
+                updateMonthlyTitle(
+                    time = it.time,
+                    currentOnTitleChange = currentOnTitleChange
                 )
             }
         }
     }
+}
 
+@OptIn(ExperimentalTime::class)
+private fun updateMonthlyTitle(time: Long?, currentOnTitleChange: (String) -> Unit) {
+    time?.let {
+        currentOnTitleChange(
+            it.formatMilliseconds(
+                known = setOf(Time.MONTH),
+                smart = false
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun MonthlyPager(
+    pagerState: androidx.compose.foundation.pager.PagerState,
+    dateState: LazyPagingItems<CalendarPageData>,
+    activityViewModel: MainActivityViewModel,
+    currentJumpToDate: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
     HorizontalPager(
         state = pagerState,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
     ) { page ->
-        val monthData = if (page < lazyPagingItems.itemCount) lazyPagingItems[page] else null
+        val monthData = if (page < dateState.itemCount) dateState[page] else null
 
         if (monthData != null) {
             val tasksByDay by monthData.tasksByDay.collectAsState(initial = emptyMap())
@@ -112,8 +160,8 @@ fun MonthlyScreen(
             MonthGrid(
                 month = monthData.time,
                 tasks = tasks,
-                onDateFocused = { date ->
-                    viewModel.jumpToDate(
+                onDateFocus = { date ->
+                    currentJumpToDate(
                         date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
                     )
                 },
@@ -125,7 +173,6 @@ fun MonthlyScreen(
             )
         } else {
             Box(
-                modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Loading...")

@@ -1,22 +1,20 @@
 package ap.panini.procrastaint.ui.calendar.monthly
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -29,8 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.util.Date.formatMilliseconds
-import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.dayOfMonth
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -42,26 +38,32 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 
+private const val DayOfWeekAbbreviationLength = 3
+private const val WeeksInMonth = 6
+private const val DaysInWeek = 7
+private const val GridCellCount = WeeksInMonth * DaysInWeek
+
 @OptIn(ExperimentalTime::class)
 @Composable
 fun MonthGrid(
     month: Long,
     tasks: List<TaskSingle>,
     onDateClick: (LocalDate) -> Unit,
-    onDateFocused: (LocalDate) -> Unit
+    onDateFocus: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val monthDate = kotlin.time.Instant.fromEpochMilliseconds(month)
         .toLocalDateTime(TimeZone.currentSystemDefault()).date
     val tasksByDay = tasks.groupBy { it.currentEventTime.dayOfMonth() }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         // Header row with day names
         Row(modifier = Modifier.fillMaxWidth()) {
             val daysOfWeek =
                 listOf(DayOfWeek.SUNDAY) + DayOfWeek.entries.filter { it != DayOfWeek.SUNDAY }
             for (day in daysOfWeek) {
                 Text(
-                    text = day.name.take(3),
+                    text = day.name.take(DayOfWeekAbbreviationLength),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
@@ -74,18 +76,18 @@ fun MonthGrid(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            val cellHeight = maxHeight / 6  // 6 rows = 42 / 7
+            val cellHeight = maxHeight / WeeksInMonth // 6 rows = 42 / 7
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(7),
+                columns = GridCells.Fixed(DaysInWeek),
                 modifier = Modifier.fillMaxSize(),
                 userScrollEnabled = false // optional: make it static calendar grid
             ) {
                 val firstDayOfMonth = LocalDate(monthDate.year, monthDate.month, 1)
-                val startDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % 7
+                val startDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % DaysInWeek
                 val gridStartDate = firstDayOfMonth.minus(startDayOfWeek.toLong(), DateTimeUnit.DAY)
 
-                items(42) { index ->
+                items(GridCellCount) { index ->
                     val date = gridStartDate.plus(index.toLong(), DateTimeUnit.DAY)
 
                     Card(
@@ -95,7 +97,7 @@ fun MonthGrid(
                             .fillMaxWidth()
                             .combinedClickable(
                                 onClick = { onDateClick(date) },
-                                onLongClick = { onDateFocused(date) }
+                                onLongClick = { onDateFocus(date) }
                             ),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
