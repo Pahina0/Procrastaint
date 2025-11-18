@@ -142,9 +142,13 @@ fun ScrollableWeekView(
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
                                     tasks.forEach { task ->
-                                        val dotColor = task.tags.firstOrNull()?.toRgbOrNull()
-                                            ?.let { Color(it.first, it.second, it.third) }
-                                            ?: MaterialTheme.colorScheme.primary
+                                        val dotColor = if (task.completed != null) {
+                                            Color.Gray // Greyed out color for completed tasks
+                                        } else {
+                                            task.tags.firstOrNull()?.toRgbOrNull()
+                                                ?.let { Color(it.first, it.second, it.third) }
+                                                ?: MaterialTheme.colorScheme.primary
+                                        }
                                         Box(
                                             modifier = Modifier
                                                 .size(8.dp) // Size of the dot

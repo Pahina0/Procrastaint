@@ -118,18 +118,19 @@ fun MonthGrid(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     tasksByDay[date.day]?.forEach { task ->
-                                        val tagColor = task.tags.firstOrNull()?.toRgbOrNull()
-                                        val color = if (tagColor != null) {
-                                            Color(tagColor.first, tagColor.second, tagColor.third)
+                                        val dotColor = if (task.completed != null) {
+                                            Color.Gray // Greyed out color for completed tasks
                                         } else {
-                                            MaterialTheme.colorScheme.primary
+                                            task.tags.firstOrNull()?.toRgbOrNull()
+                                                ?.let { Color(it.first, it.second, it.third) }
+                                                ?: MaterialTheme.colorScheme.primary
                                         }
                                         Box(
                                             modifier = Modifier
                                                 .padding(1.dp)
                                                 .size(8.dp)
                                                 .clip(CircleShape)
-                                                .background(color)
+                                                .background(dotColor)
                                         )
                                     }
                                 }
