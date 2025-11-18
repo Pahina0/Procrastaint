@@ -27,7 +27,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -108,7 +110,12 @@ private fun SetupWeeklyScreenEffects(
         }
     }
 
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress, currentOnTitleChange, currentSetFocusedDate) {
+    LaunchedEffect(
+        pagerState.currentPage,
+        pagerState.isScrollInProgress,
+        currentOnTitleChange,
+        currentSetFocusedDate
+    ) {
         if (dateState.itemCount == 0) return@LaunchedEffect
 
         if (pagerState.isScrollInProgress) {
@@ -147,6 +154,8 @@ private fun WeeklyPager(
     currentJumpToDate: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     HorizontalPager(
         state = pagerState,
         modifier = modifier,
@@ -165,6 +174,8 @@ private fun WeeklyPager(
 
             ScrollableWeekView(
                 weekData = weekDates,
+                today = today,
+                currentHour = now.hour,
 
                 onCellClick = { date, hour ->
                     val dayString = date.formatToMMDDYYYY()

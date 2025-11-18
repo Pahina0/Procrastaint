@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,8 @@ private val TimeColWidth = 50.dp
 @Composable
 fun ScrollableWeekView(
     weekData: List<Pair<LocalDate, List<TaskSingle>>>,
+    today: LocalDate,
+    currentHour: Int,
     onCellClick: (LocalDate, Int) -> Unit,
     onCellFocus: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
@@ -63,7 +66,8 @@ fun ScrollableWeekView(
                 Text(
                     text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    color = if (date == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -73,7 +77,8 @@ fun ScrollableWeekView(
                 Text(
                     text = date.day.toString(),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    color = if (date == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -120,7 +125,13 @@ fun ScrollableWeekView(
                                         onCellFocus(date)
                                     }
                                 ),
-
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (date == today && hour == currentHour) {
+                                    MaterialTheme.colorScheme.primaryContainer
+                                } else {
+                                    Color.Unspecified
+                                }
+                            )
                         ) {
                             val tasks = tasksByDayAndHour[date]?.get(hour)
                             if (!tasks.isNullOrEmpty()) {

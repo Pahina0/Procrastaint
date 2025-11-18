@@ -36,6 +36,7 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import kotlin.time.ExperimentalTime
 
 private const val DayOfWeekAbbreviationLength = 3
@@ -55,6 +56,7 @@ fun MonthGrid(
     val monthDate = kotlin.time.Instant.fromEpochMilliseconds(month)
         .toLocalDateTime(TimeZone.currentSystemDefault()).date
     val tasksByDay = tasks.groupBy { it.currentEventTime.dayOfMonth() }
+    val today = kotlin.time.Clock.System.todayIn(TimeZone.currentSystemDefault())
 
     Column(modifier = modifier.fillMaxSize()) {
         // Header row with day names
@@ -100,7 +102,7 @@ fun MonthGrid(
                                 onLongClick = { onDateFocus(date) }
                             ),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = if (date == today) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
                         if (date.month == monthDate.month) {
