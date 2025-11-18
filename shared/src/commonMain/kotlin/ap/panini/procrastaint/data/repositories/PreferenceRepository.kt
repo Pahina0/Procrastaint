@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.data.repositories
 
+import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -21,11 +22,13 @@ class PreferenceRepository(
         const val GOOGLE_CALENDAR_ID = "google_calendar_id"
 
         const val ON_BOARDING_COMPLETE = "landing_page_complete"
+        const val CALENDAR_DISPLAY_MODE = "calendar_display_mode"
 
         val stringPreference = mapOf(
             GOOGLE_REFRESH_TOKEN to "",
             GOOGLE_ACCESS_TOKEN to "",
             GOOGLE_CALENDAR_ID to "",
+            CALENDAR_DISPLAY_MODE to CalendarDisplayMode.DAILY.name
         )
 
         val boolPreference = mapOf(
@@ -68,5 +71,16 @@ class PreferenceRepository(
 
     suspend fun putBoolean(key: String, value: Boolean) {
         dataStore.edit { it[booleanPreferencesKey(key)] = value }
+    }
+
+    fun getCalendarDisplayMode(): Flow<CalendarDisplayMode> = dataStore.data.map { preferences ->
+        val modeName = preferences[stringPreferencesKey(CALENDAR_DISPLAY_MODE)] ?: CalendarDisplayMode.DAILY.name
+        CalendarDisplayMode.valueOf(modeName)
+    }
+
+    suspend fun setCalendarDisplayMode(displayMode: CalendarDisplayMode) {
+        dataStore.edit { settings ->
+            settings[stringPreferencesKey(CALENDAR_DISPLAY_MODE)] = displayMode.name
+        }
     }
 }
