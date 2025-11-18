@@ -51,7 +51,11 @@ fun CalendarScreen(
                 displayMode = state.displayMode,
                 onDisplayModeChange = {
                     viewModel.setDisplayMode(it)
-                }
+                },
+                showCompleted = state.showCompleted,
+                showIncomplete = state.showIncomplete,
+                setShowCompleted = viewModel::setShowCompleted,
+                setShowIncomplete = viewModel::setShowIncomplete
             )
         }
     }

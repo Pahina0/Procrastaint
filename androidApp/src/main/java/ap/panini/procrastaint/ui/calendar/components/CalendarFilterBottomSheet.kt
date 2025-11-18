@@ -13,6 +13,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,10 @@ import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 fun CalendarFilterBottomSheet(
     displayMode: CalendarDisplayMode,
     onDisplayModeChange: (CalendarDisplayMode) -> Unit,
+    showCompleted: Boolean,
+    showIncomplete: Boolean,
+    setShowCompleted: (Boolean) -> Unit,
+    setShowIncomplete: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
@@ -44,7 +49,7 @@ fun CalendarFilterBottomSheet(
         }
         when (tabIndex) {
             0 -> DisplayTabContent(displayMode, onDisplayModeChange)
-            1 -> FilterTabContent()
+            1 -> FilterTabContent(showCompleted, showIncomplete, setShowCompleted, setShowIncomplete)
         }
     }
 }
@@ -86,13 +91,57 @@ private fun DisplayTabContent(
 }
 
 @Composable
-private fun FilterTabContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Filter options will be here.")
+private fun FilterTabContent(
+    showCompleted: Boolean,
+    showIncomplete: Boolean,
+    setShowCompleted: (Boolean) -> Unit,
+    setShowIncomplete: (Boolean) -> Unit
+) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            "Status",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .selectable(
+                    selected = showCompleted,
+                    onClick = { setShowCompleted(!showCompleted) },
+                    role = Role.Checkbox
+                )
+                .padding(vertical = 4.dp)
+        ) {
+            Checkbox(
+                checked = showCompleted,
+                onCheckedChange = null // click is handled by parent
+            )
+            Text(
+                text = "Completed Tasks",
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .selectable(
+                    selected = showIncomplete,
+                    onClick = { setShowIncomplete(!showIncomplete) },
+                    role = Role.Checkbox
+                )
+                .padding(vertical = 4.dp)
+        ) {
+            Checkbox(
+                checked = showIncomplete,
+                onCheckedChange = null // click is handled by parent
+            )
+            Text(
+                text = "Incompleted Tasks",
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
     }
 }

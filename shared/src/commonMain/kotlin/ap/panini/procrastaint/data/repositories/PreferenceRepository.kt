@@ -23,6 +23,8 @@ class PreferenceRepository(
 
         const val ON_BOARDING_COMPLETE = "landing_page_complete"
         const val CALENDAR_DISPLAY_MODE = "calendar_display_mode"
+        const val SHOW_COMPLETED_TASKS = "show_completed_tasks"
+        const val SHOW_INCOMPLETE_TASKS = "show_incomplete_tasks"
 
         val stringPreference = mapOf(
             GOOGLE_REFRESH_TOKEN to "",
@@ -32,7 +34,9 @@ class PreferenceRepository(
         )
 
         val boolPreference = mapOf(
-            ON_BOARDING_COMPLETE to false
+            ON_BOARDING_COMPLETE to false,
+            SHOW_COMPLETED_TASKS to true,
+            SHOW_INCOMPLETE_TASKS to true
         )
     }
 
@@ -81,6 +85,26 @@ class PreferenceRepository(
     suspend fun setCalendarDisplayMode(displayMode: CalendarDisplayMode) {
         dataStore.edit { settings ->
             settings[stringPreferencesKey(CALENDAR_DISPLAY_MODE)] = displayMode.name
+        }
+    }
+
+    fun getShowCompletedTasks(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_COMPLETED_TASKS)] ?: boolPreference[SHOW_COMPLETED_TASKS]!!
+    }
+
+    suspend fun setShowCompletedTasks(show: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(SHOW_COMPLETED_TASKS)] = show
+        }
+    }
+
+    fun getShowIncompleteTasks(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_INCOMPLETE_TASKS)] ?: boolPreference[SHOW_INCOMPLETE_TASKS]!!
+    }
+
+    suspend fun setShowIncompleteTasks(show: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(SHOW_INCOMPLETE_TASKS)] = show
         }
     }
 }
