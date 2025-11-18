@@ -1,0 +1,144 @@
+package ap.panini.procrastaint.ui.calendar.monthly
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.util.dayOfMonth
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
+import kotlin.time.ExperimentalTime
+
+private const val DayOfWeekAbbreviationLength = 3
+private const val WeeksInMonth = 6
+private const val DaysInWeek = 7
+private const val GridCellCount = WeeksInMonth * DaysInWeek
+
+@OptIn(ExperimentalTime::class)
+@Composable
+fun MonthGrid(
+    month: Long,
+    tasks: List<TaskSingle>,
+    onDateClick: (LocalDate) -> Unit,
+    onDateFocus: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val monthDate = kotlin.time.Instant.fromEpochMilliseconds(month)
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val tasksByDay = tasks.groupBy { it.currentEventTime.dayOfMonth() }
+    val today = kotlin.time.Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    Column(modifier = modifier.fillMaxSize()) {
+        // Header row with day names
+        Row(modifier = Modifier.fillMaxWidth()) {
+            val daysOfWeek =
+                listOf(DayOfWeek.SUNDAY) + DayOfWeek.entries.filter { it != DayOfWeek.SUNDAY }
+            for (day in daysOfWeek) {
+                Text(
+                    text = day.name.take(DayOfWeekAbbreviationLength),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        // Grid area
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            val cellHeight = maxHeight / WeeksInMonth // 6 rows = 42 / 7
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(DaysInWeek),
+                modifier = Modifier.fillMaxSize(),
+                userScrollEnabled = false // optional: make it static calendar grid
+            ) {
+                val firstDayOfMonth = LocalDate(monthDate.year, monthDate.month, 1)
+                val startDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % DaysInWeek
+                val gridStartDate = firstDayOfMonth.minus(startDayOfWeek.toLong(), DateTimeUnit.DAY)
+
+                items(GridCellCount) { index ->
+                    val date = gridStartDate.plus(index.toLong(), DateTimeUnit.DAY)
+
+                    Card(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .height(cellHeight) // ⬅️ force equal height
+                            .fillMaxWidth()
+                            .combinedClickable(
+                                onClick = { onDateClick(date) },
+                                onLongClick = { onDateFocus(date) }
+                            ),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (date == today) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        if (date.month == monthDate.month) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = date.day.toString())
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    tasksByDay[date.day]?.forEach { task ->
+                                        val dotColor = if (task.completed != null) {
+                                            Color.Gray // Greyed out color for completed tasks
+                                        } else {
+                                            task.tags.firstOrNull()?.toRgbOrNull()
+                                                ?.let { Color(it.first, it.second, it.third) }
+                                                ?: MaterialTheme.colorScheme.primary
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(1.dp)
+                                                .size(8.dp)
+                                                .clip(CircleShape)
+                                                .background(dotColor)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

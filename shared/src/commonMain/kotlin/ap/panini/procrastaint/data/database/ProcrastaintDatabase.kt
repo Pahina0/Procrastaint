@@ -39,8 +39,15 @@ abstract class ProcrastaintDatabase : RoomDatabase() {
 
 val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(connection: SQLiteConnection) {
-        connection.execSQL("CREATE TABLE `TaskTagCrossRef_new` (`taskId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, PRIMARY KEY(`taskId`, `tagId`), FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`tagId`) REFERENCES `TaskTag`(`tagId`) ON UPDATE NO ACTION ON DELETE CASCADE )")
-        connection.execSQL("INSERT INTO `TaskTagCrossRef_new` (`taskId`, `tagId`) SELECT `taskId`, `tagId` FROM `TaskTagCrossRef`")
+        connection.execSQL(
+            "CREATE TABLE `TaskTagCrossRef_new` (`taskId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`taskId`, `tagId`), " +
+                "FOREIGN KEY(`taskId`) REFERENCES `TaskInfo`(`taskId`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+                "FOREIGN KEY(`tagId`) REFERENCES `TaskTag`(`tagId`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+        )
+        connection.execSQL(
+            "INSERT INTO `TaskTagCrossRef_new` (`taskId`, `tagId`) SELECT `taskId`, `tagId` FROM `TaskTagCrossRef`"
+        )
         connection.execSQL("DROP TABLE `TaskTagCrossRef`")
         connection.execSQL("ALTER TABLE `TaskTagCrossRef_new` RENAME TO `TaskTagCrossRef`")
         connection.execSQL("CREATE INDEX IF NOT EXISTS `index_TaskTagCrossRef_tagId` ON `TaskTagCrossRef` (`tagId`)")
