@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -18,13 +15,9 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.TaskAlt
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -32,7 +25,6 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -139,13 +131,26 @@ fun CalendarFilterBottomSheet(
                         }
                     },
                     label = {
-                        Text(if (hasDeviceCalendarPermission) "Device Calendar" else "Device Calendar (No Perm)")
+                        Text("Device Calendar")
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = if (showDeviceCalendar && hasDeviceCalendarPermission) Icons.Outlined.Check else Icons.Outlined.CalendarMonth,
+                            imageVector = when {
+                                !hasDeviceCalendarPermission -> Icons.Outlined.Lock
+                                showDeviceCalendar -> Icons.Outlined.Check
+                                else -> Icons.Outlined.CalendarMonth
+                            },
                             contentDescription = null
                         )
+                    },
+                    colors = if (!hasDeviceCalendarPermission) {
+                        FilterChipDefaults.filterChipColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f),
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            iconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    } else {
+                        FilterChipDefaults.filterChipColors()
                     }
                 )
 
@@ -159,112 +164,28 @@ fun CalendarFilterBottomSheet(
                         }
                     },
                     label = {
-                        Text(if (isGoogleLoggedIn) "Google Calendar" else "Google Calendar (Not Connected)")
+                        Text("Google Calendar")
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = if (showGoogleCalendar && isGoogleLoggedIn) Icons.Outlined.Check else Icons.Outlined.Public,
+                            imageVector = when {
+                                !isGoogleLoggedIn -> Icons.Outlined.AccountCircle
+                                showGoogleCalendar -> Icons.Outlined.Check
+                                else -> Icons.Outlined.Public
+                            },
                             contentDescription = null
                         )
+                    },
+                    colors = if (!isGoogleLoggedIn) {
+                        FilterChipDefaults.filterChipColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f),
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            iconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    } else {
+                        FilterChipDefaults.filterChipColors()
                     }
                 )
-            }
-
-            // Quick Permission / Connect Prompts if not enabled
-            if (!hasDeviceCalendarPermission) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Lock,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Column {
-                                Text(
-                                    text = "Device Calendar Permission",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(
-                                    text = "Grant access to see phone calendar events",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        FilledTonalButton(
-                            onClick = onRequestDeviceCalendarPermission
-                        ) {
-                            Text("Grant")
-                        }
-                    }
-                }
-            }
-
-            if (!isGoogleLoggedIn) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.AccountCircle,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Column {
-                                Text(
-                                    text = "Google Account",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(
-                                    text = "Connect to view & sync Google Calendar",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                        FilledTonalButton(
-                            onClick = onConnectGoogle
-                        ) {
-                            Text("Connect")
-                        }
-                    }
-                }
             }
         }
 

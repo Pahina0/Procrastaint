@@ -1,12 +1,8 @@
 package ap.panini.procrastaint.data.entities
 
-import ap.panini.procrastaint.data.repositories.TaskRepository
+import androidx.room.Ignore
 import ap.panini.procrastaint.util.Time
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 /**
  * flattened task for displaying
@@ -28,11 +24,33 @@ data class TaskSingle(
 
     val currentEventTime: Long, // make sure not -1 when accessing
 
-) : KoinComponent {
-    @Transient
-    private val db: TaskRepository by inject()
-
-    @Transient
-    val tags: List<TaskTag>
-        get() = runBlocking { db.getTask(taskId).tags }
+    @Ignore
+    val tags: List<TaskTag> = emptyList()
+) {
+    constructor(
+        taskId: Long,
+        metaId: Long,
+        completionId: Long,
+        title: String,
+        description: String,
+        completed: Long?,
+        startTime: Long?,
+        endTime: Long?,
+        repeatTag: Time?,
+        repeatOften: Int?,
+        currentEventTime: Long
+    ) : this(
+        taskId,
+        metaId,
+        completionId,
+        title,
+        description,
+        completed,
+        startTime,
+        endTime,
+        repeatTag,
+        repeatOften,
+        currentEventTime,
+        emptyList()
+    )
 }

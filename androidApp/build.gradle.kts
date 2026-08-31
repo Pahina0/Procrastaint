@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -10,13 +12,13 @@ plugins {
 
 android {
     namespace = "ap.panini.procrastaint"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "ap.panini.procrastaint"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 8
-        versionName = "0.0.7"
+        targetSdk = 37
+        versionCode = 9
+        versionName = "0.0.8"
     }
     buildFeatures {
         buildConfig = true
@@ -28,10 +30,6 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -49,12 +47,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 
     defaultConfig {
         manifestPlaceholders["appAuthRedirectScheme"] = "ap.panini.procrastaint"
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 

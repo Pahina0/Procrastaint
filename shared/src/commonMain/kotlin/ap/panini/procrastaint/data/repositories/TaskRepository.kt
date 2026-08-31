@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
@@ -186,6 +187,13 @@ open class TaskRepository(
         }
     }
 
+    fun getTaskTagsMap(): Flow<Map<Long, List<TaskTag>>> =
+        combine(taskDao.getTags(), taskDao.getTagCrossRefs()) { tags, refs ->
+            val tagById = tags.associateBy { it.tagId }
+            refs.groupBy({ it.taskId }, { tagById[it.tagId] })
+                .mapValues { (_, tagList) -> tagList.filterNotNull() }
+        }
+
     fun getTasks(
         from: Long = Date.getTodayStart(),
         to: Long? = null,
@@ -194,7 +202,12 @@ open class TaskRepository(
         maxRepetition: Long = Long.MAX_VALUE,
         includeNoTimeTasks: Boolean = false
     ): Flow<List<TaskSingle>> =
-        taskDao.getTasks(from, to, taskId, tagId, includeNoTimeTasks).organize(
+        combine(
+            taskDao.getTasks(from, to, taskId, tagId, includeNoTimeTasks),
+            getTaskTagsMap()
+        ) { rawTasks, tagMap ->
+            Pair(rawTasks, tagMap)
+        }.organize(
             from = from,
             to = to ?: Long.MAX_VALUE,
             maxRepetition = maxRepetition
@@ -216,7 +229,8 @@ open class TaskRepository(
         maxRepetition: Long,
         completed: Map<Long, MutableMap<Long, Long>>
     ): List<TaskSingle> {
-        if (repeatOften == null || repeatTag == null || startTime == null) {
+        val effectiveStartTime = startTime ?: Date.getTodayStart()
+        if (repeatOften == null || repeatTag == null) {
             return listOf(
                 copy(
                     currentEventTime = startTime ?: 0
@@ -226,7 +240,7 @@ open class TaskRepository(
 
         val items = mutableListOf<TaskSingle>()
         val toTime = Instant.fromEpochMilliseconds(min(endTime ?: to, to))
-        var curTime = Instant.fromEpochMilliseconds(startTime)
+        var curTime = Instant.fromEpochMilliseconds(effectiveStartTime)
 
         var timesDuped = 0L
 
@@ -263,11 +277,11 @@ open class TaskRepository(
      * @param maxRepetition
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun Flow<List<TaskSingle>>.organize(
+    private fun Flow<Pair<List<TaskSingle>, Map<Long, List<TaskTag>>>>.organize(
         from: Long,
         to: Long = Long.MAX_VALUE,
         maxRepetition: Long = Long.MAX_VALUE
-    ) = this.mapLatest { list ->
+    ) = this.mapLatest { (list, tagMap) ->
         val filteredList = mutableListOf<TaskSingle>()
 
         // task id to a list of all the completed times to the completed id
@@ -279,9 +293,9 @@ open class TaskRepository(
                     task.completionId
             }
 
-            // saves all the unique tasks
+            // saves all the unique tasks with their preloaded tags
             if (filteredList.isEmpty() || task.metaId != filteredList.last().metaId) {
-                filteredList += task
+                filteredList += task.copy(tags = tagMap[task.taskId] ?: emptyList())
             }
         }
 

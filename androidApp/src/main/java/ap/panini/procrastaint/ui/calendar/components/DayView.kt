@@ -1,10 +1,13 @@
 package ap.panini.procrastaint.ui.calendar.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -13,10 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Date.toDayOfWeek
 import ap.panini.procrastaint.util.Time
@@ -62,6 +64,7 @@ fun DayView(
                     color = dateType.getTextColor()
                 )
 
+                // Only show badge count for actual incomplete tasks
                 if (taskCount > 0) {
                     Badge(
                         containerColor = dateType.getBadgeColor()
@@ -72,28 +75,35 @@ fun DayView(
                             color = dateType.getBadgeContentColor()
                         )
                     }
-                } else if (eventCount > 0) {
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Text(
-                            text = eventCount.toString(),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
                 }
             }
 
-            Text(
-                text = date.toDayOfWeek(),
-                style = MaterialTheme.typography.labelSmall,
-                color = if (date.dayOfWeek() == 6 || date.dayOfWeek() == 7) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    text = date.toDayOfWeek(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (date.dayOfWeek() == 6 || date.dayOfWeek() == 7) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+
+                // Subtle calendar event indicator dot (separate from task count)
+                if (eventCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                    )
                 }
-            )
+            }
         }
     }
 }

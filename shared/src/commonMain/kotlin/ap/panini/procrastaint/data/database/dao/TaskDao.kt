@@ -60,6 +60,10 @@ interface TaskDao {
     suspend fun deleteTagsCrossRef(taskId: Long)
 
     @Transaction
+    @Query("""SELECT * FROM TaskTagCrossRef""")
+    fun getTagCrossRefs(): Flow<List<TaskTagCrossRef>>
+
+    @Transaction
     @Query("""SELECT * FROM TaskTag""")
     fun getTags(): Flow<List<TaskTag>>
 
@@ -112,20 +116,14 @@ interface TaskDao {
         WHERE (
                 (
                     tm.startTime IS NOT NULL
-                    AND (
-                        tm.startTime >= :from
-                        OR (
-                            (
-                                tm.repeatTag IS NOT NULL
-                                AND tm.repeatOften IS NOT NULL
-                                )
-                            AND (
-                                tm.endTime IS NULL
-                                OR tm.endTime >= :from
-                                )
-                            )
-                        )
+                    AND tm.startTime >= :from
                     AND (:to IS NULL OR tm.startTime <= :to)
+                )
+                OR (
+                    tm.repeatTag IS NOT NULL
+                    AND tm.repeatOften IS NOT NULL
+                    AND (tm.endTime IS NULL OR tm.endTime >= :from)
+                    AND (:to IS NULL OR tm.startTime IS NULL OR tm.startTime <= :to)
                 )
                 OR (
                     :includeNoTimeTasks

@@ -110,7 +110,7 @@ class CalendarViewModel(
                 if (!showProcrastaint) {
                     kotlinx.coroutines.flow.flowOf(emptyList())
                 } else {
-                    db.getTasks(from = range.first, to = range.second)
+                    db.getTasks(from = range.first, to = range.second, includeNoTimeTasks = true)
                 }
             }.collectLatest { allTasks ->
                 val showCompleted = _uiState.value.showCompleted

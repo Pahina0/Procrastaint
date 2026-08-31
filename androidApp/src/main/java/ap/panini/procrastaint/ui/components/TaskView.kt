@@ -6,22 +6,22 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Repeat
+import androidx.compose.material.icons.outlined.Tag
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,14 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TaskView(
     task: TaskSingle,
@@ -55,129 +56,180 @@ fun TaskView(
         Pair(task.taskId, task.currentEventTime)
     )
 
-    Column(modifier = modifier) {
-        ListItem(
-            modifier = Modifier
-                .combinedClickable(
-                    onClick = { onEdit(task) }
-                ),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            ),
-            trailingContent = {
-                if (task.startTime != null) {
-                    val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
-                    if (showFullDate) {
-                        timeSet += Time.DAY
-                    }
+    val primaryTag = task.tags.firstOrNull()
+    val primaryTagColor = primaryTag?.toRgbOrNull()?.let {
+        Color(it.first, it.second, it.third)
+    } ?: MaterialTheme.colorScheme.primary
 
+    val accentColor = if (isDone) {
+        MaterialTheme.colorScheme.outlineVariant
+    } else {
+        primaryTagColor
+    }
+
+    val groupName = primaryTag?.displayTitle?.ifBlank { primaryTag.title }
+
+    val timeString = if (task.startTime != null) {
+        val timeSet = mutableSetOf(Time.HOUR, Time.MINUTE)
+        if (showFullDate) {
+            timeSet += Time.DAY
+        }
+        task.currentEventTime.formatMilliseconds(
+            timeSet,
+            smart = showFullDate,
+            useAbbreviated = true
+        )
+    } else {
+        null
+    }
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 3.dp)
+            .combinedClickable(onClick = { onEdit(task) }),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = when {
+                isDone -> MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f)
+                task.tags.isNotEmpty() -> primaryTagColor.copy(alpha = 0.08f)
+                else -> MaterialTheme.colorScheme.surfaceContainerLow
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left color bar indicator matching artistic event style
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(accentColor)
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            Checkbox(
+                checked = isDone,
+                onCheckedChange = { onCheck(task) },
+                modifier = Modifier.size(36.dp)
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                // Top Row: Title + Repeat Badge
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
-                        text = task.currentEventTime.formatMilliseconds(
-                            timeSet,
-                            smart = showFullDate,
-                            useAbbreviated = true
+                        text = task.title,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None
                         ),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isDone) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
-                }
-            },
-            leadingContent = {
-                Checkbox(
-                    checked = isDone,
-                    onCheckedChange = {
-                        onCheck(task)
-                    },
-                )
-            },
-            headlineContent = {
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None
-                    ),
-                    color = if (isDone) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
-                )
-            },
-            supportingContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+
                     if (task.repeatOften != null && task.repeatTag != null) {
+                        val repeatText = if (task.repeatOften == 1) {
+                            "Every ${task.repeatTag!!.name.lowercase()}"
+                        } else {
+                            "Every ${task.repeatOften} ${task.repeatTag!!.name.lowercase()}s"
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Repeat,
                                 contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                                modifier = Modifier.size(12.dp),
+                                tint = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
                             )
-                            val repeatText = if (task.repeatOften == 1) {
-                                "Every ${task.repeatTag!!.name.lowercase()}"
-                            } else {
-                                "Every ${task.repeatOften} ${task.repeatTag!!.name.lowercase()}s"
-                            }
                             Text(
                                 text = repeatText,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary
+                                color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
                             )
                         }
                     }
+                }
 
-                    if (task.description.isNotBlank()) {
+                // Bottom Row: Time (bottom-left) • Group name • Description
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (timeString != null) {
                         Text(
-                            text = task.description,
-                            modifier = Modifier.clickable { expanded = !expanded },
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = if (expanded) Int.MAX_VALUE else 1,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = timeString,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Medium,
+                            color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    if (task.tags.isNotEmpty()) {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.padding(top = 2.dp)
-                        ) {
-                            task.tags.forEach { tag ->
-                                val tagColor = tag.toRgbOrNull()?.let {
-                                    Color(it.first, it.second, it.third)
-                                } ?: MaterialTheme.colorScheme.primary
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(tagColor.copy(alpha = 0.15f))
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(6.dp)
-                                            .clip(CircleShape)
-                                            .background(tagColor)
-                                    )
-                                    Text(
-                                        text = tag.displayTitle.ifBlank { tag.title },
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = tagColor
-                                    )
-                                }
-                            }
+                    if (!groupName.isNullOrBlank()) {
+                        if (timeString != null) {
+                            Text(
+                                text = "•",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
                         }
+
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(if (isDone) Color.Gray else primaryTagColor)
+                        )
+
+                        Text(
+                            text = groupName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isDone) Color.Gray else primaryTagColor,
+                            maxLines = 1
+                        )
+                    }
+
+                    if (task.description.isNotBlank()) {
+                        if (timeString != null || !groupName.isNullOrBlank()) {
+                            Text(
+                                text = "•",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                        }
+
+                        Text(
+                            text = task.description.trim(),
+                            modifier = Modifier
+                                .clickable { expanded = !expanded }
+                                .weight(1f, fill = false),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = if (expanded) Int.MAX_VALUE else 1,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
                     }
                 }
             }
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = DividerDefaults.Thickness,
-            color = DividerDefaults.color.copy(alpha = 0.4f)
-        )
+        }
     }
 }
