@@ -68,22 +68,31 @@ fun TaskTextField(
 ) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
 
-    val text = textFieldValue.text
-    val cursorPos = textFieldValue.selection.start.coerceIn(0, text.length)
+    LaunchedEffect(text) {
+        if (text != textFieldValue.text) {
+            textFieldValue = textFieldValue.copy(
+                text = text,
+                selection = TextRange(text.length)
+            )
+        }
+    }
+
+    val currentText = textFieldValue.text
+    val cursorPos = textFieldValue.selection.start.coerceIn(0, currentText.length)
 
     val latestOnValueChange by rememberUpdatedState(onValueChange)
     val latestOnCurrentWordChange by rememberUpdatedState(onCurrentWordChange)
 
-    val wordAtCursor = remember(text, cursorPos) {
-        val before = text.substring(0, cursorPos)
-        val after = text.substring(cursorPos)
+    val wordAtCursor = remember(currentText, cursorPos) {
+        val before = currentText.substring(0, cursorPos)
+        val after = currentText.substring(cursorPos)
 
         val start =
             before.lastIndexOfAny(charArrayOf(' ', '\n')).let { if (it == -1) 0 else it + 1 }
         val end = after.indexOfAny(charArrayOf(' ', '\n'))
-            .let { if (it == -1) text.length else cursorPos + it }
+            .let { if (it == -1) currentText.length else cursorPos + it }
 
-        text.substring(start, end.coerceAtLeast(start))
+        currentText.substring(start, end.coerceAtLeast(start))
     }
 
     LaunchedEffect(textFieldValue) {
@@ -130,46 +139,49 @@ fun TaskTextField(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp)
+                contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
                 items(suggestions) { suggestion ->
-                    val onClick: () -> Unit =
-                        {
-                            val suggestionString = suggestion.generateTag()
-                            val beforeCursor = text.substring(0, cursorPos)
-                            val afterCursor = text.substring(cursorPos)
+                    val onClick: () -> Unit = {
+                        val suggestionString = suggestion.generateTag()
+                        val beforeCursor = currentText.substring(0, cursorPos)
+                        val afterCursor = currentText.substring(cursorPos)
 
-                            val start = beforeCursor.lastIndexOfAny(charArrayOf(' ', '\n'))
-                                .let { if (it == -1) 0 else it + 1 }
+                        val start = beforeCursor.lastIndexOfAny(charArrayOf(' ', '\n'))
+                            .let { if (it == -1) 0 else it + 1 }
 
-                            val end = afterCursor.indexOfAny(charArrayOf(' ', '\n'))
-                                .let { if (it == -1) text.length else cursorPos + it }
+                        val end = afterCursor.indexOfAny(charArrayOf(' ', '\n'))
+                            .let { if (it == -1) currentText.length else cursorPos + it }
 
-                            val newText = buildString {
-                                append(text.substring(0, start))
-                                append(suggestionString)
-                                if (end < text.length) {
-                                    append(text.substring(end))
-                                }
+                        val newText = buildString {
+                            append(currentText.substring(0, start))
+                            append(suggestionString)
+                            if (end < currentText.length) {
+                                append(currentText.substring(end))
                             }
-
-                            val newCursorPos =
-                                (start + suggestionString.length).coerceAtMost(newText.length)
-
-                            textFieldValue = TextFieldValue(
-                                text = newText,
-                                selection = TextRange(newCursorPos)
-                            )
-                            latestOnValueChange(textFieldValue.text)
                         }
 
-                    SuggestionChip(icon = {
-                        Icon(
-                            Icons.Outlined.Tag,
-                            contentDescription = null,
-                            tint = suggestion.toRgb().let { Color(it.first, it.second, it.third) }
+                        val newCursorPos =
+                            (start + suggestionString.length).coerceAtMost(newText.length)
+
+                        textFieldValue = TextFieldValue(
+                            text = newText,
+                            selection = TextRange(newCursorPos)
                         )
-                    }, label = { Text(suggestion.title) }, onClick = onClick)
+                        latestOnValueChange(textFieldValue.text)
+                    }
+
+                    SuggestionChip(
+                        icon = {
+                            Icon(
+                                Icons.Outlined.Tag,
+                                contentDescription = null,
+                                tint = suggestion.toRgb().let { Color(it.first, it.second, it.third) }
+                            )
+                        },
+                        label = { Text(suggestion.displayTitle.ifBlank { suggestion.title }) },
+                        onClick = onClick
+                    )
                 }
             }
         }

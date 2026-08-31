@@ -68,7 +68,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 }
 
                 item {
-                    HorizontalDivider(height = 2.dp)
+                    HorizontalDivider(height = 1.dp)
                 }
                 items(tasks) { task ->
                     TaskItem(task, recentlyCompleted)
@@ -86,10 +86,11 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
         Text(
             text = DateFormat.format("EEEE, MMM d", date).toString(),
             style = TextStyle(
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = GlanceTheme.colors.onSurface
+                color = GlanceTheme.colors.primary
             ),
-            modifier = GlanceModifier.padding(vertical = 8.dp)
+            modifier = GlanceModifier.padding(top = 10.dp, bottom = 4.dp)
         )
     }
 
@@ -98,13 +99,16 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     private fun TaskItem(task: TaskSingle, recentlyCompleted: Set<Pair<Long, Long>>) {
         val isCompleted = task.completed != null || recentlyCompleted.contains(Pair(task.taskId, task.currentEventTime))
         Row(
-            modifier = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp).clickable(
-                actionStartActivity<AddTaskActivity>(
-                    parameters = actionParametersOf(
-                        taskSingleKey to Json.encodeToString(task)
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp)
+                .clickable(
+                    actionStartActivity<AddTaskActivity>(
+                        parameters = actionParametersOf(
+                            taskSingleKey to Json.encodeToString(task)
+                        )
                     )
-                )
-            ),
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CheckBox(
@@ -123,6 +127,8 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 Text(
                     text = task.title,
                     style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
                         color = GlanceTheme.colors.onSurface,
                         textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     )
@@ -135,33 +141,24 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                         )
                     ),
                     style = TextStyle(
-                        color = GlanceTheme.colors.onSurface,
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Medium,
+                        color = GlanceTheme.colors.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
                     )
                 )
 
                 if (task.tags.isNotEmpty()) {
                     Row(modifier = GlanceModifier.padding(top = 2.dp)) {
                         task.tags.forEach { tag ->
-                            Row(modifier = GlanceModifier.padding(end = 4.dp)) {
+                            Row(modifier = GlanceModifier.padding(end = 6.dp)) {
                                 Text(
-                                    text = "#",
+                                    text = "#${tag.displayTitle.ifBlank { tag.title }}",
                                     style = TextStyle(
-                                        color = tag.toRgb()
-                                            .let {
-                                                ColorProvider(Color(it.first, it.second, it.third))
-                                            },
-                                        fontSize = 8.sp,
+                                        color = tag.toRgbOrNull()?.let {
+                                            ColorProvider(Color(it.first, it.second, it.third))
+                                        } ?: GlanceTheme.colors.primary,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Medium
-                                    )
-                                )
-                                Text(
-                                    text = tag.displayTitle,
-                                    style = TextStyle(
-                                        color = GlanceTheme.colors.onSurface,
-                                        fontSize = 8.sp,
-                                        fontWeight = FontWeight.Medium,
                                     )
                                 )
                             }
@@ -175,22 +172,25 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun NoTasksView() {
         Column(
-            modifier = GlanceModifier.fillMaxSize(),
+            modifier = GlanceModifier.fillMaxSize().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = ";-;",
+                text = "✨",
                 style = TextStyle(
-                    fontSize = 48.sp,
+                    fontSize = 32.sp,
                     color = GlanceTheme.colors.onSurface
                 )
             )
             Text(
-                text = "no upcoming tasks",
+                text = "No upcoming tasks",
                 style = TextStyle(
-                    color = GlanceTheme.colors.onSurface
-                )
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = GlanceTheme.colors.onSurfaceVariant
+                ),
+                modifier = GlanceModifier.padding(top = 4.dp)
             )
         }
     }
@@ -202,19 +202,19 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
         val groupedTasks = tasks.groupBy {
             val cal = Calendar.getInstance()
             cal.timeInMillis = it.currentEventTime
-            cal.get(Calendar.DAY_OF_YEAR)
+            (cal.get(Calendar.YEAR) * 1000) + cal.get(Calendar.DAY_OF_YEAR)
         }
 
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(12.dp)
                 .background(GlanceTheme.colors.surface),
             verticalAlignment = Alignment.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Button(
-                text = "Add task",
+                text = "+ Add Task",
                 onClick = actionStartActivity<AddTaskActivity>(),
                 modifier = GlanceModifier.fillMaxWidth()
             )

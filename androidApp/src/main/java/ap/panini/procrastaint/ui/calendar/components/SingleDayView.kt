@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,7 +27,7 @@ import kotlin.time.Duration.Companion.hours
 
 private const val HOURS = 24
 private const val ScrollMultiplier = 2
-private val EmptyHourHeight = 20.dp
+private val EmptyHourHeight = 44.dp
 
 /**
  * Day view
@@ -49,8 +50,7 @@ fun SingleDayView(
     val curHour by remember { mutableIntStateOf(Date.getTime().hour()) }
 
     LazyColumn(
-        modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = modifier.fillMaxHeight(),
         state = listState
     ) {
         for (hour in 0 until HOURS) {
@@ -60,7 +60,8 @@ fun SingleDayView(
                         setOf(Time.HOUR, Time.MINUTE),
                         smart = false
                     ),
-                    highlight = isToday && hour == curHour
+                    highlight = isToday && hour == curHour,
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
 

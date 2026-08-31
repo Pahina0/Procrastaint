@@ -91,47 +91,74 @@ fun MonthGrid(
 
                 items(GridCellCount) { index ->
                     val date = gridStartDate.plus(index.toLong(), DateTimeUnit.DAY)
+                    val isInCurrentMonth = date.month == monthDate.month
+                    val isToday = date == today
 
                     Card(
                         modifier = Modifier
-                            .padding(2.dp)
-                            .height(cellHeight) // ⬅️ force equal height
+                            .padding(1.5.dp)
+                            .height(cellHeight)
                             .fillMaxWidth()
-                            .combinedClickable(
-                                onClick = { onDateClick(date) },
-                                onLongClick = { onDateFocus(date) }
+                            .then(
+                                if (isInCurrentMonth) {
+                                    Modifier.combinedClickable(
+                                        onClick = { onDateClick(date) },
+                                        onLongClick = { onDateFocus(date) }
+                                    )
+                                } else {
+                                    Modifier
+                                }
                             ),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (date == today) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = when {
+                                isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                                isInCurrentMonth -> MaterialTheme.colorScheme.surfaceContainerLowest
+                                else -> MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.3f)
+                            }
                         )
                     ) {
-                        if (date.month == monthDate.month) {
-                            Column(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(text = date.day.toString())
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    tasksByDay[date.day]?.forEach { task ->
-                                        val dotColor = if (task.completed != null) {
-                                            Color.Gray // Greyed out color for completed tasks
-                                        } else {
-                                            task.tags.firstOrNull()?.toRgbOrNull()
-                                                ?.let { Color(it.first, it.second, it.third) }
-                                                ?: MaterialTheme.colorScheme.primary
+                        Column(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = date.day.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isToday) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal,
+                                color = when {
+                                    isToday -> MaterialTheme.colorScheme.primary
+                                    isInCurrentMonth -> MaterialTheme.colorScheme.onSurface
+                                    else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+                                }
+                            )
+
+                            if (isInCurrentMonth) {
+                                val dayTasks = tasksByDay[date.day]
+                                if (!dayTasks.isNullOrEmpty()) {
+                                    androidx.compose.foundation.layout.FlowRow(
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalArrangement = Arrangement.spacedBy(1.dp)
+                                    ) {
+                                        dayTasks.take(6).forEach { task ->
+                                            val dotColor = if (task.completed != null) {
+                                                Color.Gray
+                                            } else {
+                                                task.tags.firstOrNull()?.toRgbOrNull()
+                                                    ?.let { Color(it.first, it.second, it.third) }
+                                                    ?: MaterialTheme.colorScheme.primary
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(0.5.dp)
+                                                    .size(6.dp)
+                                                    .clip(CircleShape)
+                                                    .background(dotColor)
+                                            )
                                         }
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(1.dp)
-                                                .size(8.dp)
-                                                .clip(CircleShape)
-                                                .background(dotColor)
-                                        )
                                     }
                                 }
                             }

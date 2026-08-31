@@ -21,33 +21,17 @@ import ap.panini.procrastaint.ui.settings.sync.SyncScreen
 import ap.panini.procrastaint.ui.tag.TagScreen
 import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
 
-private const val AnimationSpeed = 300
+private const val AnimationSpeed = 250
 
 @Composable
 fun NavGraph(navController: NavHostController, startDestination: Route) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        enterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    AnimationSpeed, easing = LinearEasing
-                )
-            ) + slideIntoContainer(
-                animationSpec = tween(AnimationSpeed, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Start
-            )
-        },
-        exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    AnimationSpeed, easing = LinearEasing
-                )
-            ) + slideOutOfContainer(
-                animationSpec = tween(AnimationSpeed, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            )
-        }
+        enterTransition = { fadeIn(animationSpec = tween(AnimationSpeed)) },
+        exitTransition = { fadeOut(animationSpec = tween(AnimationSpeed)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(AnimationSpeed)) },
+        popExitTransition = { fadeOut(animationSpec = tween(AnimationSpeed)) }
     ) {
         composable<Route.OnBoarding> { OnBoardingScreen() }
 
@@ -61,7 +45,22 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
             )
         }
 
-        composable<Route.Tag> {
+        composable<Route.Tag>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(AnimationSpeed, easing = EaseIn)
+                ) + fadeIn(tween(AnimationSpeed))
+            },
+            exitTransition = { fadeOut(tween(AnimationSpeed / 2)) },
+            popEnterTransition = { fadeIn(tween(AnimationSpeed)) },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(AnimationSpeed, easing = EaseOut)
+                ) + fadeOut(tween(AnimationSpeed))
+            }
+        ) {
             TagScreen(
                 args = it.toRoute(),
                 onNavigateBack = { navController.popBackStack() }
@@ -75,13 +74,43 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
             )
         }
 
-        composable<Route.AboutLibraries> {
+        composable<Route.AboutLibraries>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(AnimationSpeed, easing = EaseIn)
+                ) + fadeIn(tween(AnimationSpeed))
+            },
+            exitTransition = { fadeOut(tween(AnimationSpeed / 2)) },
+            popEnterTransition = { fadeIn(tween(AnimationSpeed)) },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(AnimationSpeed, easing = EaseOut)
+                ) + fadeOut(tween(AnimationSpeed))
+            }
+        ) {
             AboutLibrariesScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
-        composable<Route.Sync> {
+        composable<Route.Sync>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(AnimationSpeed, easing = EaseIn)
+                ) + fadeIn(tween(AnimationSpeed))
+            },
+            exitTransition = { fadeOut(tween(AnimationSpeed / 2)) },
+            popEnterTransition = { fadeIn(tween(AnimationSpeed)) },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(AnimationSpeed, easing = EaseOut)
+                ) + fadeOut(tween(AnimationSpeed))
+            }
+        ) {
             SyncScreen(
                 onNavigateBack = { navController.popBackStack() }
             )

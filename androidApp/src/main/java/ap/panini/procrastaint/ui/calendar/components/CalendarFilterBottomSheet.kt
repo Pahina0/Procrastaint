@@ -1,29 +1,30 @@
 package ap.panini.procrastaint.ui.calendar.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.material3.Checkbox
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CalendarFilterBottomSheet(
     displayMode: CalendarDisplayMode,
@@ -34,114 +35,92 @@ fun CalendarFilterBottomSheet(
     setShowIncomplete: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var tabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Display", "Filter")
-
-    Column(modifier = modifier) {
-        SecondaryTabRow(selectedTabIndex = tabIndex) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = tabIndex == index,
-                    onClick = { tabIndex = index },
-                    text = { Text(title) }
-                )
-            }
-        }
-        when (tabIndex) {
-            0 -> DisplayTabContent(displayMode, onDisplayModeChange)
-            1 -> FilterTabContent(showCompleted, showIncomplete, setShowCompleted, setShowIncomplete)
-        }
-    }
-}
-
-@Composable
-private fun DisplayTabContent(
-    displayMode: CalendarDisplayMode,
-    onDisplayModeChange: (CalendarDisplayMode) -> Unit
-) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Text(
-            "Organization",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+            text = "Calendar Options",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
         )
-        CalendarDisplayMode.entries.forEach { mode ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = (displayMode == mode),
-                        onClick = { onDisplayModeChange(mode) },
-                        role = Role.RadioButton
-                    )
-                    .padding(vertical = 4.dp)
-            ) {
-                RadioButton(
-                    selected = (displayMode == mode),
-                    onClick = null // click is handled by parent
-                )
-                Text(
-                    text = mode.name.lowercase().replaceFirstChar { it.uppercase() },
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
-        }
-    }
-}
 
-@Composable
-private fun FilterTabContent(
-    showCompleted: Boolean,
-    showIncomplete: Boolean,
-    setShowCompleted: (Boolean) -> Unit,
-    setShowIncomplete: (Boolean) -> Unit
-) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            "Status",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
-                    selected = showCompleted,
-                    onClick = { setShowCompleted(!showCompleted) },
-                    role = Role.Checkbox
-                )
-                .padding(vertical = 4.dp)
-        ) {
-            Checkbox(
-                checked = showCompleted,
-                onCheckedChange = null // click is handled by parent
-            )
+        // View Mode Section
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = "Completed Tasks",
-                modifier = Modifier.padding(start = 16.dp)
+                text = "View Mode",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium
             )
+
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                CalendarDisplayMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = CalendarDisplayMode.entries.size
+                        ),
+                        onClick = { onDisplayModeChange(mode) },
+                        selected = displayMode == mode,
+                        label = {
+                            Text(
+                                mode.name.lowercase().replaceFirstChar { it.uppercase() },
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    )
+                }
+            }
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectable(
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Task Status Filters Section
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = "Filter Tasks",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                FilterChip(
                     selected = showIncomplete,
                     onClick = { setShowIncomplete(!showIncomplete) },
-                    role = Role.Checkbox
+                    label = { Text("Incomplete Tasks") },
+                    leadingIcon = if (showIncomplete) {
+                        {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = null
+                            )
+                        }
+                    } else null
                 )
-                .padding(vertical = 4.dp)
-        ) {
-            Checkbox(
-                checked = showIncomplete,
-                onCheckedChange = null // click is handled by parent
-            )
-            Text(
-                text = "Incompleted Tasks",
-                modifier = Modifier.padding(start = 16.dp)
-            )
+
+                FilterChip(
+                    selected = showCompleted,
+                    onClick = { setShowCompleted(!showCompleted) },
+                    label = { Text("Completed Tasks") },
+                    leadingIcon = if (showCompleted) {
+                        {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = null
+                            )
+                        }
+                    } else null
+                )
+            }
         }
     }
 }

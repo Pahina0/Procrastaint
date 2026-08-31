@@ -46,8 +46,6 @@ import ap.panini.procrastaint.ui.navigation.Route
 import ap.panini.procrastaint.ui.navigation.isEntryIn
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -68,15 +66,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProcrastaintTheme {
-                // determine which page to go to
-                val onBoardComplete =
-                    preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
-                        .collectAsStateWithLifecycle(
-                            runBlocking {
-                                preferences.getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
-                                    .first()
-                            }
-                        ).value
+                val onBoardComplete by preferences
+                    .getBoolean(PreferenceRepository.ON_BOARDING_COMPLETE)
+                    .collectAsStateWithLifecycle(initialValue = false)
 
                 if (!onBoardComplete) {
                     OnBoardingScreen()
@@ -84,6 +76,15 @@ class MainActivity : ComponentActivity() {
                     MainContent(viewModel)
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val viewModel by viewModel<MainActivityViewModel>()
+        if (intent.getStringExtra("action") == "add_task") {
+            viewModel.onShow()
         }
     }
 
@@ -95,21 +96,15 @@ class MainActivity : ComponentActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        val showBottomBar by remember(currentDestination) {
-            mutableStateOf(
-                BottomBarDestination.entries.map { it.direction::class }
-                    .isEntryIn(currentDestination)
-            )
+        val showBottomBar = remember(currentDestination) {
+            BottomBarDestination.entries.map { it.direction::class }
+                .isEntryIn(currentDestination)
         }
 
-        val showFab by remember(currentDestination) {
-            mutableStateOf(
-                ( // all the bottom sheet stuff + tag, besides settings
-                    BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                        Route.Tag::class
-                    )
-                    .isEntryIn(currentDestination)
-            )
+        val showFab = remember(currentDestination) {
+            (BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
+                Route.Tag::class)
+                .isEntryIn(currentDestination)
         }
 
         val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -136,7 +131,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             },
-
         ) { padding ->
             if (state.visible) {
                 TaskBottomSheet(
@@ -199,8 +193,8 @@ private fun BottomBar(navController: NavController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         BottomBarDestination.entries.forEach { topLevelRoute ->
-            val isSelected by remember(currentDestination) {
-                mutableStateOf(listOf(topLevelRoute.direction::class).isEntryIn(currentDestination))
+            val isSelected = remember(currentDestination) {
+                listOf(topLevelRoute.direction::class).isEntryIn(currentDestination)
             }
 
             ShortNavigationBarItem(
@@ -218,9 +212,6 @@ private fun BottomBar(navController: NavController) {
                 selected = isSelected,
                 onClick = {
                     navController.navigate(topLevelRoute.direction) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

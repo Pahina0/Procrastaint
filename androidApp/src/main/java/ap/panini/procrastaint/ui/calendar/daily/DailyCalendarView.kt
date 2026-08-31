@@ -35,10 +35,9 @@ fun DailyCalendarView(
     val coroutineScope = rememberCoroutineScope()
 
     LazyRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         state = selectableListState
     ) {
         items(

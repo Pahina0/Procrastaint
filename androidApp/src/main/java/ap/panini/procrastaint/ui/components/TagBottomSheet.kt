@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -50,13 +51,22 @@ fun TagBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            Text(
+                text = if (tag.tagId == 0L) "New Tag" else "Edit Tag",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+            )
+
             OutlinedTextField(
-                label = { Text("Tag display title") },
+                label = { Text("Display Title") },
+                placeholder = { Text("e.g. Work, Home, Study") },
                 value = tag.displayTitle,
                 onValueChange = state::updateDisplayTitle,
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -68,19 +78,24 @@ fun TagBottomSheet(
                         tint = color
                     )
                 },
-                isError = !validTag,
-                label = { Text("Title identifier (unique and no spaces)") },
+                isError = !validTag && tag.title.isNotBlank(),
+                supportingText = if (!validTag && tag.title.isNotBlank()) {
+                    { Text("Identifier must be unique and non-empty") }
+                } else null,
+                label = { Text("Tag Identifier (#slug)") },
                 value = tag.title,
                 onValueChange = {
                     state.updateTitle(it)
                 },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                label = { Text("Info") },
+                label = { Text("Description / Notes (optional)") },
                 value = tag.info,
                 onValueChange = state::updateInfo,
+                maxLines = 3,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -89,9 +104,13 @@ fun TagBottomSheet(
             Button(
                 enabled = validTag,
                 onClick = { onSave(tag) },
+                shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save tag")
+                Text(
+                    text = "Save Tag",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }

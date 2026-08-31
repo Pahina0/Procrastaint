@@ -2,15 +2,15 @@ package ap.panini.procrastaint.ui.upcoming
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -39,8 +39,7 @@ fun UpcomingScreen(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
 
-//    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val recentlyCompleted by viewModel.recentlyCompleted.collectAsStateWithLifecycle()
 
     val scrollBehavior =
@@ -49,7 +48,7 @@ fun UpcomingScreen(
     ScreenScaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 scrollBehavior = scrollBehavior,
                 title = { Text("Upcoming") }
             )
@@ -58,18 +57,18 @@ fun UpcomingScreen(
         if (state.taskInfos.isEmpty()) {
             EmptyPage(
                 Icons.Outlined.CheckCircleOutline,
-                "You have no upcoming tasks!\nPress + to start adding",
+                "No upcoming tasks!\nTap the + button to add one.",
                 Modifier.padding(padding)
             )
+        } else {
+            Tasks(
+                state.taskInfos,
+                viewModel::checkTask,
+                activityViewModel::editCreatedTask,
+                recentlyCompleted,
+                modifier = Modifier.padding(padding)
+            )
         }
-
-        Tasks(
-            state.taskInfos,
-            viewModel::checkTask,
-            activityViewModel::editCreatedTask,
-            recentlyCompleted,
-            modifier = Modifier.padding(padding)
-        )
     }
 }
 
@@ -81,27 +80,24 @@ private fun Tasks(
     recentlyCompleted: Set<Pair<Long, Long>>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.padding(10.dp)) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
         itemsIndexed(
             items = tasks,
             key = { _, task -> Pair(task.taskId, task.currentEventTime) }
         ) { index, task ->
+            val showDateHeader = index == 0 || tasks[index - 1].currentEventTime.formatMilliseconds(
+                setOf(Time.DAY, Time.MONTH, Time.YEAR)
+            ) != task.currentEventTime.formatMilliseconds(
+                setOf(Time.DAY, Time.MONTH, Time.YEAR)
+            )
 
-            // sees if it should show the header of the current date
-            if (index == 0 || tasks[index - 1].currentEventTime.formatMilliseconds(
-                    setOf(
-                        Time.DAY, Time.MONTH, Time.YEAR
-                    )
-                ) != task.currentEventTime.formatMilliseconds(
-                    setOf(
-                        Time.DAY, Time.MONTH, Time.YEAR
-                    )
-                )
-
-            ) {
+            if (showDateHeader) {
                 DateText(task.currentEventTime)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 5.dp))
             }
+
             TaskView(
                 task = task,
                 modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),

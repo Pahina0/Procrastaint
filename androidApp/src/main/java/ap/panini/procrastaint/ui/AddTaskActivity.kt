@@ -3,8 +3,9 @@ package ap.panini.procrastaint.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
 import ap.panini.procrastaint.ui.widget.taskSingleKey
@@ -15,6 +16,7 @@ class AddTaskActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         intent.getStringExtra(taskSingleKey.name)?.let {
@@ -24,7 +26,7 @@ class AddTaskActivity : ComponentActivity() {
 
         setContent {
             ProcrastaintTheme {
-                val state by viewModel.uiState.collectAsState()
+                val state by viewModel.uiState.collectAsStateWithLifecycle()
                 TaskBottomSheet(
                     state = state,
                     updateTitle = viewModel::updateTask,

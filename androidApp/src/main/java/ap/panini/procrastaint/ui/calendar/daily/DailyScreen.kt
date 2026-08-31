@@ -56,9 +56,6 @@ fun DailyScreen(
     val currentOnTitleChange by rememberUpdatedState(onTitleChange)
     val currentSetFocusedDate by rememberUpdatedState(setFocusedDate)
 
-    LaunchedEffect(initialDate) {
-    }
-
     val today by remember { mutableLongStateOf(Date.getTodayStart()) }
 
     val selectableListState = rememberLazyListState()
@@ -79,12 +76,7 @@ fun DailyScreen(
         coroutineScope.launch {
             if (pagerState.pageCount == 0) return@launch
 
-            var index =
-                max(dateState.itemSnapshotList.indexOfFirst { it?.time == focusedDate }, 0)
-            pagerState.animateScrollToPage(index)
-            selectableListState.animateScrollToItem(max(index - 1, 0))
-
-            index =
+            val index =
                 max(dateState.itemSnapshotList.indexOfFirst { it?.time == focusedDate }, 0)
             pagerState.animateScrollToPage(index)
             selectableListState.animateScrollToItem(max(index - 1, 0))

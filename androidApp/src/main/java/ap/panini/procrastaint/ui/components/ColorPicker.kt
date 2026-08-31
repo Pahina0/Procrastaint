@@ -1,9 +1,15 @@
 package ap.panini.procrastaint.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskTag
@@ -46,12 +53,12 @@ fun ColorPicker(
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         HsvColorPicker(
             initialColor = parsedColor,
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(110.dp),
             controller = controller,
             onColorChanged = {
                 val hex = TaskTag.rgbToHex(
@@ -64,25 +71,44 @@ fun ColorPicker(
             }
         )
 
-        OutlinedTextField(
-            label = { Text("Hex") },
-            value = hexTextColor,
-            onValueChange = {
-                hexTextColor = it
-                try {
-                    TaskTag.hexToRgb(it)
-                    onColorChange(it)
-                } catch (_: Exception) {
-                    // do nothing or show error
-                }
-            },
-            isError = try {
-                TaskTag.hexToRgb(hexTextColor)
-                false
-            } catch (_: Exception) {
-                true
-            },
-            modifier = Modifier.weight(WeightOne)
-        )
+        Column(
+            modifier = Modifier.weight(WeightOne),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(parsedColor)
+                        .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                )
+
+                OutlinedTextField(
+                    label = { Text("Hex Color") },
+                    value = hexTextColor,
+                    onValueChange = {
+                        hexTextColor = it
+                        try {
+                            TaskTag.hexToRgb(it)
+                            onColorChange(it)
+                        } catch (_: Exception) {
+                            // do nothing or show error
+                        }
+                    },
+                    isError = try {
+                        TaskTag.hexToRgb(hexTextColor)
+                        false
+                    } catch (_: Exception) {
+                        true
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }

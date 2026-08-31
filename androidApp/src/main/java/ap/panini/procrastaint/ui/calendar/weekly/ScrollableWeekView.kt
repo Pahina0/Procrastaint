@@ -46,44 +46,55 @@ fun ScrollableWeekView(
     onCellFocus: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        if (currentHour > 2) {
+            listState.scrollToItem(currentHour - 2)
+        }
+    }
+
     val tasksByDayAndHour = remember(weekData) {
         weekData.associate { (date, tasks) ->
-            date to tasks.groupBy {
-                val taskTime = Date.getTime(
-                    hour = it.currentEventTime.hour(),
-                    minute = it.currentEventTime.hour()
-                )
-                taskTime.hour()
-            }
+            date to tasks.groupBy { it.currentEventTime.hour() }
         }
     }
 
     Column(modifier = modifier) {
-        // Header Row
-        Row(modifier = Modifier.fillMaxWidth()) {
+        // Day Names Header Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
             Spacer(modifier = Modifier.width(TimeColWidth))
             weekData.forEach { (date, _) ->
-                Text(
-                    text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
-                    textAlign = TextAlign.Center,
+                val isToday = date == today
+                Column(
                     modifier = Modifier.weight(1f),
-                    color = if (date == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.width(TimeColWidth))
-            weekData.forEach { (date, _) ->
-                Text(
-                    text = date.day.toString(),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f),
-                    color = if (date == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = date.day.toString(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = if (isToday) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal,
+                        color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState
+        ) {
             items(HoursInDay) { hour ->
                 Row(
                     modifier = Modifier
@@ -93,8 +104,6 @@ fun ScrollableWeekView(
                     // Time label
                     val amPmFormatter = LocalTime.Format {
                         amPmHour()
-                        char(':')
-                        minute()
                         char(' ')
                         amPmMarker("AM", "PM")
                     }
@@ -104,7 +113,7 @@ fun ScrollableWeekView(
                         text = formattedTime,
                         modifier = Modifier
                             .width(TimeColWidth)
-                            .padding(end = 4.dp),
+                            .padding(end = 4.dp, top = 2.dp),
                         textAlign = TextAlign.End,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -112,24 +121,22 @@ fun ScrollableWeekView(
 
                     // Day cells
                     weekData.forEach { (date, _) ->
-                        Card( // Changed from Box to Card
+                        val isCurrentCell = date == today && hour == currentHour
+                        Card(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(HourHeight)
                                 .padding(1.dp)
                                 .combinedClickable(
-                                    onClick = {
-                                        onCellClick(date, hour)
-                                    },
-                                    onLongClick = {
-                                        onCellFocus(date)
-                                    }
+                                    onClick = { onCellClick(date, hour) },
+                                    onLongClick = { onCellFocus(date) }
                                 ),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (date == today && hour == currentHour) {
-                                    MaterialTheme.colorScheme.primaryContainer
+                                containerColor = if (isCurrentCell) {
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                                 } else {
-                                    Color.Unspecified
+                                    MaterialTheme.colorScheme.surfaceContainerLowest
                                 }
                             )
                         ) {
@@ -138,12 +145,13 @@ fun ScrollableWeekView(
                                 FlowRow(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp),
+                                        .padding(4.dp),
                                     horizontalArrangement = Arrangement.Center,
+                                    verticalArrangement = Arrangement.Center
                                 ) {
                                     tasks.forEach { task ->
                                         val dotColor = if (task.completed != null) {
-                                            Color.Gray // Greyed out color for completed tasks
+                                            Color.Gray
                                         } else {
                                             task.tags.firstOrNull()?.toRgbOrNull()
                                                 ?.let { Color(it.first, it.second, it.third) }
@@ -151,12 +159,12 @@ fun ScrollableWeekView(
                                         }
                                         Box(
                                             modifier = Modifier
-                                                .size(8.dp) // Size of the dot
+                                                .padding(1.dp)
+                                                .size(7.dp)
                                                 .background(
                                                     dotColor,
                                                     androidx.compose.foundation.shape.CircleShape
-                                                ) // Dot color and shape
-                                                .padding(2.dp) // Spacing between dots
+                                                )
                                         )
                                     }
                                 }

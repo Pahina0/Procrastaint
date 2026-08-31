@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 const val StronglyDeemphasizedAlpha = 0.6f
 const val SlightlyDeemphasizedAlpha = 0.75f
@@ -118,6 +119,12 @@ fun ProcrastaintTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
+        shapes = androidx.compose.material3.Shapes(
+            small = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+            medium = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            large = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+            extraLarge = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+        ),
         content = content
     )
 }

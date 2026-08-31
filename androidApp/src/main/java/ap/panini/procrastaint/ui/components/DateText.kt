@@ -16,9 +16,10 @@ fun DateText(
     modifier: Modifier = Modifier
 ) {
     Text(
-        date?.takeUnless { it == 0L }?.formatMilliseconds(setOf(Time.DAY, Time.MONTH)) ?: "Unknown",
-        style = MaterialTheme.typography.titleLarge,
+        text = date?.takeUnless { it == 0L }?.formatMilliseconds(setOf(Time.DAY, Time.MONTH)) ?: "Unknown",
+        style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        modifier = modifier.padding(vertical = 8.dp)
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
 }

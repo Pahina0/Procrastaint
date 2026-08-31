@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Repeat
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +20,7 @@ import ap.panini.procrastaint.util.ParsedTime
 
 /**
  * displays all the times of the auto parsed data
- * */
+ */
 @Composable
 fun TimeChips(
     currentAutoParsed: ParsedTime?,
@@ -26,45 +28,90 @@ fun TimeChips(
     leadingContent: @Composable FlowRowScope.() -> Unit = {}
 ) {
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
         leadingContent()
 
         currentAutoParsed?.startTimes?.forEach { time ->
-            InputChip(
-                selected = true,
-                onClick = { /* ignored */ },
-                label = { Text(text = time.formatMilliseconds(currentAutoParsed.tagsTimeStart)) }
+            AssistChip(
+                onClick = { },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Schedule,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                label = {
+                    Text(
+                        text = time.formatMilliseconds(currentAutoParsed.tagsTimeStart),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                border = null
             )
         }
 
         currentAutoParsed?.endTime?.let {
-            InputChip(
-                selected = true,
-                onClick = { /* ignored */ },
-                label = {
-                    Text(
-                        text = it.formatMilliseconds(
-                            currentAutoParsed.tagsTimeEnd
-                        ),
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
+            AssistChip(
+                onClick = { },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Event,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 },
-                colors = InputChipDefaults.inputChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
-                )
+                label = {
+                    Text(
+                        text = it.formatMilliseconds(currentAutoParsed.tagsTimeEnd),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f),
+                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer
+                ),
+                border = null
             )
         }
 
         currentAutoParsed?.let { time ->
-            if (time.repeatOften == 0 || time.repeatTag == null) return@let
+            val repeatTag = time.repeatTag
+            if (time.repeatOften == 0 || repeatTag == null) return@let
 
-            InputChip(
-                leadingIcon = { Icon(Icons.Outlined.Repeat, contentDescription = null) },
-                selected = true,
-                onClick = { /* ignored */ },
-                label = { Text(text = "${time.repeatOften} ${time.repeatTag}(s)") }
+            val repeatLabel = if (time.repeatOften == 1) {
+                "Every ${repeatTag.name.lowercase()}"
+            } else {
+                "Every ${time.repeatOften} ${repeatTag.name.lowercase()}s"
+            }
+
+            AssistChip(
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Repeat,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                onClick = { },
+                label = {
+                    Text(
+                        text = repeatLabel,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                    labelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                border = null
             )
         }
     }

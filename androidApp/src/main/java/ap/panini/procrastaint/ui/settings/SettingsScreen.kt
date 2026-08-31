@@ -1,15 +1,21 @@
 package ap.panini.procrastaint.ui.settings
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
@@ -27,27 +33,38 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = koinViewModel(),
     googleAuth: GoogleAuth = koinInject()
 ) {
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollState = rememberScrollState()
 
-    ScreenScaffold(modifier = modifier, topBar = {
-        TopAppBar(title = { Text("Settings") })
-    }) {
-        Box(modifier = Modifier.padding(it)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Sync(
-                    onNavigateToSync,
-                    state.googleLoggedIn,
-                    viewModel::googleLogout,
-                    googleAuth::auth
-                )
+    ScreenScaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                scrollBehavior = scrollBehavior,
+                title = { Text("Settings") }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(scrollState)
+                .padding(bottom = 24.dp)
+        ) {
+            Sync(
+                onNavigateToSync = onNavigateToSync,
+                isLoggedInGoogle = state.googleLoggedIn,
+                logoutGoogle = viewModel::googleLogout,
+                loginGoogle = googleAuth::auth
+            )
 
-                HorizontalDivider()
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            )
 
-                About(onNavigateToAboutLibraries)
-            }
+            About(onNavigateToAboutLibraries = onNavigateToAboutLibraries)
         }
     }
 }

@@ -47,6 +47,7 @@ fun ScreenScaffold(
                     start = it.calculateStartPadding(LocalLayoutDirection.current),
                     end = it.calculateEndPadding(LocalLayoutDirection.current),
                     top = it.calculateTopPadding(),
+                    bottom = it.calculateBottomPadding(),
                 )
             )
         }

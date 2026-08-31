@@ -4,16 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.SyncDisabled
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,16 +29,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,15 +51,15 @@ fun SyncScreen(
     modifier: Modifier = Modifier,
     viewModel: SyncViewModel = koinViewModel(),
 ) {
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     ScreenScaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Calendar Sync") },
+                title = { Text("Calendar Sync Queue") },
                 navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -71,18 +78,18 @@ fun SyncScreen(
         ) {
             if (state.syncList.isEmpty()) {
                 EmptyPage(
-                    Icons.Default.SyncDisabled,
-                    "Nothing to sync!",
-                    Modifier.padding(padding)
+                    icon = Icons.Default.SyncDisabled,
+                    text = "Nothing to sync!\nAll tasks are up to date with Google Calendar."
                 )
-            }
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(state.syncList, key = { it.id }) {
-                    SyncItem(it, viewModel::deleteItem)
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(state.syncList, key = { it.id }) { item ->
+                        SyncItem(item, viewModel::deleteItem)
+                    }
                 }
             }
         }
@@ -91,57 +98,89 @@ fun SyncScreen(
 
 @Composable
 private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Unit) {
-    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+    val coroutineScope = rememberCoroutineScope()
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                deleteItem(item)
+                true
+            } else {
+                false
+            }
+        }
+    )
 
     SwipeToDismissBox(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp)),
         state = swipeToDismissBoxState,
         enableDismissFromStartToEnd = false,
-        onDismiss = {
-            if (it == SwipeToDismissBoxValue.EndToStart) {
-                deleteItem(item)
-                runBlocking { swipeToDismissBoxState.reset() }
-            }
-        },
         backgroundContent = {
-            val direction = swipeToDismissBoxState.dismissDirection
-            val alignment = when (direction) {
-                SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
-                SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
-                else -> Alignment.CenterEnd
-            }
-
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.errorContainer)
-                    .fillMaxSize(),
-                contentAlignment = alignment
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = null,
-                    modifier = Modifier.padding(16.dp),
-                    tint = Color.White
+                    contentDescription = "Delete from queue",
+                    tint = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
         }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            )
         ) {
-            Column(modifier = Modifier.padding(10.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("TaskId: ${item.taskId}")
-                    Text("MetaId: ${item.metaId}")
-                    Text("CompletionId: ${item.completionId}")
-                    Text("Runs: ${item.failCount}")
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Action: ${item.action}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (item.failCount > 0) {
+                        Text(
+                            text = "Retries: ${item.failCount}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
 
-                Text("Location: ${item.location}")
-                Text("Action: ${item.action}")
-                Text(item.time.toRFC3339(), style = MaterialTheme.typography.labelSmall)
+                Text(
+                    text = "Location: ${item.location}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "Task #${item.taskId} • Meta #${item.metaId}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = item.time.toRFC3339(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
             }
         }
     }

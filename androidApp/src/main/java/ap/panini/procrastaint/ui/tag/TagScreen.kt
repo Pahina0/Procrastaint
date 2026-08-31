@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.tag
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,23 +10,31 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.ui.navigation.Route
@@ -33,10 +42,7 @@ import ap.panini.procrastaint.ui.tag.components.DeleteConfirmationDialog
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-private const val HorizontalPadding = 16f
-private const val VerticalPadding = 8f
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
     args: Route.Tag,
@@ -54,11 +60,20 @@ fun TagScreen(
         viewModelStoreOwner = LocalActivity.current as ComponentActivity
     )
 
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     ScreenScaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                title = { Text(viewModel.tag.title) },
+            LargeTopAppBar(
+                scrollBehavior = scrollBehavior,
+                title = {
+                    Text(
+                        viewModel.tag.displayTitle.ifBlank { viewModel.tag.title }
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onNavigateBack() }) {
                         Icon(
@@ -79,16 +94,30 @@ fun TagScreen(
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.DeleteOutline,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            text = { Text("Delete Tag", color = MaterialTheme.colorScheme.error) },
                             onClick = {
                                 showDeleteDialog = true
                                 showMenu = false
                             }
                         )
                         DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.FolderDelete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            },
                             text = {
                                 Text(
-                                    "Delete with tasks",
+                                    "Delete Tag & Tasks",
                                     color = MaterialTheme.colorScheme.error
                                 )
                             },
@@ -102,56 +131,67 @@ fun TagScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-        ) {
-            item {
-                Text(
-                    text = "Incomplete",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(
-                        horizontal = Dp(HorizontalPadding),
-                        vertical = Dp(VerticalPadding)
-                    )
-                )
-            }
-            items(incompleteTasks) { task ->
-                TaskView(
-                    task = task,
-                    onCheck = viewModel::checkTask,
-                    onEdit = activityViewModel::editCreatedTask,
-                    showFullDate = true
-                )
-            }
+        if (incompleteTasks.isEmpty() && completedTasks.isEmpty()) {
+            EmptyPage(
+                icon = Icons.Outlined.CheckCircleOutline,
+                text = "No tasks for this tag yet!\nAdd tasks using #${viewModel.tag.title}",
+                modifier = Modifier.padding(padding)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentPadding = PaddingValues(bottom = 24.dp)
+            ) {
+                if (incompleteTasks.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "To Do (${incompleteTasks.size})",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    }
+                    items(incompleteTasks, key = { it.taskId }) { task ->
+                        TaskView(
+                            task = task,
+                            onCheck = viewModel::checkTask,
+                            onEdit = activityViewModel::editCreatedTask,
+                            showFullDate = true
+                        )
+                    }
+                }
 
-            item {
-                Text(
-                    text = "Complete",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(
-                        horizontal = Dp(HorizontalPadding),
-                        vertical = Dp(VerticalPadding)
-                    )
-                )
-            }
+                if (completedTasks.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Completed (${completedTasks.size})",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    }
 
-            items(completedTasks.asReversed()) { task ->
-                TaskView(
-                    task = task,
-                    onCheck = viewModel::checkTask,
-                    onEdit = activityViewModel::editCreatedTask,
-                    showFullDate = true
-                )
+                    items(completedTasks.asReversed(), key = { it.taskId }) { task ->
+                        TaskView(
+                            task = task,
+                            onCheck = viewModel::checkTask,
+                            onEdit = activityViewModel::editCreatedTask,
+                            showFullDate = true
+                        )
+                    }
+                }
             }
         }
     }
 
     if (showDeleteDialog) {
         DeleteConfirmationDialog(
-            title = "Deleting tag",
-            text = "Are you sure you want to delete this tag? This action cannot be undone.",
+            title = "Delete tag?",
+            text = "Are you sure you want to delete #${viewModel.tag.title}? Associated tasks will not be deleted.",
             confirmButtonText = "Delete",
             onConfirm = {
                 viewModel.onDelete()
@@ -164,8 +204,8 @@ fun TagScreen(
 
     if (showDeleteWithTasksDialog) {
         DeleteConfirmationDialog(
-            title = "Deleting tag + tasks",
-            text = "Are you sure you want to delete this tag and all associated tasks? This action cannot be undone.",
+            title = "Delete tag and tasks?",
+            text = "Are you sure you want to delete #${viewModel.tag.title} and all associated tasks? This action cannot be undone.",
             confirmButtonText = "Delete All",
             onConfirm = {
                 viewModel.onDeleteWithTasks()

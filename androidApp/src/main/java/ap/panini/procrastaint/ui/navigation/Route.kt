@@ -6,30 +6,29 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 sealed interface Route {
+    @Serializable
+    data object OnBoarding : Route
 
     @Serializable
-    object OnBoarding : Route
+    data object Calendar : Route
 
     @Serializable
-    object Calendar : Route
+    data object Upcoming : Route
 
     @Serializable
-    object Upcoming : Route
+    data object Library : Route
 
     @Serializable
-    object Library : Route
+    data object Settings : Route
 
     @Serializable
-    object Settings : Route
+    data class Tag(val tagId: Long) : Route
 
     @Serializable
-    class Tag(val tagId: Long) : Route
+    data object AboutLibraries : Route
 
     @Serializable
-    object AboutLibraries : Route
-
-    @Serializable
-    object Sync : Route
+    data object Sync : Route
 }
 
 fun List<KClass<out Route>>.isEntryIn(navDestination: NavDestination?): Boolean {

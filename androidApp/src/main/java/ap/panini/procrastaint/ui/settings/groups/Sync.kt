@@ -2,8 +2,14 @@ package ap.panini.procrastaint.ui.settings.groups
 
 import android.content.Context
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Autorenew
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,28 +27,45 @@ fun Sync(
 ) {
     val context = LocalContext.current
 
-    Section("Sync", modifier = modifier) {
+    Section("Calendar Sync", modifier = modifier) {
         SettingsItem(
-            Icons.Outlined.Autorenew,
-            "Google",
-            subtext = "Sync to Google calendar",
-            onClick = { onNavigateToSync() }
-        ) {
-            Button(
-                onClick = {
-                    if (isLoggedInGoogle) {
-                        logoutGoogle()
-                    } else {
-                        loginGoogle(context)
-                    }
-                },
-            ) {
+            icon = Icons.Outlined.AccountCircle,
+            text = "Google Calendar",
+            subtext = if (isLoggedInGoogle) "Connected and syncing" else "Not connected",
+            trailingItem = {
                 if (isLoggedInGoogle) {
-                    Text("Logout")
+                    OutlinedButton(
+                        onClick = logoutGoogle,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Disconnect")
+                    }
                 } else {
-                    Text("Login")
+                    FilledTonalButton(
+                        onClick = { loginGoogle(context) }
+                    ) {
+                        Text("Connect")
+                    }
                 }
             }
+        )
+
+        if (isLoggedInGoogle) {
+            SettingsItem(
+                icon = Icons.Outlined.Sync,
+                text = "Sync Queue",
+                subtext = "View pending calendar sync items",
+                onClick = onNavigateToSync,
+                trailingItem = {
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+            )
         }
     }
 }

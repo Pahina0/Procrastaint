@@ -21,27 +21,31 @@ fun DividerText(
     modifier: Modifier = Modifier,
     highlight: Boolean = false,
 ) {
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 10.dp),
-            thickness = DividerDefaults.Thickness + if (highlight) 1.dp else 0.dp,
-            color = if (highlight) MaterialTheme.colorScheme.primary else DividerDefaults.color
+                .padding(horizontal = 16.dp),
+            thickness = if (highlight) 1.5.dp else DividerDefaults.Thickness,
+            color = if (highlight) MaterialTheme.colorScheme.primary else DividerDefaults.color.copy(alpha = 0.5f)
         )
 
         Text(
-            text,
-            fontWeight = if (highlight) FontWeight.Bold else null,
-            style = if (highlight) LocalTextStyle.current else MaterialTheme.typography.labelSmall
+            text = text,
+            fontWeight = if (highlight) FontWeight.SemiBold else FontWeight.Normal,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 10.dp),
-            thickness = DividerDefaults.Thickness + if (highlight) 1.dp else 0.dp,
-            color = if (highlight) MaterialTheme.colorScheme.primary else DividerDefaults.color
+                .padding(horizontal = 16.dp),
+            thickness = if (highlight) 1.5.dp else DividerDefaults.Thickness,
+            color = if (highlight) MaterialTheme.colorScheme.primary else DividerDefaults.color.copy(alpha = 0.5f)
         )
     }
 }
