@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.serialization)
     alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -56,6 +58,8 @@ kotlin {
             implementation(libs.ktor.client.auth)
             implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
+            implementation(compose.runtime)
+            api(compose.components.resources)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -110,4 +114,10 @@ dependencies {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "ap.panini.procrastaint.resources"
+    generateResClass = always
 }

@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.aboutLibraries).apply(false)
     alias(libs.plugins.google.services).apply(false)
     alias(libs.plugins.crashalytics).apply(false)
+    alias(libs.plugins.composeMultiplatform).apply(false)
 }
 
 dependencies {

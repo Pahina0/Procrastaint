@@ -33,12 +33,18 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ap.panini.procrastaint.resources.Res
+import ap.panini.procrastaint.resources.delete_all_confirm
+import ap.panini.procrastaint.resources.delete_tag_confirm
+import ap.panini.procrastaint.resources.delete_tag_title
+import ap.panini.procrastaint.resources.delete_with_tasks_title
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.ui.navigation.Route
 import ap.panini.procrastaint.ui.tag.components.DeleteConfirmationDialog
+import org.jetbrains.compose.resources.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -190,9 +196,9 @@ fun TagScreen(
 
     if (showDeleteDialog) {
         DeleteConfirmationDialog(
-            title = "Delete tag?",
+            title = stringResource(Res.string.delete_tag_title),
             text = "Are you sure you want to delete #${viewModel.tag.title}? Associated tasks will not be deleted.",
-            confirmButtonText = "Delete",
+            confirmButtonText = stringResource(Res.string.delete_tag_confirm),
             onConfirm = {
                 viewModel.onDelete()
                 showDeleteDialog = false
@@ -204,10 +210,10 @@ fun TagScreen(
 
     if (showDeleteWithTasksDialog) {
         DeleteConfirmationDialog(
-            title = "Delete tag and tasks?",
+            title = stringResource(Res.string.delete_with_tasks_title),
             text = "Are you sure you want to delete #${viewModel.tag.title} " +
                 "and all associated tasks? This action cannot be undone.",
-            confirmButtonText = "Delete All",
+            confirmButtonText = stringResource(Res.string.delete_all_confirm),
             onConfirm = {
                 viewModel.onDeleteWithTasks()
                 showDeleteWithTasksDialog = false

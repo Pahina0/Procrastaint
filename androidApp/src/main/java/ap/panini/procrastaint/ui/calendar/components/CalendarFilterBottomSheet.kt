@@ -28,7 +28,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.resources.Res
+import ap.panini.procrastaint.resources.daily
+import ap.panini.procrastaint.resources.device_calendar
+import ap.panini.procrastaint.resources.filter_calendar
+import ap.panini.procrastaint.resources.google_calendar
+import ap.panini.procrastaint.resources.monthly
+import ap.panini.procrastaint.resources.procrastaint_tasks
+import ap.panini.procrastaint.resources.show_completed
+import ap.panini.procrastaint.resources.show_incomplete
+import ap.panini.procrastaint.resources.view_mode
+import ap.panini.procrastaint.resources.weekly
 import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -59,7 +71,7 @@ fun CalendarFilterBottomSheet(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Calendar Options",
+            text = stringResource(Res.string.filter_calendar),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
@@ -67,7 +79,7 @@ fun CalendarFilterBottomSheet(
         // View Mode Section
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = "View Mode",
+                text = stringResource(Res.string.view_mode),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium
@@ -84,7 +96,11 @@ fun CalendarFilterBottomSheet(
                         selected = displayMode == mode,
                         label = {
                             Text(
-                                mode.name.lowercase().replaceFirstChar { it.uppercase() },
+                                text = when (mode) {
+                                    CalendarDisplayMode.DAILY -> stringResource(Res.string.daily)
+                                    CalendarDisplayMode.WEEKLY -> stringResource(Res.string.weekly)
+                                    CalendarDisplayMode.MONTHLY -> stringResource(Res.string.monthly)
+                                },
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -112,7 +128,7 @@ fun CalendarFilterBottomSheet(
                 FilterChip(
                     selected = showProcrastaintTasks,
                     onClick = { onToggleProcrastaintTasks(!showProcrastaintTasks) },
-                    label = { Text("Procrastaint Tasks") },
+                    label = { Text(stringResource(Res.string.procrastaint_tasks)) },
                     leadingIcon = {
                         Icon(
                             imageVector = if (showProcrastaintTasks) Icons.Outlined.Check else Icons.Outlined.TaskAlt,
@@ -131,7 +147,7 @@ fun CalendarFilterBottomSheet(
                         }
                     },
                     label = {
-                        Text("Device Calendar")
+                        Text(stringResource(Res.string.device_calendar))
                     },
                     leadingIcon = {
                         Icon(
@@ -164,7 +180,7 @@ fun CalendarFilterBottomSheet(
                         }
                     },
                     label = {
-                        Text("Google Calendar")
+                        Text(stringResource(Res.string.google_calendar))
                     },
                     leadingIcon = {
                         Icon(
@@ -209,7 +225,7 @@ fun CalendarFilterBottomSheet(
                     FilterChip(
                         selected = showIncomplete,
                         onClick = { setShowIncomplete(!showIncomplete) },
-                        label = { Text("Incomplete Tasks") },
+                        label = { Text(stringResource(Res.string.show_incomplete)) },
                         leadingIcon = if (showIncomplete) {
                             {
                                 Icon(
@@ -225,7 +241,7 @@ fun CalendarFilterBottomSheet(
                     FilterChip(
                         selected = showCompleted,
                         onClick = { setShowCompleted(!showCompleted) },
-                        label = { Text("Completed Tasks") },
+                        label = { Text(stringResource(Res.string.show_completed)) },
                         leadingIcon = if (showCompleted) {
                             {
                                 Icon(

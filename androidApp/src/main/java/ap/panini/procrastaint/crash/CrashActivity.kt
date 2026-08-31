@@ -33,8 +33,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.resources.Res
+import ap.panini.procrastaint.resources.crash_title
+import ap.panini.procrastaint.resources.report
+import ap.panini.procrastaint.resources.restart
 import ap.panini.procrastaint.ui.MainActivity
 import ap.panini.procrastaint.ui.theme.ProcrastaintTheme
+import org.jetbrains.compose.resources.stringResource
 import java.net.URLEncoder
 
 class CrashActivity : ComponentActivity() {
@@ -71,7 +76,7 @@ class CrashActivity : ComponentActivity() {
             )
 
             Text(
-                "Uh oh.\nSomething unexpected happened!",
+                text = stringResource(Res.string.crash_title),
                 style = MaterialTheme.typography.headlineLarge,
             )
 
@@ -107,11 +112,11 @@ class CrashActivity : ComponentActivity() {
             }) {
                 Icon(
                     Icons.Outlined.BugReport,
-                    contentDescription = "Report",
+                    contentDescription = stringResource(Res.string.report),
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Report")
+                Text(stringResource(Res.string.report))
             }
 
             Button(onClick = {
@@ -124,11 +129,11 @@ class CrashActivity : ComponentActivity() {
             }) {
                 Icon(
                     Icons.Outlined.Replay,
-                    contentDescription = "Restart",
+                    contentDescription = stringResource(Res.string.restart),
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Restart")
+                Text(stringResource(Res.string.restart))
             }
         }
     }

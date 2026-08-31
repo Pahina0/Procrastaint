@@ -33,6 +33,7 @@ serialization = "2.4.10"
 google-services = "4.5.0"
 crashalytics = "3.0.8"
 colorpicker = "1.2.0"
+composeMultiplatform = "1.7.3"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -94,3 +95,4 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", version.re
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 crashalytics = { id = "com.google.firebase.crashlytics", version.ref = "crashalytics" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }

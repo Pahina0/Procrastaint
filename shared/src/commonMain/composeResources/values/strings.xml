@@ -1,0 +1,155 @@
+<resources>
+    <!-- App & Common -->
+    <string name="app_name">Procrastaint</string>
+    <string name="slogan">A smarter way to organize your tasks</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="retry">Retry</string>
+    <string name="confirm">Confirm</string>
+    <string name="all">All</string>
+    <string name="search">Search</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="color">Color</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="all_day">All Day</string>
+
+    <!-- Navigation -->
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_upcoming">Upcoming</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Tasks -->
+    <string name="new_task">New Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="what_needs_to_be_done">What needs to be done?</string>
+    <string name="description_optional">Description (optional)</string>
+    <string name="description_placeholder">Add details, notes, or links...</string>
+    <string name="save_task">Save Task</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="delete_task_title">Delete Task?</string>
+    <string name="delete_task_message">Are you sure you want to delete this task? This action cannot be undone.</string>
+    <string name="stop_repeating">Stop Repeating</string>
+    <string name="stop_repeating_task">Stop Repeating Task</string>
+    <string name="stop_repeating_title">Stop Repeating?</string>
+    <string name="stop_repeating_message">Are you sure you want to stop repeating this task? All future occurrences will be cancelled.</string>
+    <string name="title_label">Title:</string>
+    <string name="no_time">No time</string>
+    <string name="ignored">Ignored</string>
+    <string name="cycle_times">Cycle through found times</string>
+    <string name="no_tasks_yet">No tasks yet</string>
+    <string name="no_tasks_subtitle">Tap the + button below to create your first task.</string>
+    <string name="all_tasks_completed">All tasks completed!</string>
+    <string name="all_tasks_completed_subtitle">Enjoy your free time or add a new task.</string>
+
+    <string-array name="task_hint_examples">
+        <item>e.g. Call Mom tomorrow at 5pm #family</item>
+        <item>e.g. Grocery shopping every Saturday at 10am #errands</item>
+        <item>e.g. Submit quarterly tax report next Friday #finance</item>
+        <item>e.g. Team standup every weekday at 9:30am #work</item>
+        <item>e.g. Water house plants every Sunday #home</item>
+        <item>e.g. Dentist appointment on Oct 14 at 2pm #health</item>
+        <item>e.g. Read 20 pages every night at 9pm #habits</item>
+        <item>e.g. Renew car insurance on December 1st #important</item>
+        <item>e.g. Pay rent on the 1st of every month #finance</item>
+        <item>e.g. Workout at gym every Mon Wed Fri at 7am #fitness</item>
+        <item>e.g. Plan weekend getaway trip with Sarah tonight #personal</item>
+        <item>e.g. Review pull request by 3pm today #dev</item>
+        <item>e.g. Buy birthday gift for Alex on Thursday #shopping</item>
+        <item>e.g. Oil change appointment in 2 weeks #auto</item>
+        <item>e.g. Clean kitchen counters every 3 days #chores</item>
+        <item>e.g. Take daily vitamin at 8am #health</item>
+        <item>e.g. Finish project proposal by noon tomorrow #work</item>
+        <item>e.g. Schedule eye exam next Tuesday morning #health</item>
+        <item>e.g. Cancel unused streaming subscription in 3 days #finance</item>
+        <item>e.g. Prep weekly meal plan every Sunday at 4pm #nutrition</item>
+    </string-array>
+
+    <!-- Calendar -->
+    <string name="calendar_title">Calendar</string>
+    <string name="filter_calendar">Filter Calendar</string>
+    <string name="view_mode">View Mode</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="procrastaint_tasks">Procrastaint Tasks</string>
+    <string name="device_calendar">Device Calendar</string>
+    <string name="google_calendar">Google Calendar</string>
+    <string name="show_completed">Show Completed</string>
+    <string name="show_incomplete">Show Incomplete</string>
+    <string name="connect_google">Connect Google Calendar</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="no_scheduled_items">No events or tasks scheduled for this day</string>
+    <string name="jump_to_today">Jump to Today</string>
+
+    <!-- Library & Tags -->
+    <string name="tags_header">Tags</string>
+    <string name="new_tag">New Tag</string>
+    <string name="edit_tag">Edit Tag</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="tag_color">Tag Color</string>
+    <string name="delete_tag_title">Delete tag?</string>
+    <string name="delete_tag_confirm">Delete</string>
+    <string name="delete_all_confirm">Delete All</string>
+    <string name="delete_with_tasks_title">Delete tag and tasks?</string>
+    <string name="no_tags_yet">No tags yet</string>
+    <string name="no_tags_subtitle">Create tags using #tag in task titles to organize your schedule.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="general_section">General</string>
+    <string name="sync_section">Sync &amp; Integrations</string>
+    <string name="about_section">About</string>
+    <string name="google_sync">Google Calendar Sync</string>
+    <string name="device_calendar_sync">Device Calendar Sync</string>
+    <string name="pending_syncs">Pending Sync Queue</string>
+    <string name="about_libraries">Open Source Licenses</string>
+    <string name="version">Version</string>
+    <string name="report_bug">Report an Issue</string>
+    <string name="github_repo">GitHub Repository</string>
+
+    <!-- Sync -->
+    <string name="sync_title">Sync Queue</string>
+    <string name="no_pending_syncs">No Pending Sync Items</string>
+    <string name="no_pending_syncs_subtitle">All changes have been successfully synchronized.</string>
+    <string name="pending">Pending</string>
+    <string name="retrying">Retrying</string>
+    <string name="failed">Failed</string>
+    <string name="synced">Synced</string>
+
+    <!-- Onboarding -->
+    <string name="demo_title">Welcome to Procrastaint</string>
+    <string name="demo_desc">A distraction-free calendar and task manager tailored for natural scheduling.</string>
+    <string name="setup_title">Quick Setup</string>
+    <string name="setup_desc">Connect your calendars and customize notifications to stay on track.</string>
+    <string name="try_title">Try Natural Language</string>
+    <string name="try_desc">Type naturally: \'Gym tomorrow 8am #health\' — Procrastaint understands.</string>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+
+    <!-- Notifications -->
+    <string name="complete">Complete</string>
+    <string name="snooze_15_min">Snooze 15 min</string>
+    <string name="channel_reminders">Task Reminders</string>
+    <string name="channel_reminders_desc">Notifications for upcoming and due tasks</string>
+
+    <!-- Widgets -->
+    <string name="upcoming_title">Upcoming Tasks</string>
+    <string name="no_upcoming_tasks">No upcoming tasks</string>
+    <string name="add_task_description">Add a new task</string>
+
+    <!-- Crash -->
+    <string name="crash_title">Uh oh.\nSomething unexpected happened!</string>
+    <string name="report">Report</string>
+    <string name="restart">Restart App</string>
+</resources>

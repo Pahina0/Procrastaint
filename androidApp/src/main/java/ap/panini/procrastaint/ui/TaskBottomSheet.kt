@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +13,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material.icons.outlined.RepeatOn
+import androidx.compose.material.icons.outlined.EventBusy
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,10 +40,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.TaskTag
+import ap.panini.procrastaint.resources.Res
+import ap.panini.procrastaint.resources.cycle_times
+import ap.panini.procrastaint.resources.delete
+import ap.panini.procrastaint.resources.delete_task
+import ap.panini.procrastaint.resources.delete_task_message
+import ap.panini.procrastaint.resources.delete_task_title
+import ap.panini.procrastaint.resources.description_optional
+import ap.panini.procrastaint.resources.description_placeholder
+import ap.panini.procrastaint.resources.edit_task
+import ap.panini.procrastaint.resources.ignored
+import ap.panini.procrastaint.resources.new_task
+import ap.panini.procrastaint.resources.no_time
+import ap.panini.procrastaint.resources.save_changes
+import ap.panini.procrastaint.resources.save_task
+import ap.panini.procrastaint.resources.stop_repeating
+import ap.panini.procrastaint.resources.stop_repeating_message
+import ap.panini.procrastaint.resources.stop_repeating_task
+import ap.panini.procrastaint.resources.stop_repeating_title
+import ap.panini.procrastaint.resources.task_hint_examples
+import ap.panini.procrastaint.resources.title_label
+import ap.panini.procrastaint.resources.what_needs_to_be_done
 import ap.panini.procrastaint.ui.components.TaskTextField
 import ap.panini.procrastaint.ui.components.TimeChips
 import ap.panini.procrastaint.ui.components.rememberParsedText
+import ap.panini.procrastaint.ui.tag.components.DeleteConfirmationDialog
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringArrayResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +89,39 @@ fun TaskBottomSheet(
     }
 
     var tagSuggestions by remember { mutableStateOf(listOf<TaskTag>()) }
+    val hintExamples = stringArrayResource(Res.array.task_hint_examples)
+    val randomPlaceholder = remember(hintExamples) {
+        if (hintExamples.isNotEmpty()) hintExamples.random() else ""
+    }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showStopRepeatingDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        DeleteConfirmationDialog(
+            title = stringResource(Res.string.delete_task_title),
+            text = stringResource(Res.string.delete_task_message),
+            confirmButtonText = stringResource(Res.string.delete),
+            onConfirm = {
+                showDeleteDialog = false
+                deleteTask()
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
+
+    if (showStopRepeatingDialog) {
+        DeleteConfirmationDialog(
+            title = stringResource(Res.string.stop_repeating_title),
+            text = stringResource(Res.string.stop_repeating_message),
+            confirmButtonText = stringResource(Res.string.stop_repeating),
+            onConfirm = {
+                showStopRepeatingDialog = false
+                completeForeverTask()
+            },
+            onDismiss = { showStopRepeatingDialog = false }
+        )
+    }
 
     ModalBottomSheet(
         modifier = Modifier.fillMaxWidth(),
@@ -90,8 +149,8 @@ fun TaskBottomSheet(
             ) {
                 Text(
                     text = when (state.mode) {
-                        is MainActivityViewModel.MainUiState.Mode.Create -> "New Task"
-                        is MainActivityViewModel.MainUiState.Mode.Edit -> "Edit Task"
+                        is MainActivityViewModel.MainUiState.Mode.Create -> stringResource(Res.string.new_task)
+                        is MainActivityViewModel.MainUiState.Mode.Edit -> stringResource(Res.string.edit_task)
                     },
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold
@@ -99,11 +158,11 @@ fun TaskBottomSheet(
 
                 if (state.mode is MainActivityViewModel.MainUiState.Mode.Edit) {
                     IconButton(
-                        onClick = { deleteTask() }
+                        onClick = { showDeleteDialog = true }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.DeleteOutline,
-                            contentDescription = "Delete task",
+                            contentDescription = stringResource(Res.string.delete_task),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -116,8 +175,8 @@ fun TaskBottomSheet(
                 suggestions = tagSuggestions,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = { updateTitle(it) },
-                label = { Text("What needs to be done?") },
-                placeholder = { Text("e.g. Call Mom tomorrow at 5pm #family") },
+                label = { Text(stringResource(Res.string.what_needs_to_be_done)) },
+                placeholder = { Text(randomPlaceholder) },
                 onCurrentWordChange = { tagSuggestions = getTagsStarting(it) },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
             )
@@ -152,7 +211,7 @@ fun TaskBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "Title:",
+                        text = stringResource(Res.string.title_label),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
@@ -170,8 +229,8 @@ fun TaskBottomSheet(
                 value = state.description,
                 onValueChange = { updateDescription(it) },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Description (optional)") },
-                placeholder = { Text("Add details, notes, or links...") },
+                label = { Text(stringResource(Res.string.description_optional)) },
+                placeholder = { Text(stringResource(Res.string.description_placeholder)) },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 minLines = 2,
                 maxLines = 4
@@ -194,7 +253,7 @@ fun TaskBottomSheet(
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
-                            text = "Save Task",
+                            text = stringResource(Res.string.save_task),
                             modifier = Modifier.padding(start = 8.dp),
                             style = MaterialTheme.typography.labelLarge
                         )
@@ -204,40 +263,45 @@ fun TaskBottomSheet(
                 is MainActivityViewModel.MainUiState.Mode.Edit -> {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Row(
+                        Button(
+                            onClick = { saveTask() },
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            enabled = state.task.isNotBlank(),
+                            shape = MaterialTheme.shapes.medium
                         ) {
-                            if (state.mode.repeated) {
-                                OutlinedButton(
-                                    onClick = { completeForeverTask() },
-                                    modifier = Modifier.weight(1f),
-                                    shape = MaterialTheme.shapes.medium
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.RepeatOn,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Text(
-                                        text = "Stop Repeating",
-                                        modifier = Modifier.padding(start = 6.dp),
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                }
-                            }
+                            Text(
+                                text = stringResource(Res.string.save_changes),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
 
-                            Button(
-                                onClick = { saveTask() },
-                                modifier = Modifier.weight(1f),
-                                enabled = state.task.isNotBlank(),
-                                shape = MaterialTheme.shapes.medium
+                        if (state.mode.repeated) {
+                            OutlinedButton(
+                                onClick = { showStopRepeatingDialog = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MaterialTheme.shapes.medium,
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                ),
+                                border = BorderStroke(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                                )
                             ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.EventBusy,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
                                 Text(
-                                    text = "Save Changes",
-                                    style = MaterialTheme.typography.labelLarge
+                                    text = stringResource(Res.string.stop_repeating_task),
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.error,
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
                         }
@@ -262,8 +326,8 @@ private fun ActionList(
         label = {
             Text(
                 text = when (viewing) {
-                    -1 -> "No time"
-                    currentViewingSize -> "Ignored"
+                    -1 -> stringResource(Res.string.no_time)
+                    currentViewingSize -> stringResource(Res.string.ignored)
                     else -> "${viewing + 1} of $currentViewingSize"
                 },
                 style = MaterialTheme.typography.labelSmall
@@ -276,7 +340,7 @@ private fun ActionList(
                 } else {
                     Icons.Outlined.SyncDisabled
                 },
-                contentDescription = "Cycle through found times",
+                contentDescription = stringResource(Res.string.cycle_times),
                 modifier = Modifier.size(16.dp)
             )
         }
