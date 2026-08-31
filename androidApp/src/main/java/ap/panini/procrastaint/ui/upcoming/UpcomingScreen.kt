@@ -82,7 +82,7 @@ private fun Tasks(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(bottom = 16.dp)
+        contentPadding = PaddingValues(bottom = 88.dp)
     ) {
         itemsIndexed(
             items = tasks,

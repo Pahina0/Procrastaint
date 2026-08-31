@@ -48,10 +48,13 @@ import java.util.Calendar
 import java.util.Date
 
 val taskSingleKey = ActionParameters.Key<String>("taskSingle")
+val taskIdKey = ActionParameters.Key<Long>("taskId")
+val eventTimeKey = ActionParameters.Key<Long>("eventTime")
 
 class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        viewModel.refresh()
         provideContent {
             GlanceTheme {
                 GlanceContent()
@@ -115,7 +118,8 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 checked = isCompleted,
                 onCheckedChange = actionRunCallback<ToggleTaskAction>(
                     parameters = actionParametersOf(
-                        taskIdKey to task.taskId
+                        taskIdKey to task.taskId,
+                        eventTimeKey to task.currentEventTime
                     )
                 ),
                 modifier = GlanceModifier.padding(end = 8.dp)

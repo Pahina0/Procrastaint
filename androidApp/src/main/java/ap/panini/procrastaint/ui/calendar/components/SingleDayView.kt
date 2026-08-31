@@ -51,6 +51,7 @@ fun SingleDayView(
 
     LazyColumn(
         modifier = modifier.fillMaxHeight(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 80.dp),
         state = listState
     ) {
         for (hour in 0 until HOURS) {

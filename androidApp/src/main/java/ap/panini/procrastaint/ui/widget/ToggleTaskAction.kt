@@ -8,8 +8,6 @@ import ap.panini.procrastaint.di.WidgetUpdaterCallback
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-val taskIdKey = ActionParameters.Key<Long>("taskId")
-
 class ToggleTaskAction : ActionCallback, KoinComponent {
     private val viewModel: UpcomingWidgetViewModel by inject()
     private val widgetUpdater: WidgetUpdaterCallback by inject()
@@ -20,8 +18,9 @@ class ToggleTaskAction : ActionCallback, KoinComponent {
         parameters: ActionParameters
     ) {
         val taskId = parameters[taskIdKey] ?: return
+        val eventTime = parameters[eventTimeKey]
 
-        viewModel.toggleTaskCompletion(taskId)
+        viewModel.toggleTaskCompletion(taskId, eventTime)
 
         widgetUpdater.onDataChanged()
     }

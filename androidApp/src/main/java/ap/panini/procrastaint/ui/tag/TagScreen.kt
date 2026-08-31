@@ -142,7 +142,7 @@ fun TagScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(bottom = 24.dp)
+                contentPadding = PaddingValues(bottom = 88.dp)
             ) {
                 if (incompleteTasks.isNotEmpty()) {
                     item {

@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -93,7 +94,7 @@ fun DailyScreen(
         }
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxSize()) {
         DailyCalendarView(
             dateState = dateState,
             selectableListState = selectableListState,
@@ -103,6 +104,9 @@ fun DailyScreen(
         )
         HorizontalPager(
             state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             key = dateState.itemKey { it.time }
         ) { i ->
             val dayData = dateState[i]
