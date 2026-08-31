@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -72,6 +73,23 @@ android {
     compileSdk = 36
     defaultConfig {
         minSdk = 24
+
+        val localProperties = Properties().apply {
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use { load(it) }
+            }
+        }
+
+        val googleClientId: String = System.getenv("GOOGLE_CLIENT_ID")
+            ?: System.getenv("ANDROID_CLIENT_ID")
+            ?: localProperties.getProperty("GOOGLE_CLIENT_ID")
+            ?: localProperties.getProperty("google.client.id")
+            ?: (findProperty("GOOGLE_CLIENT_ID") as? String)
+            ?: (findProperty("google.client.id") as? String)
+            ?: "YOUR_GENERATED_CLIENT_ID"
+
+        resValue("string", "android_client_id", googleClientId)
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

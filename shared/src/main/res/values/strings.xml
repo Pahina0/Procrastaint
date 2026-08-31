@@ -4,5 +4,4 @@
     <string name="upcoming">Upcoming</string>
     <string name="library">Library</string>
     <string name="settings">Settings</string>
-    <string name="android_client_id">YOUR_GENERATED_CLIENT_ID</string>
 </resources>

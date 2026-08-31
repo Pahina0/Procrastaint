@@ -35,14 +35,16 @@ import okio.Path.Companion.toPath
 import org.koin.dsl.module
 
 val appModule = module {
-    val database = getRoomDatabase(
-        getDatabaseBuilder()
-            .addMigrations(MIGRATION_2_3)
-    )
+    single<ProcrastaintDatabase> {
+        getRoomDatabase(
+            getDatabaseBuilder()
+                .addMigrations(MIGRATION_2_3)
+                .fallbackToDestructiveMigrationOnDowngrade(true)
+        )
+    }
 
-    single { database }
-    single { database.getTaskDao() }
-    single { database.getNetworkSyncDao() }
+    single { get<ProcrastaintDatabase>().getTaskDao() }
+    single { get<ProcrastaintDatabase>().getNetworkSyncDao() }
     single { createDataStore() }
 
     single { NotificationManager() }
