@@ -25,7 +25,8 @@ import ap.panini.procrastaint.util.dayOfWeek
 @Composable
 fun DayView(
     date: Long,
-    tasks: List<TaskSingle>,
+    taskCount: Int,
+    eventCount: Int = 0,
     dateType: ViewingType,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
@@ -60,16 +61,25 @@ fun DayView(
                     fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal,
                     color = dateType.getTextColor()
                 )
-                val remaining = tasks.count { it.completed == null }
 
-                if (remaining > 0) {
+                if (taskCount > 0) {
                     Badge(
                         containerColor = dateType.getBadgeColor()
                     ) {
                         Text(
-                            text = remaining.toString(),
+                            text = taskCount.toString(),
                             style = MaterialTheme.typography.labelSmall,
                             color = dateType.getBadgeContentColor()
+                        )
+                    }
+                } else if (eventCount > 0) {
+                    Badge(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text(
+                            text = eventCount.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }

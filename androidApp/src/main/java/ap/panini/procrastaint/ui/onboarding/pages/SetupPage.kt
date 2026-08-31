@@ -69,7 +69,15 @@ fun SetupPage(
                         )
                     }
                 )
+                Spacer(modifier = Modifier.height(12.dp))
             }
+
+            PermissionRequester(
+                Manifest.permission.READ_CALENDAR,
+                "Device Calendar",
+                "View on-device calendar events on your timeline",
+                null
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,48 +16,54 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
-import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.hour
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 private const val HoursInDay = 24
 private const val DayOfWeekAbbreviationLength = 3
-private val HourHeight = 60.dp
-private val TimeColWidth = 50.dp
+private val HourHeight = 56.dp
+private val TimeColWidth = 48.dp
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun ScrollableWeekView(
-    weekData: List<Pair<LocalDate, List<TaskSingle>>>,
+    weekDates: List<LocalDate>,
+    tasksByDate: Map<LocalDate, List<TaskSingle>>,
+    eventsByDate: Map<LocalDate, List<ExternalCalendarEvent>>,
     today: LocalDate,
     currentHour: Int,
     onCellClick: (LocalDate, Int) -> Unit,
     onCellFocus: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    val listState = rememberLazyListState()
 
-    androidx.compose.runtime.LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         if (currentHour > 2) {
             listState.scrollToItem(currentHour - 2)
-        }
-    }
-
-    val tasksByDayAndHour = remember(weekData) {
-        weekData.associate { (date, tasks) ->
-            date to tasks.groupBy { it.currentEventTime.hour() }
         }
     }
 
@@ -65,14 +72,14 @@ fun ScrollableWeekView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp)
+                .padding(vertical = 6.dp)
         ) {
             Spacer(modifier = Modifier.width(TimeColWidth))
-            weekData.forEach { (date, _) ->
+            weekDates.forEach { date ->
                 val isToday = date == today
                 Column(
                     modifier = Modifier.weight(1f),
-                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
@@ -84,7 +91,7 @@ fun ScrollableWeekView(
                         text = date.day.toString(),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = if (isToday) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal,
+                        fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                         color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -93,6 +100,7 @@ fun ScrollableWeekView(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 80.dp),
             state = listState
         ) {
             items(HoursInDay) { hour ->
@@ -101,7 +109,6 @@ fun ScrollableWeekView(
                         .fillMaxWidth()
                         .height(HourHeight)
                 ) {
-                    // Time label
                     val amPmFormatter = LocalTime.Format {
                         amPmHour()
                         char(' ')
@@ -119,9 +126,13 @@ fun ScrollableWeekView(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Day cells
-                    weekData.forEach { (date, _) ->
+                    weekDates.forEach { date ->
                         val isCurrentCell = date == today && hour == currentHour
+                        val tasksForHour = tasksByDate[date]?.filter { it.currentEventTime.hour() == hour } ?: emptyList()
+                        val eventsForHour = eventsByDate[date]?.filter {
+                            Instant.fromEpochMilliseconds(it.startTime).toLocalDateTime(TimeZone.currentSystemDefault()).hour == hour
+                        } ?: emptyList()
+
                         Card(
                             modifier = Modifier
                                 .weight(1f)
@@ -131,25 +142,39 @@ fun ScrollableWeekView(
                                     onClick = { onCellClick(date, hour) },
                                     onLongClick = { onCellFocus(date) }
                                 ),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(4.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (isCurrentCell) {
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
                                 } else {
                                     MaterialTheme.colorScheme.surfaceContainerLowest
                                 }
                             )
                         ) {
-                            val tasks = tasksByDayAndHour[date]?.get(hour)
-                            if (!tasks.isNullOrEmpty()) {
+                            if (tasksForHour.isNotEmpty() || eventsForHour.isNotEmpty()) {
                                 FlowRow(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(4.dp),
+                                        .padding(3.dp),
                                     horizontalArrangement = Arrangement.Center,
                                     verticalArrangement = Arrangement.Center
                                 ) {
-                                    tasks.forEach { task ->
+                                    eventsForHour.forEach { event ->
+                                        val color = event.color
+                                        val eventColor = if (color != null && color != 0) {
+                                            Color(color)
+                                        } else {
+                                            MaterialTheme.colorScheme.tertiary
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(1.dp)
+                                                .size(6.dp)
+                                                .background(eventColor, CircleShape)
+                                        )
+                                    }
+
+                                    tasksForHour.forEach { task ->
                                         val dotColor = if (task.completed != null) {
                                             Color.Gray
                                         } else {
@@ -160,11 +185,8 @@ fun ScrollableWeekView(
                                         Box(
                                             modifier = Modifier
                                                 .padding(1.dp)
-                                                .size(7.dp)
-                                                .background(
-                                                    dotColor,
-                                                    androidx.compose.foundation.shape.CircleShape
-                                                )
+                                                .size(6.dp)
+                                                .background(dotColor, CircleShape)
                                         )
                                     }
                                 }

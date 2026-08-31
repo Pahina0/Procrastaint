@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date
@@ -39,6 +40,7 @@ private val EmptyHourHeight = 44.dp
 @Composable
 fun SingleDayView(
     tasks: Map<Int, List<TaskSingle>>,
+    events: Map<Int, List<ExternalCalendarEvent>> = emptyMap(),
     onCheck: (TaskSingle) -> Unit,
     onEdit: (TaskSingle) -> Unit,
     isToday: Boolean,
@@ -66,9 +68,10 @@ fun SingleDayView(
                 )
             }
 
-            val tasksForHour = tasks[hour]
+            val tasksForHour = tasks[hour] ?: emptyList()
+            val eventsForHour = events[hour] ?: emptyList()
 
-            if (tasksForHour.isNullOrEmpty()) {
+            if (tasksForHour.isEmpty() && eventsForHour.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -78,7 +81,11 @@ fun SingleDayView(
                     )
                 }
             } else {
-                items(tasksForHour) { task ->
+                items(eventsForHour, key = { "event_${it.id}_${it.startTime}" }) { event ->
+                    ExternalEventView(event = event)
+                }
+
+                items(tasksForHour, key = { "task_${it.taskId}_${it.currentEventTime}" }) { task ->
                     TaskView(task, onCheck, onEdit)
                 }
             }

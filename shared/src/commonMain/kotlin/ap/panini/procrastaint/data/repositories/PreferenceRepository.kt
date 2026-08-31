@@ -25,6 +25,9 @@ class PreferenceRepository(
         const val CALENDAR_DISPLAY_MODE = "calendar_display_mode"
         const val SHOW_COMPLETED_TASKS = "show_completed_tasks"
         const val SHOW_INCOMPLETE_TASKS = "show_incomplete_tasks"
+        const val SHOW_PROCRASTAINT_TASKS = "show_procrastaint_tasks"
+        const val SHOW_DEVICE_CALENDAR = "show_device_calendar"
+        const val SHOW_GOOGLE_CALENDAR = "show_google_calendar"
 
         val stringPreference = mapOf(
             GOOGLE_REFRESH_TOKEN to "",
@@ -36,7 +39,10 @@ class PreferenceRepository(
         val boolPreference = mapOf(
             ON_BOARDING_COMPLETE to false,
             SHOW_COMPLETED_TASKS to true,
-            SHOW_INCOMPLETE_TASKS to true
+            SHOW_INCOMPLETE_TASKS to true,
+            SHOW_PROCRASTAINT_TASKS to true,
+            SHOW_DEVICE_CALENDAR to true,
+            SHOW_GOOGLE_CALENDAR to true
         )
     }
 
@@ -105,6 +111,36 @@ class PreferenceRepository(
     suspend fun setShowIncompleteTasks(show: Boolean) {
         dataStore.edit { settings ->
             settings[booleanPreferencesKey(SHOW_INCOMPLETE_TASKS)] = show
+        }
+    }
+
+    fun getShowProcrastaintTasks(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_PROCRASTAINT_TASKS)] ?: boolPreference[SHOW_PROCRASTAINT_TASKS]!!
+    }
+
+    suspend fun setShowProcrastaintTasks(show: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(SHOW_PROCRASTAINT_TASKS)] = show
+        }
+    }
+
+    fun getShowDeviceCalendar(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_DEVICE_CALENDAR)] ?: boolPreference[SHOW_DEVICE_CALENDAR]!!
+    }
+
+    suspend fun setShowDeviceCalendar(show: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(SHOW_DEVICE_CALENDAR)] = show
+        }
+    }
+
+    fun getShowGoogleCalendar(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_GOOGLE_CALENDAR)] ?: boolPreference[SHOW_GOOGLE_CALENDAR]!!
+    }
+
+    suspend fun setShowGoogleCalendar(show: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(SHOW_GOOGLE_CALENDAR)] = show
         }
     }
 }

@@ -1,5 +1,6 @@
 package ap.panini.procrastaint.di
 
+import ap.panini.procrastaint.data.repositories.DeviceCalendarRepository
 import ap.panini.procrastaint.data.repositories.RepositoryCallback
 import ap.panini.procrastaint.services.NotificationWorker
 import ap.panini.procrastaint.services.SyncWorker
@@ -22,10 +23,11 @@ val androidModule = module {
     viewModel { UpcomingViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
-    viewModel { CalendarViewModel(get(), get()) }
+    viewModel { CalendarViewModel(get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get()) }
     viewModel { TagViewModel(it[0], get()) }
 
+    single { DeviceCalendarRepository(androidApplication()) }
     single { UpcomingWidgetViewModel(get()) }
 
     single { GoogleAuth(androidApplication()) }

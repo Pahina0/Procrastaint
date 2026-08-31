@@ -2,30 +2,30 @@ package ap.panini.procrastaint.ui.calendar.weekly
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.paging.compose.LazyPagingItems
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
+import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.MainActivityViewModel
-import ap.panini.procrastaint.ui.calendar.CalendarPageData
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 import ap.panini.procrastaint.util.formatToMMDDYYYY
 import ap.panini.procrastaint.util.toAmPmHour
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.koinViewModel
@@ -34,13 +34,17 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-private const val WeekDays = 6
+private const val WindowWeeksBefore = 8
+private const val WindowWeeksAfter = 8
+private const val TotalWindowWeeks = WindowWeeksBefore + WindowWeeksAfter + 1
+private const val DaysInWeek = 7
 
 @OptIn(ExperimentalTime::class)
 @Composable
 fun WeeklyScreen(
-    dateState: LazyPagingItems<CalendarPageData>,
     focusedDate: Long,
+    tasksByDate: Map<LocalDate, List<TaskSingle>>,
+    eventsByDate: Map<LocalDate, List<ExternalCalendarEvent>>,
     onTitleChange: (String) -> Unit,
     setFocusedDate: (Long) -> Unit,
     jumpToDate: (Long) -> Unit,
@@ -54,149 +58,86 @@ fun WeeklyScreen(
     val currentSetFocusedDate by rememberUpdatedState(setFocusedDate)
     val currentJumpToDate by rememberUpdatedState(jumpToDate)
 
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { dateState.itemCount }
-    )
-
-    SetupWeeklyScreenEffects(
-        dateState = dateState,
-        focusedDate = focusedDate,
-        pagerState = pagerState,
-        currentOnTitleChange = currentOnTitleChange,
-        currentSetFocusedDate = currentSetFocusedDate
-    )
-
-    WeeklyPager(
-        pagerState = pagerState,
-        dateState = dateState,
-        activityViewModel = activityViewModel,
-        currentJumpToDate = currentJumpToDate,
-        modifier = modifier
-    )
-}
-
-@OptIn(ExperimentalTime::class)
-@Composable
-private fun SetupWeeklyScreenEffects(
-    dateState: LazyPagingItems<CalendarPageData>,
-    focusedDate: Long,
-    pagerState: PagerState,
-    currentOnTitleChange: (String) -> Unit,
-    currentSetFocusedDate: (Long) -> Unit
-) {
-    LaunchedEffect(dateState) {
-        snapshotFlow { dateState.itemSnapshotList }
-            .map { it.items }
-            .collect { list ->
-                if (list.isNotEmpty()) {
-                    dateState.peek(0)
-                }
-            }
-    }
-
-    LaunchedEffect(focusedDate, dateState.itemCount) {
-        if (dateState.itemCount == 0 || pagerState.isScrollInProgress) return@LaunchedEffect
-
-        val index = dateState.itemSnapshotList.indexOfFirst {
-            if (it == null) return@indexOfFirst false
-            val weekStart = it.time
-            val weekEnd = weekStart + WeekDays.days.inWholeMilliseconds
-            focusedDate in weekStart..weekEnd
-        }
-
-        if (index != -1 && index != pagerState.currentPage) {
-            pagerState.animateScrollToPage(index)
-        }
-    }
-
-    LaunchedEffect(
-        pagerState.currentPage,
-        pagerState.isScrollInProgress,
-        currentOnTitleChange,
-        currentSetFocusedDate
-    ) {
-        if (dateState.itemCount == 0) return@LaunchedEffect
-
-        if (pagerState.isScrollInProgress) {
-            updateWeeklyTitle(
-                time = dateState[pagerState.targetPage]?.time,
-                currentOnTitleChange = currentOnTitleChange
-            )
-        } else {
-            dateState[pagerState.currentPage]?.let {
-                if (it.time != focusedDate) {
-                    currentSetFocusedDate(it.time)
-                }
-                updateWeeklyTitle(
-                    time = it.time,
-                    currentOnTitleChange = currentOnTitleChange
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-private fun updateWeeklyTitle(time: Long?, currentOnTitleChange: (String) -> Unit) {
-    time?.let {
-        val startStr = it.formatMilliseconds(known = setOf(Time.MONTH), useAbbreviated = false)
-        currentOnTitleChange(startStr)
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-@Composable
-private fun WeeklyPager(
-    pagerState: PagerState,
-    dateState: LazyPagingItems<CalendarPageData>,
-    activityViewModel: MainActivityViewModel,
-    currentJumpToDate: (Long) -> Unit,
-    modifier: Modifier = Modifier
-) {
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+    // Calculate start of current week (Sunday)
+    val dayOfWeekOffset = today.dayOfWeek.ordinal % 7
+    val currentWeekStartDate = today.minus(dayOfWeekOffset.toLong(), DateTimeUnit.DAY)
+
+    // Generate week list
+    val weekStartsList = remember(currentWeekStartDate) {
+        (-WindowWeeksBefore..WindowWeeksAfter).map { weekOffset ->
+            val weekDate = if (weekOffset < 0) {
+                currentWeekStartDate.minus((-weekOffset * 7).toLong(), DateTimeUnit.DAY)
+            } else {
+                currentWeekStartDate.plus((weekOffset * 7).toLong(), DateTimeUnit.DAY)
+            }
+            weekDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        }
+    }
+
+    val pagerState = rememberPagerState(
+        initialPage = WindowWeeksBefore,
+        pageCount = { TotalWindowWeeks }
+    )
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(focusedDate) {
+        coroutineScope.launch {
+            val index = weekStartsList.indexOfFirst { weekStart ->
+                val weekEnd = weekStart + 7.days.inWholeMilliseconds
+                focusedDate in weekStart until weekEnd
+            }
+            if (index != -1 && index != pagerState.currentPage) {
+                pagerState.animateScrollToPage(index)
+            }
+            currentOnTitleChange(focusedDate.formatMilliseconds(known = setOf(Time.MONTH), useAbbreviated = false))
+        }
+    }
+
+    LaunchedEffect(pagerState.settledPage) {
+        val weekStart = weekStartsList.getOrNull(pagerState.settledPage) ?: return@LaunchedEffect
+        val weekEnd = weekStart + 7.days.inWholeMilliseconds
+        if (focusedDate !in weekStart until weekEnd) {
+            currentSetFocusedDate(weekStart)
+        }
+        currentOnTitleChange(weekStart.formatMilliseconds(known = setOf(Time.MONTH), useAbbreviated = false))
+    }
+
     HorizontalPager(
         state = pagerState,
-        modifier = modifier,
-    ) { page ->
-        val weekData = if (page < dateState.itemCount) dateState[page] else null
-
-        if (weekData != null) {
-            val tasksByDay by weekData.tasksByDay.collectAsState(initial = emptyMap())
-            val weekStartInstant = Instant.fromEpochMilliseconds(weekData.time)
-            val weekDates = (0..WeekDays).map {
-                val date =
+        modifier = modifier.fillMaxSize(),
+        key = { weekStartsList[it] }
+    ) { pageIndex ->
+        val weekStartTime = weekStartsList.getOrNull(pageIndex)
+        if (weekStartTime != null) {
+            val weekStartInstant = Instant.fromEpochMilliseconds(weekStartTime)
+            val weekDates = remember(weekStartTime) {
+                (0 until DaysInWeek).map {
                     (weekStartInstant + it.days).toLocalDateTime(TimeZone.currentSystemDefault()).date
-                val tasks = tasksByDay.getOrElse(date) { emptyList() }
-                date to tasks
+                }
             }
 
             ScrollableWeekView(
-                weekData = weekDates,
+                weekDates = weekDates,
+                tasksByDate = tasksByDate,
+                eventsByDate = eventsByDate,
                 today = today,
                 currentHour = now.hour,
-
                 onCellClick = { date, hour ->
                     val dayString = date.formatToMMDDYYYY()
                     activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
                     activityViewModel.onShow()
                 },
-
                 onCellFocus = { date ->
                     currentJumpToDate(
                         date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
                     )
                 },
-
                 modifier = Modifier.fillMaxSize()
             )
-        } else {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Loading...")
-            }
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.dayOfMonth
 import kotlinx.datetime.DateTimeUnit
@@ -37,7 +41,9 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 private const val DayOfWeekAbbreviationLength = 3
 private const val WeeksInMonth = 6
@@ -49,25 +55,31 @@ private const val GridCellCount = WeeksInMonth * DaysInWeek
 fun MonthGrid(
     month: Long,
     tasks: List<TaskSingle>,
+    events: List<ExternalCalendarEvent> = emptyList(),
     onDateClick: (LocalDate) -> Unit,
     onDateFocus: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val monthDate = kotlin.time.Instant.fromEpochMilliseconds(month)
+    val monthDate = Instant.fromEpochMilliseconds(month)
         .toLocalDateTime(TimeZone.currentSystemDefault()).date
     val tasksByDay = tasks.groupBy { it.currentEventTime.dayOfMonth() }
-    val today = kotlin.time.Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val eventsByDay = events.groupBy {
+        Instant.fromEpochMilliseconds(it.startTime).toLocalDateTime(TimeZone.currentSystemDefault()).date.day
+    }
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
     Column(modifier = modifier.fillMaxSize()) {
         // Header row with day names
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
             val daysOfWeek =
                 listOf(DayOfWeek.SUNDAY) + DayOfWeek.entries.filter { it != DayOfWeek.SUNDAY }
             for (day in daysOfWeek) {
                 Text(
                     text = day.name.take(DayOfWeekAbbreviationLength),
                     modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -78,12 +90,12 @@ fun MonthGrid(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            val cellHeight = maxHeight / WeeksInMonth // 6 rows = 42 / 7
+            val cellHeight = maxHeight / WeeksInMonth
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(DaysInWeek),
                 modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = false // optional: make it static calendar grid
+                userScrollEnabled = false
             ) {
                 val firstDayOfMonth = LocalDate(monthDate.year, monthDate.month, 1)
                 val startDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % DaysInWeek
@@ -109,7 +121,7 @@ fun MonthGrid(
                                     Modifier
                                 }
                             ),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
+                        shape = RoundedCornerShape(6.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = when {
                                 isToday -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
@@ -127,7 +139,7 @@ fun MonthGrid(
                             Text(
                                 text = date.day.toString(),
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isToday) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal,
+                                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                                 color = when {
                                     isToday -> MaterialTheme.colorScheme.primary
                                     isInCurrentMonth -> MaterialTheme.colorScheme.onSurface
@@ -136,14 +148,32 @@ fun MonthGrid(
                             )
 
                             if (isInCurrentMonth) {
-                                val dayTasks = tasksByDay[date.day]
-                                if (!dayTasks.isNullOrEmpty()) {
-                                    androidx.compose.foundation.layout.FlowRow(
+                                val dayTasks = tasksByDay[date.day] ?: emptyList()
+                                val dayEvents = eventsByDay[date.day] ?: emptyList()
+
+                                if (dayTasks.isNotEmpty() || dayEvents.isNotEmpty()) {
+                                    FlowRow(
                                         modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalArrangement = Arrangement.spacedBy(1.dp)
                                     ) {
-                                        dayTasks.take(6).forEach { task ->
+                                        dayEvents.take(3).forEach { event ->
+                                            val color = event.color
+                                            val eventColor = if (color != null && color != 0) {
+                                                Color(color)
+                                            } else {
+                                                MaterialTheme.colorScheme.tertiary
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(0.5.dp)
+                                                    .size(5.dp)
+                                                    .clip(CircleShape)
+                                                    .background(eventColor)
+                                            )
+                                        }
+
+                                        dayTasks.take(5).forEach { task ->
                                             val dotColor = if (task.completed != null) {
                                                 Color.Gray
                                             } else {
@@ -154,7 +184,7 @@ fun MonthGrid(
                                             Box(
                                                 modifier = Modifier
                                                     .padding(0.5.dp)
-                                                    .size(6.dp)
+                                                    .size(5.dp)
                                                     .clip(CircleShape)
                                                     .background(dotColor)
                                             )
