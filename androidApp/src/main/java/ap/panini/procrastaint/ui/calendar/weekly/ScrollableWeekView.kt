@@ -85,7 +85,11 @@ fun ScrollableWeekView(
                         text = date.dayOfWeek.name.take(DayOfWeekAbbreviationLength),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isToday) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                     Text(
                         text = date.day.toString(),
@@ -128,9 +132,13 @@ fun ScrollableWeekView(
 
                     weekDates.forEach { date ->
                         val isCurrentCell = date == today && hour == currentHour
-                        val tasksForHour = tasksByDate[date]?.filter { it.currentEventTime.hour() == hour } ?: emptyList()
+                        val tasksForHour = tasksByDate[date]?.filter {
+                            it.currentEventTime.hour() == hour
+                        } ?: emptyList()
                         val eventsForHour = eventsByDate[date]?.filter {
-                            Instant.fromEpochMilliseconds(it.startTime).toLocalDateTime(TimeZone.currentSystemDefault()).hour == hour
+                            val eventTime = Instant.fromEpochMilliseconds(it.startTime)
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                            eventTime.hour == hour
                         } ?: emptyList()
 
                         Card(

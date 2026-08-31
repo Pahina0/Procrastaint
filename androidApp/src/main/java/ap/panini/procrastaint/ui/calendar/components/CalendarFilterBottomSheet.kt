@@ -217,7 +217,9 @@ fun CalendarFilterBottomSheet(
                                     contentDescription = null
                                 )
                             }
-                        } else null
+                        } else {
+                            null
+                        }
                     )
 
                     FilterChip(
@@ -231,7 +233,9 @@ fun CalendarFilterBottomSheet(
                                     contentDescription = null
                                 )
                             }
-                        } else null
+                        } else {
+                            null
+                        }
                     )
                 }
             }

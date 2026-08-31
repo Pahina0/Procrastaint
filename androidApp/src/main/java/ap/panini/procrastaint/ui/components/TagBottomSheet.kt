@@ -81,7 +81,9 @@ fun TagBottomSheet(
                 isError = !validTag && tag.title.isNotBlank(),
                 supportingText = if (!validTag && tag.title.isNotBlank()) {
                     { Text("Identifier must be unique and non-empty") }
-                } else null,
+                } else {
+                    null
+                },
                 label = { Text("Tag Identifier (#slug)") },
                 value = tag.title,
                 onValueChange = {

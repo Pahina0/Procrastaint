@@ -76,6 +76,25 @@ jobs:
           fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
+      - name: Prepare & Name Release Artifacts
+        run: |
+          mkdir -p release-artifacts
+          TAG="${{ steps.get_tag.outputs.tag }}"
+          # Find and copy APK
+          APK_FILE=$(find androidApp/build/outputs/apk/release -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ]; then
+            cp "$APK_FILE" "release-artifacts/Procrastaint-${TAG}.apk"
+          fi
+          # Find and copy AAB
+          AAB_FILE=$(find androidApp/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -n "$AAB_FILE" ]; then
+            cp "$AAB_FILE" "release-artifacts/Procrastaint-${TAG}.aab"
+          fi
+          # Copy ProGuard mapping if present
+          if [ -f androidApp/build/outputs/mapping/release/mapping.txt ]; then
+            cp androidApp/build/outputs/mapping/release/mapping.txt "release-artifacts/mapping-${TAG}.txt"
+          fi
+
       - name: Create Draft Release & Upload Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -84,9 +103,6 @@ jobs:
           draft: ${{ github.event_name == 'release' && github.event.release.draft || (github.event_name == 'workflow_dispatch' && github.event.inputs.is_draft == 'true') || true }}
           prerelease: false
           generate_release_notes: true
-          files: |
-            androidApp/build/outputs/apk/release/*.apk
-            androidApp/build/outputs/bundle/release/*.aab
-            androidApp/build/outputs/mapping/release/mapping.txt
+          files: release-artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -117,8 +117,14 @@ fun MonthlyScreen(
                 .toLocalDateTime(TimeZone.currentSystemDefault()).date
 
             // Filter tasks and events for this month
-            val monthTasks = tasksByDate.filterKeys { it.year == monthDate.year && it.month == monthDate.month }.values.flatten()
-            val monthEvents = eventsByDate.filterKeys { it.year == monthDate.year && it.month == monthDate.month }.values.flatten()
+            val monthTasks = tasksByDate
+                .filterKeys { it.year == monthDate.year && it.month == monthDate.month }
+                .values
+                .flatten()
+            val monthEvents = eventsByDate
+                .filterKeys { it.year == monthDate.year && it.month == monthDate.month }
+                .values
+                .flatten()
 
             MonthGrid(
                 month = monthStartTime,

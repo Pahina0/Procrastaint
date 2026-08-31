@@ -50,6 +50,7 @@ import java.util.Date
 val taskSingleKey = ActionParameters.Key<String>("taskSingle")
 val taskIdKey = ActionParameters.Key<Long>("taskId")
 val eventTimeKey = ActionParameters.Key<Long>("eventTime")
+private const val DayOfYearKeyMultiplier = 1000
 
 class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceAppWidget() {
 
@@ -206,7 +207,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
         val groupedTasks = tasks.groupBy {
             val cal = Calendar.getInstance()
             cal.timeInMillis = it.currentEventTime
-            (cal.get(Calendar.YEAR) * 1000) + cal.get(Calendar.DAY_OF_YEAR)
+            (cal.get(Calendar.YEAR) * DayOfYearKeyMultiplier) + cal.get(Calendar.DAY_OF_YEAR)
         }
 
         Column(

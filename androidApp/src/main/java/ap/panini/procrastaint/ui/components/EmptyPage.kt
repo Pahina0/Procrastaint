@@ -59,10 +59,20 @@ fun EmptyPage(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
 
         val lines = text.split("\n")
         lines.forEachIndexed { index, sText ->
+            val textStyle = if (index == 0) {
+                MaterialTheme.typography.titleMedium
+            } else {
+                MaterialTheme.typography.bodyMedium
+            }
+            val textColor = if (index == 0) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
             Text(
                 text = sText,
-                style = if (index == 0) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
-                color = if (index == 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                style = textStyle,
+                color = textColor,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
             )

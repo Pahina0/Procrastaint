@@ -30,7 +30,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +40,6 @@ import ap.panini.procrastaint.data.entities.NetworkSyncItem
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.util.toRFC3339
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,7 +96,6 @@ fun SyncScreen(
 
 @Composable
 private fun SyncItem(item: NetworkSyncItem, deleteItem: (NetworkSyncItem) -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {

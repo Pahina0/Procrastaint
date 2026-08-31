@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Card

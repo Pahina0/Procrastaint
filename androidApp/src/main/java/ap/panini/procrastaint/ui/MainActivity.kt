@@ -27,7 +27,6 @@ import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -102,8 +101,10 @@ class MainActivity : ComponentActivity() {
         }
 
         val showFab = remember(currentDestination) {
-            (BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                Route.Tag::class)
+            (
+                BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
+                    Route.Tag::class
+                )
                 .isEntryIn(currentDestination)
         }
 

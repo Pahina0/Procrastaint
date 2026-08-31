@@ -49,6 +49,8 @@ private const val DayOfWeekAbbreviationLength = 3
 private const val WeeksInMonth = 6
 private const val DaysInWeek = 7
 private const val GridCellCount = WeeksInMonth * DaysInWeek
+private const val MaxDisplayedEvents = 3
+private const val MaxDisplayedTasks = 5
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -157,7 +159,7 @@ fun MonthGrid(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalArrangement = Arrangement.spacedBy(1.dp)
                                     ) {
-                                        dayEvents.take(3).forEach { event ->
+                                        dayEvents.take(MaxDisplayedEvents).forEach { event ->
                                             val color = event.color
                                             val eventColor = if (color != null && color != 0) {
                                                 Color(color)
@@ -173,7 +175,7 @@ fun MonthGrid(
                                             )
                                         }
 
-                                        dayTasks.take(5).forEach { task ->
+                                        dayTasks.take(MaxDisplayedTasks).forEach { task ->
                                             val dotColor = if (task.completed != null) {
                                                 Color.Gray
                                             } else {

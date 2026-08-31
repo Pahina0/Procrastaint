@@ -1,11 +1,11 @@
 package ap.panini.procrastaint.data.repositories
 
-import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

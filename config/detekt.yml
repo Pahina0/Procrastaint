@@ -15,8 +15,16 @@ complexity:
   LongParameterList:
     ignoreDefaultParameters: true
     ignoreAnnotated: [ 'Composable' ]
+  CyclomaticComplexMethod:
+    ignoreAnnotated: [ 'Composable' ]
   ComplexCondition:
     threshold: 6
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+  SwallowedException:
+    active: false
 
 formatting:
   autoCorrect: true
@@ -69,10 +77,6 @@ Compose:
     # -- You can optionally allow parts of it, if you are in the middle of a migration.
     # allowedFromM2: icons.Icons,TopAppBar
   ModifierClickableOrder:
-    active: true
-    # -- You can optionally add your own Modifier types
-    # customModifiers: BananaModifier,PotatoModifier
-  ModifierComposable:
     active: true
     # -- You can optionally add your own Modifier types
     # customModifiers: BananaModifier,PotatoModifier

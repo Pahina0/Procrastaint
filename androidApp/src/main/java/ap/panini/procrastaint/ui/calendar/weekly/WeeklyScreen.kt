@@ -62,16 +62,16 @@ fun WeeklyScreen(
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     // Calculate start of current week (Sunday)
-    val dayOfWeekOffset = today.dayOfWeek.ordinal % 7
+    val dayOfWeekOffset = today.dayOfWeek.ordinal % DaysInWeek
     val currentWeekStartDate = today.minus(dayOfWeekOffset.toLong(), DateTimeUnit.DAY)
 
     // Generate week list
     val weekStartsList = remember(currentWeekStartDate) {
         (-WindowWeeksBefore..WindowWeeksAfter).map { weekOffset ->
             val weekDate = if (weekOffset < 0) {
-                currentWeekStartDate.minus((-weekOffset * 7).toLong(), DateTimeUnit.DAY)
+                currentWeekStartDate.minus((-weekOffset * DaysInWeek).toLong(), DateTimeUnit.DAY)
             } else {
-                currentWeekStartDate.plus((weekOffset * 7).toLong(), DateTimeUnit.DAY)
+                currentWeekStartDate.plus((weekOffset * DaysInWeek).toLong(), DateTimeUnit.DAY)
             }
             weekDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
         }

@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,6 +29,8 @@ import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+
+private const val PageScrollAnimationDurationMs = 400
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +101,7 @@ fun OnBoardingScreen(
                                 } else {
                                     pagerState.animateScrollToPage(
                                         currentPage + 1,
-                                        animationSpec = tween(400)
+                                        animationSpec = tween(PageScrollAnimationDurationMs)
                                     )
                                 }
                             }

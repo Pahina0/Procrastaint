@@ -99,7 +99,13 @@ fun DayView(
                             .size(4.dp)
                             .clip(CircleShape)
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                if (isSelected) {
+                                    MaterialTheme.colorScheme.tertiary
+                                } else {
+                                    MaterialTheme.colorScheme.primary.copy(
+                                        alpha = 0.7f
+                                    )
+                                }
                             )
                     )
                 }

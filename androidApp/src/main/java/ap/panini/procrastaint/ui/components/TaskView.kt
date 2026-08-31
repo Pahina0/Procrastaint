@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Repeat
-import androidx.compose.material.icons.outlined.Tag
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -137,9 +136,17 @@ fun TaskView(
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp,
-                            textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None
+                            textDecoration = if (isDone) {
+                                TextDecoration.LineThrough
+                            } else {
+                                TextDecoration.None
+                            }
                         ),
-                        color = if (isDone) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface,
+                        color = if (isDone) {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -159,12 +166,20 @@ fun TaskView(
                                 imageVector = Icons.Outlined.Repeat,
                                 contentDescription = null,
                                 modifier = Modifier.size(12.dp),
-                                tint = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
+                                tint = if (isDone) {
+                                    MaterialTheme.colorScheme.outline
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
                             )
                             Text(
                                 text = repeatText,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
+                                color = if (isDone) {
+                                    MaterialTheme.colorScheme.outline
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
                             )
                         }
                     }
@@ -180,7 +195,11 @@ fun TaskView(
                             text = timeString,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Medium,
-                            color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (isDone) {
+                                MaterialTheme.colorScheme.outline
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
                     }
 

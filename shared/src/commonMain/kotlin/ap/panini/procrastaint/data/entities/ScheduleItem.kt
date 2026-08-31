@@ -23,7 +23,9 @@ sealed interface ScheduleItem {
         override val color: Int? get() = task.tags.firstOrNull()?.toRgbOrNull()?.let {
             (0xFF shl 24) or (it.first shl 16) or (it.second shl 8) or it.third
         }
-        override val sourceName: String get() = task.tags.firstOrNull()?.displayTitle?.ifBlank { task.tags.first().title } ?: "Procrastaint"
+        override val sourceName: String get() = task.tags.firstOrNull()?.displayTitle?.ifBlank {
+            task.tags.first().title
+        } ?: "Procrastaint"
     }
 
     data class ExternalCalendar(
@@ -35,6 +37,11 @@ sealed interface ScheduleItem {
         override val endTime: Long get() = event.endTime
         override val isAllDay: Boolean get() = event.isAllDay
         override val color: Int? get() = event.color
-        override val sourceName: String get() = if (event.source == CalendarSource.GOOGLE) "Google Calendar" else "Device Calendar"
+        override val sourceName: String
+            get() = if (event.source == CalendarSource.GOOGLE) {
+                "Google Calendar"
+            } else {
+                "Device Calendar"
+            }
     }
 }

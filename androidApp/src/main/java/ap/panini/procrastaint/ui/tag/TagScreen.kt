@@ -205,7 +205,8 @@ fun TagScreen(
     if (showDeleteWithTasksDialog) {
         DeleteConfirmationDialog(
             title = "Delete tag and tasks?",
-            text = "Are you sure you want to delete #${viewModel.tag.title} and all associated tasks? This action cannot be undone.",
+            text = "Are you sure you want to delete #${viewModel.tag.title} " +
+                "and all associated tasks? This action cannot be undone.",
             confirmButtonText = "Delete All",
             onConfirm = {
                 viewModel.onDeleteWithTasks()
