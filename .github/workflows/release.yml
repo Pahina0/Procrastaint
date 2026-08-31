@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+  release:
+    types: [published, created]
   workflow_dispatch:
     inputs:
       tag_name:
@@ -80,7 +82,7 @@ jobs:
         with:
           tag_name: ${{ steps.get_tag.outputs.tag }}
           name: "Release ${{ steps.get_tag.outputs.tag }}"
-          draft: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.is_draft == 'true' || true }}
+          draft: ${{ github.event_name == 'release' && github.event.release.draft || (github.event_name == 'workflow_dispatch' && github.event.inputs.is_draft == 'true') || true }}
           prerelease: false
           generate_release_notes: true
           files: |
