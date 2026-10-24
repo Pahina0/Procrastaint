@@ -20,7 +20,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Suppress("TooManyFunctions")
-class PreferenceRepository(
+open class PreferenceRepository(
     private val dataStore: DataStore<Preferences>,
     private val systemDateTimeProvider: SystemDateTimeProvider = SystemDateTimeProvider()
 ) {
@@ -153,7 +153,7 @@ class PreferenceRepository(
         }
     }
 
-    fun getShowDeviceCalendar(): Flow<Boolean> = dataStore.data.map { preferences ->
+    open fun getShowDeviceCalendar(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[booleanPreferencesKey(SHOW_DEVICE_CALENDAR)] ?: boolPreference[SHOW_DEVICE_CALENDAR]!!
     }
 

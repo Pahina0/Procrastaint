@@ -57,7 +57,7 @@ open class TaskRepository(
     suspend fun getTask(id: Long): Task = taskDao.getTask(id)
     suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
 
-    fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
+    open fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
     suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
     suspend fun getTag(id: Long): TaskTag = taskDao.getTag(id)
 
@@ -209,7 +209,7 @@ open class TaskRepository(
                 .mapValues { (_, tagList) -> tagList.filterNotNull() }
         }
 
-    fun getTasks(
+    open fun getTasks(
         from: Long = Date.getTodayStart(),
         to: Long? = null,
         taskId: Long? = null,

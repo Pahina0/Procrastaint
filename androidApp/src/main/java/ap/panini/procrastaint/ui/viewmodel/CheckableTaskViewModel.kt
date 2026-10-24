@@ -18,7 +18,7 @@ open class CheckableTaskViewModel(
 
     protected val recentlyCompletedInternal = MutableStateFlow<Set<Pair<Long, Long>>>(setOf())
 
-    fun checkTask(task: TaskSingle) {
+    open fun checkTask(task: TaskSingle) {
         viewModelScope.launch {
             val id = Pair(task.taskId, task.currentEventTime)
             if (task.completed != null) {

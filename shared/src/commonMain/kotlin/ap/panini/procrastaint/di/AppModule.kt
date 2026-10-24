@@ -131,7 +131,7 @@ private fun getRoomDatabase(builder: RoomDatabase.Builder<ProcrastaintDatabase>)
 internal expect fun getDatabaseBuilder(): RoomDatabase.Builder<ProcrastaintDatabase>
 
 // https://developer.android.com/kotlin/multiplatform/datastore
-internal fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+fun createDataStore(producePath: () -> String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
         produceFile = { producePath().toPath() }
     )

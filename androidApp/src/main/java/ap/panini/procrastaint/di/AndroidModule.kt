@@ -5,6 +5,7 @@ import ap.panini.procrastaint.data.repositories.RepositoryCallback
 import ap.panini.procrastaint.services.NotificationWorker
 import ap.panini.procrastaint.services.SyncWorker
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.ui.agenda.AgendaViewModel
 import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.library.LibraryViewModel
 import ap.panini.procrastaint.ui.settings.SettingsViewModel
@@ -28,6 +29,7 @@ val androidModule = module {
     viewModel { CalendarViewModel(get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get()) }
     viewModel { TagViewModel(it[0], get()) }
+    viewModel { AgendaViewModel(get(), get(), get(), get()) }
 
     single { DeviceCalendarRepository(androidApplication()) }
     single { UpcomingWidgetViewModel(get()) }
