@@ -228,50 +228,7 @@ flowchart TD
 
 ---
 
-## 5. Implementation Roadmap & Task Checklist
-
-When implementing this feature, future agents must execute the work in the following order:
-
-### Phase 1: Shared Storage & Repository
-- [ ] Add preference key constants and default values in [`PreferenceRepository.kt`](file:///Users/pahina/Documents/Procrastaint/shared/src/commonMain/kotlin/ap/panini/procrastaint/data/repositories/PreferenceRepository.kt).
-- [ ] Implement individual getters and setters for all six `ENConfig` fields.
-- [ ] Implement `getKwhenConfig(): Flow<ENConfig>` that maps the stored values into an `ENConfig` instance.
-- [ ] Implement `resetKwhenConfigToDefaults()`.
-
-### Phase 2: Engine Integration
-- [ ] Update [`Parser.kt`](file:///Users/pahina/Documents/Procrastaint/shared/src/commonMain/kotlin/ap/panini/procrastaint/util/Parser.kt) constructor to accept `PreferenceRepository`.
-- [ ] Collect or cache the user's `ENConfig` so `TimeParser(currentConfig)` is always configured correctly.
-- [ ] Update [`AppModule.kt`](file:///Users/pahina/Documents/Procrastaint/shared/src/commonMain/kotlin/ap/panini/procrastaint/di/AppModule.kt) to provide `Parser(get(), get())`.
-- [ ] Verify that call sites in `MainActivityViewModel`, `DemoPage`, and `TryPage` continue to operate smoothly.
-
-### Phase 3: Android Settings UI
-- [ ] Add `Route.ParserSettings` in [`Route.kt`](file:///Users/pahina/Documents/Procrastaint/androidApp/src/main/java/ap/panini/procrastaint/ui/navigation/Route.kt).
-- [ ] Update [`NavGraph.kt`](file:///Users/pahina/Documents/Procrastaint/androidApp/src/main/java/ap/panini/procrastaint/ui/navigation/NavGraph.kt) to register destination for `Route.ParserSettings`.
-- [ ] Create `ParserSettingsViewModel` (or expand `SettingsViewModel`) to expose an immutable UI state flow and update functions.
-- [ ] Create `ParserSettingsScreen.kt` with:
-  - Header & back navigation.
-  - Time threshold pickers for Morning, Afternoon, Evening, Night.
-  - Toggles for European Date (`useEuropeanDate`) and 24-Hour Time (`use24`).
-  - Interactive "Live Preview / Sandbox" test component.
-  - Reset to defaults action.
-- [ ] Add the entry item to [`SettingsScreen.kt`](file:///Users/pahina/Documents/Procrastaint/androidApp/src/main/java/ap/panini/procrastaint/ui/settings/SettingsScreen.kt).
-
-### Phase 4: iOS Compatibility (SwiftUI)
-- [ ] In [`iosApp/iosApp/Code/View/SettingViews.swift`](file:///Users/pahina/Documents/Procrastaint/iosApp/iosApp/Code/View/SettingViews.swift), ensure shared repository changes do not break the iOS compilation target.
-- [ ] Expose settings hooks or provide matching SwiftUI view components where feasible.
-
-### Phase 5: Verification & Quality Assurance
-- [ ] Verify build compiles cleanly: `./gradlew assembleDebug`.
-- [ ] Run Detekt linter and formatter: `./gradlew detektall`.
-- [ ] Test edge cases:
-  - Evening set earlier than afternoon.
-  - Ambiguous dates like `05/06/2026` with European format toggled ON vs OFF.
-  - Ambiguous times like `at 8` with 24-hour mode toggled ON vs OFF.
-  - State persistence across app process death/restart.
-
----
-
-## 6. Coding Standards & Agent Guidelines
+## 5. Coding Standards & Agent Guidelines
 
 1. **Strict KMP Constraint:**
    * Never import `java.time.*`, `java.util.Date`, or `android.*` inside `shared/src/commonMain`.

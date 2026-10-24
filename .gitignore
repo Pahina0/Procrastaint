@@ -18,6 +18,7 @@ androidApp/src/debug/google-services.json
 
 # Superpowers
 .superpowers/
+docs/superpowers/
 
 # Gradle Daemon JVM
 gradle/gradle-daemon-jvm.properties
