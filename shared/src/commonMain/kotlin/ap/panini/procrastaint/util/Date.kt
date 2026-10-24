@@ -1,5 +1,8 @@
+@file:Suppress("TooManyFunctions")
+
 package ap.panini.procrastaint.util
 
+import ap.panini.procrastaint.data.models.ResolvedDateTimeFormat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -15,6 +18,7 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.concurrent.Volatile
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -31,6 +35,9 @@ fun Instant.toLocalDate(): LocalDate {
 
 object Date {
     private const val ROUND_NUMBER = 100000
+
+    @Volatile
+    var displayConfig: ResolvedDateTimeFormat = ResolvedDateTimeFormat(use24Hour = false, useEuropeanDate = false)
 
     @OptIn(ExperimentalTime::class)
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -126,6 +133,64 @@ object Date {
         return time.format(formatter)
     }
 
+    private fun DateTimeFormatBuilder.WithDateTime.monthAndDay(
+        monthFormat: MonthNames,
+        useEuropean: Boolean
+    ) {
+        if (useEuropean) {
+            day(padding = Padding.NONE)
+            char(' ')
+            monthName(monthFormat)
+        } else {
+            monthName(monthFormat)
+            char(' ')
+            day(padding = Padding.NONE)
+        }
+    }
+
+    private fun DateTimeFormatBuilder.WithDateTime.formatDayWithYear() {
+        if (displayConfig.useEuropeanDate) {
+            day()
+            char('/')
+            monthNumber()
+            char('/')
+            year()
+        } else {
+            date(LocalDate.Formats.ISO)
+        }
+    }
+
+    private fun DateTimeFormatBuilder.WithDateTime.formatDayWithoutYear(
+        monthFormat: MonthNames,
+        daysAway: Int,
+        useAbbreviated: Boolean
+    ) {
+        if (useAbbreviated) {
+            monthAndDay(monthFormat, displayConfig.useEuropeanDate)
+            return
+        }
+
+        when (daysAway) {
+            0 -> {
+                chars("Today")
+            }
+
+            1 -> {
+                chars("Tomorrow")
+            }
+
+            in StartOfWeek..EndOfWeek -> {
+                dayOfWeek(
+                    DayOfWeekNames.ENGLISH_FULL
+                )
+            }
+
+            else -> {
+                monthAndDay(monthFormat, displayConfig.useEuropeanDate)
+            }
+        }
+    }
+
     private fun DateTimeFormatBuilder.WithDateTime.formatDate(
         year: Boolean,
         month: Boolean,
@@ -139,36 +204,9 @@ object Date {
 
         if (day) {
             if (year) {
-                date(LocalDate.Formats.ISO)
+                formatDayWithYear()
             } else {
-                if (useAbbreviated) {
-                    monthName(monthFormat)
-                    char(' ')
-                    day(padding = Padding.NONE)
-                    return
-                }
-
-                when (daysAway) {
-                    0 -> {
-                        chars("Today")
-                    }
-
-                    1 -> {
-                        chars("Tomorrow")
-                    }
-
-                    in StartOfWeek..EndOfWeek -> {
-                        dayOfWeek(
-                            DayOfWeekNames.ENGLISH_FULL
-                        )
-                    }
-
-                    else -> {
-                        monthName(monthFormat)
-                        char(' ')
-                        day(padding = Padding.NONE)
-                    }
-                }
+                formatDayWithoutYear(monthFormat, daysAway, useAbbreviated)
             }
         } else if (month) {
             monthName(monthFormat)
@@ -180,9 +218,7 @@ object Date {
             // has year only
             year()
         } else if (week) {
-            monthName(monthFormat)
-            char(' ')
-            day(padding = Padding.NONE)
+            monthAndDay(monthFormat, displayConfig.useEuropeanDate)
         }
     }
 
@@ -191,14 +227,23 @@ object Date {
         minute: Boolean
     ) {
         if (hour || minute) {
-            amPmHour(padding = Padding.NONE)
+            if (displayConfig.use24Hour) {
+                hour()
 
-            if (minute) {
-                char(':')
-                minute()
+                if (minute) {
+                    char(':')
+                    minute()
+                }
+            } else {
+                amPmHour(padding = Padding.NONE)
+
+                if (minute) {
+                    char(':')
+                    minute()
+                }
+
+                amPmMarker("AM", "PM")
             }
-
-            amPmMarker("AM", "PM")
         }
     }
 }
@@ -264,12 +309,14 @@ private const val PaddingChar = '0'
 private const val MaxHour = 23
 private const val NoonHour = 12
 
-fun LocalDate.formatToMMDDYYYY(): String {
-    val month = month.number.toString().padStart(PaddingLength, PaddingChar)
-    val day = day.toString().padStart(PaddingLength, PaddingChar)
-    val year = this.year.toString()
-    return "$month/$day/$year"
+fun LocalDate.formatCustom(useEuropean: Boolean = Date.displayConfig.useEuropeanDate): String {
+    val monthStr = month.number.toString().padStart(PaddingLength, PaddingChar)
+    val dayStr = day.toString().padStart(PaddingLength, PaddingChar)
+    val yearStr = year.toString()
+    return if (useEuropean) "$dayStr/$monthStr/$yearStr" else "$monthStr/$dayStr/$yearStr"
 }
+
+fun LocalDate.formatToMMDDYYYY(): String = formatCustom(useEuropean = false)
 
 fun Int.toAmPmHour(): String {
     require(this in 0..MaxHour) { "Hour must be between 0 and 23" }

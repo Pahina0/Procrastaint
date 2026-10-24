@@ -15,6 +15,7 @@ import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarRepository
 import ap.panini.procrastaint.notifications.NotificationManager
+import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Parser
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.FlowConverterFactory
@@ -28,8 +29,11 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
@@ -49,7 +53,15 @@ val appModule = module {
 
     single { NotificationManager() }
     single { TaskRepository(get(), get(), get(), getAll()) }
-    single { PreferenceRepository(get()) }
+    single {
+        val repo = PreferenceRepository(get())
+        CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+            repo.getResolvedDateTimeFormat().collect { format ->
+                Date.displayConfig = format
+            }
+        }
+        repo
+    }
 
     single {
         getKtor(
