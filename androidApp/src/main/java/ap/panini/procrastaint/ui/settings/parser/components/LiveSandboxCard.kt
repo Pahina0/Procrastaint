@@ -29,9 +29,9 @@ import ap.panini.procrastaint.util.Parsed
 private const val MaxInputLines = 3
 
 private val SandboxSuggestions = listOf(
-    "tomorrow morning",
-    "04/05 at 8",
-    "gym every other Tuesday at 5pm #health"
+    "Meeting tomorrow morning",
+    "Doctor 04/05 at 8",
+    "Gym every other Tuesday at 5pm #health"
 )
 
 @Composable
