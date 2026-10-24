@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationOn
@@ -35,9 +36,11 @@ private const val PillBorderAlpha = 0.25f
 private const val HairlineStartAlpha = 0.35f
 private const val LocationIconAlpha = 0.7f
 private const val SeparatorAlpha = 0.4f
+private const val CenterContentWeight = 4f
 private val PillCornerRadius = 16.dp
 private val PillBorderWidth = 1.dp
 private val HairlineHeight = 1.dp
+private val MinHairlineWidth = 16.dp
 private val LocationIconSize = 11.dp
 
 @Composable
@@ -76,6 +79,7 @@ fun AgendaScheduleDivider(
         // Left gradient hairline rule
         Box(
             modifier = Modifier
+                .widthIn(min = MinHairlineWidth)
                 .weight(1f)
                 .height(HairlineHeight)
                 .background(
@@ -92,7 +96,11 @@ fun AgendaScheduleDivider(
             border = BorderStroke(PillBorderWidth, accentColor.copy(alpha = PillBorderAlpha)),
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .clickable(enabled = onEventClick != null) {
+                .weight(CenterContentWeight, fill = false)
+                .clickable(
+                    enabled = onEventClick != null,
+                    onClickLabel = "Open in calendar"
+                ) {
                     onEventClick?.invoke(event)
                 }
         ) {
@@ -120,7 +128,8 @@ fun AgendaScheduleDivider(
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
 
                 if (!location.isNullOrBlank()) {
@@ -135,7 +144,8 @@ fun AgendaScheduleDivider(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
                 }
             }
@@ -144,6 +154,7 @@ fun AgendaScheduleDivider(
         // Right gradient hairline rule
         Box(
             modifier = Modifier
+                .widthIn(min = MinHairlineWidth)
                 .weight(1f)
                 .height(HairlineHeight)
                 .background(
