@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.data.repositories
 
+import ap.panini.procrastaint.data.models.DateFormatMode
+import ap.panini.procrastaint.data.models.TimeFormatMode
 import ap.panini.procrastaint.di.createDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -18,6 +20,50 @@ class PreferenceRepositoryTest {
         val tempPath = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "test_${Uuid.random().toHexString()}.preferences_pb"
         val dataStore = createDataStore { tempPath.toString() }
         return PreferenceRepository(dataStore)
+    }
+
+    @Test
+    fun testTimeAndDateFormatModesDefaultsToSystem() = runBlocking {
+        val repo = createTestRepository()
+        val timeMode = repo.getTimeFormatMode().first()
+        val dateMode = repo.getDateFormatMode().first()
+        assertEquals(TimeFormatMode.SYSTEM, timeMode)
+        assertEquals(DateFormatMode.SYSTEM, dateMode)
+    }
+
+    @Test
+    fun testSettingExplicitFormatModes() = runBlocking {
+        val repo = createTestRepository()
+        repo.setTimeFormatMode(TimeFormatMode.H24)
+        repo.setDateFormatMode(DateFormatMode.DMY)
+        assertEquals(TimeFormatMode.H24, repo.getTimeFormatMode().first())
+        assertEquals(DateFormatMode.DMY, repo.getDateFormatMode().first())
+    }
+
+    @Test
+    fun testResolvedDateTimeFormatExplicit() = runBlocking {
+        val repo = createTestRepository()
+        repo.setTimeFormatMode(TimeFormatMode.H24)
+        repo.setDateFormatMode(DateFormatMode.DMY)
+        val resolved = repo.getResolvedDateTimeFormat().first()
+        assertTrue(resolved.use24Hour)
+        assertTrue(resolved.useEuropeanDate)
+
+        repo.setTimeFormatMode(TimeFormatMode.H12)
+        repo.setDateFormatMode(DateFormatMode.MDY)
+        val resolved12 = repo.getResolvedDateTimeFormat().first()
+        assertFalse(resolved12.use24Hour)
+        assertFalse(resolved12.useEuropeanDate)
+    }
+
+    @Test
+    fun testResetRestoresSystemModes() = runBlocking {
+        val repo = createTestRepository()
+        repo.setTimeFormatMode(TimeFormatMode.H24)
+        repo.setDateFormatMode(DateFormatMode.DMY)
+        repo.resetKwhenConfigToDefaults()
+        assertEquals(TimeFormatMode.SYSTEM, repo.getTimeFormatMode().first())
+        assertEquals(DateFormatMode.SYSTEM, repo.getDateFormatMode().first())
     }
 
     @Test

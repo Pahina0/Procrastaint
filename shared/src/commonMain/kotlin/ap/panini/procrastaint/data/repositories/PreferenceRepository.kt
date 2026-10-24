@@ -7,7 +7,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import ap.panini.kwhen.configs.ENConfig
+import ap.panini.procrastaint.data.models.DateFormatMode
+import ap.panini.procrastaint.data.models.ResolvedDateTimeFormat
+import ap.panini.procrastaint.data.models.TimeFormatMode
 import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
+import ap.panini.procrastaint.util.SystemDateTimeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -17,7 +21,8 @@ import kotlin.uuid.Uuid
 
 @Suppress("TooManyFunctions")
 class PreferenceRepository(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val systemDateTimeProvider: SystemDateTimeProvider = SystemDateTimeProvider()
 ) {
     companion object {
         const val GOOGLE_REFRESH_TOKEN = "google_refresh_token"
@@ -32,6 +37,9 @@ class PreferenceRepository(
         const val SHOW_DEVICE_CALENDAR = "show_device_calendar"
         const val SHOW_GOOGLE_CALENDAR = "show_google_calendar"
 
+        const val TIME_FORMAT_MODE = "time_format_mode"
+        const val DATE_FORMAT_MODE = "date_format_mode"
+
         const val KWHEN_MORNING_HOUR = "kwhen_morning_hour"
         const val KWHEN_AFTERNOON_HOUR = "kwhen_afternoon_hour"
         const val KWHEN_EVENING_HOUR = "kwhen_evening_hour"
@@ -43,7 +51,9 @@ class PreferenceRepository(
             GOOGLE_REFRESH_TOKEN to "",
             GOOGLE_ACCESS_TOKEN to "",
             GOOGLE_CALENDAR_ID to "",
-            CALENDAR_DISPLAY_MODE to CalendarDisplayMode.DAILY.name
+            CALENDAR_DISPLAY_MODE to CalendarDisplayMode.DAILY.name,
+            TIME_FORMAT_MODE to TimeFormatMode.SYSTEM.name,
+            DATE_FORMAT_MODE to DateFormatMode.SYSTEM.name,
         )
 
         val intPreference = mapOf(
@@ -163,29 +173,81 @@ class PreferenceRepository(
         }
     }
 
-    fun getKwhenConfig(): Flow<ENConfig> = dataStore.data.map { preferences ->
-        val morning = preferences[intPreferencesKey(KWHEN_MORNING_HOUR)]
-            ?: intPreference[KWHEN_MORNING_HOUR]!!
-        val afternoon = preferences[intPreferencesKey(KWHEN_AFTERNOON_HOUR)]
-            ?: intPreference[KWHEN_AFTERNOON_HOUR]!!
-        val evening = preferences[intPreferencesKey(KWHEN_EVENING_HOUR)]
-            ?: intPreference[KWHEN_EVENING_HOUR]!!
-        val night = preferences[intPreferencesKey(KWHEN_NIGHT_HOUR)]
-            ?: intPreference[KWHEN_NIGHT_HOUR]!!
-        val use24 = preferences[booleanPreferencesKey(KWHEN_USE_24)]
-            ?: boolPreference[KWHEN_USE_24]!!
-        val useEuropeanDate = preferences[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)]
-            ?: boolPreference[KWHEN_USE_EUROPEAN_DATE]!!
+    fun getTimeFormatMode(): Flow<TimeFormatMode> = dataStore.data.map { preferences ->
+        extractTimeFormatMode(preferences)
+    }
 
-        ENConfig(
-            morning = morning,
-            afternoon = afternoon,
-            evening = evening,
-            night = night,
-            use24 = use24,
-            useEuropeanDate = useEuropeanDate
+    fun getDateFormatMode(): Flow<DateFormatMode> = dataStore.data.map { preferences ->
+        extractDateFormatMode(preferences)
+    }
+
+    suspend fun setTimeFormatMode(mode: TimeFormatMode) {
+        dataStore.edit { settings ->
+            settings[stringPreferencesKey(TIME_FORMAT_MODE)] = mode.name
+        }
+    }
+
+    suspend fun setDateFormatMode(mode: DateFormatMode) {
+        dataStore.edit { settings ->
+            settings[stringPreferencesKey(DATE_FORMAT_MODE)] = mode.name
+        }
+    }
+
+    fun getResolvedDateTimeFormat(): Flow<ResolvedDateTimeFormat> = dataStore.data.map { preferences ->
+        ResolvedDateTimeFormat(
+            use24Hour = resolveTimeFormat(preferences),
+            useEuropeanDate = resolveDateFormat(preferences)
         )
     }
+
+    fun getKwhenConfig(): Flow<ENConfig> = dataStore.data.map { preferences ->
+        ENConfig(
+            morning = preferences[intPreferencesKey(KWHEN_MORNING_HOUR)]
+                ?: intPreference[KWHEN_MORNING_HOUR]!!,
+            afternoon = preferences[intPreferencesKey(KWHEN_AFTERNOON_HOUR)]
+                ?: intPreference[KWHEN_AFTERNOON_HOUR]!!,
+            evening = preferences[intPreferencesKey(KWHEN_EVENING_HOUR)]
+                ?: intPreference[KWHEN_EVENING_HOUR]!!,
+            night = preferences[intPreferencesKey(KWHEN_NIGHT_HOUR)]
+                ?: intPreference[KWHEN_NIGHT_HOUR]!!,
+            use24 = resolveTimeFormat(preferences),
+            useEuropeanDate = resolveDateFormat(preferences)
+        )
+    }
+
+    private fun extractTimeFormatMode(preferences: Preferences): TimeFormatMode {
+        val modeName = preferences[stringPreferencesKey(TIME_FORMAT_MODE)]
+        return if (modeName != null) {
+            runCatching { TimeFormatMode.valueOf(modeName) }.getOrDefault(TimeFormatMode.SYSTEM)
+        } else {
+            val legacy24 = preferences[booleanPreferencesKey(KWHEN_USE_24)]
+            if (legacy24 == true) TimeFormatMode.H24 else TimeFormatMode.SYSTEM
+        }
+    }
+
+    private fun extractDateFormatMode(preferences: Preferences): DateFormatMode {
+        val modeName = preferences[stringPreferencesKey(DATE_FORMAT_MODE)]
+        return if (modeName != null) {
+            runCatching { DateFormatMode.valueOf(modeName) }.getOrDefault(DateFormatMode.SYSTEM)
+        } else {
+            val legacyEuropean = preferences[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)]
+            if (legacyEuropean == true) DateFormatMode.DMY else DateFormatMode.SYSTEM
+        }
+    }
+
+    private fun resolveTimeFormat(preferences: Preferences): Boolean =
+        when (extractTimeFormatMode(preferences)) {
+            TimeFormatMode.H24 -> true
+            TimeFormatMode.H12 -> false
+            TimeFormatMode.SYSTEM -> systemDateTimeProvider.is24HourFormat()
+        }
+
+    private fun resolveDateFormat(preferences: Preferences): Boolean =
+        when (extractDateFormatMode(preferences)) {
+            DateFormatMode.DMY -> true
+            DateFormatMode.MDY -> false
+            DateFormatMode.SYSTEM -> systemDateTimeProvider.isEuropeanDateFormat()
+        }
 
     suspend fun setMorningHour(hour: Int) {
         dataStore.edit { settings ->
@@ -212,12 +274,14 @@ class PreferenceRepository(
     }
 
     suspend fun setUse24Hour(use24: Boolean) {
+        setTimeFormatMode(if (use24) TimeFormatMode.H24 else TimeFormatMode.H12)
         dataStore.edit { settings ->
             settings[booleanPreferencesKey(KWHEN_USE_24)] = use24
         }
     }
 
     suspend fun setUseEuropeanDate(useEuropeanDate: Boolean) {
+        setDateFormatMode(if (useEuropeanDate) DateFormatMode.DMY else DateFormatMode.MDY)
         dataStore.edit { settings ->
             settings[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)] = useEuropeanDate
         }
@@ -231,6 +295,8 @@ class PreferenceRepository(
             preferences[intPreferencesKey(KWHEN_NIGHT_HOUR)] = intPreference[KWHEN_NIGHT_HOUR]!!
             preferences[booleanPreferencesKey(KWHEN_USE_24)] = boolPreference[KWHEN_USE_24]!!
             preferences[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)] = boolPreference[KWHEN_USE_EUROPEAN_DATE]!!
+            preferences[stringPreferencesKey(TIME_FORMAT_MODE)] = stringPreference[TIME_FORMAT_MODE]!!
+            preferences[stringPreferencesKey(DATE_FORMAT_MODE)] = stringPreference[DATE_FORMAT_MODE]!!
         }
     }
 }
