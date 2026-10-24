@@ -1,5 +1,8 @@
 package ap.panini.procrastaint.ui.settings
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -48,6 +51,15 @@ fun SettingsScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val scrollState = rememberScrollState()
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.updateDeviceCalendarPermission()
+        if (isGranted) {
+            viewModel.setShowDeviceCalendar(true)
+        }
+    }
+
     ScreenScaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -95,8 +107,16 @@ fun SettingsScreen(
             Sync(
                 onNavigateToSync = onNavigateToSync,
                 isLoggedInGoogle = state.googleLoggedIn,
+                showGoogleCalendar = state.showGoogleCalendar,
+                onToggleGoogleCalendar = viewModel::setShowGoogleCalendar,
                 logoutGoogle = viewModel::googleLogout,
-                loginGoogle = googleAuth::auth
+                loginGoogle = googleAuth::auth,
+                hasDeviceCalendarPermission = state.hasDeviceCalendarPermission,
+                showDeviceCalendar = state.showDeviceCalendar,
+                onToggleDeviceCalendar = viewModel::setShowDeviceCalendar,
+                onRequestDeviceCalendarPermission = {
+                    permissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                }
             )
 
             HorizontalDivider(

@@ -23,7 +23,7 @@ import org.koin.dsl.module
 val androidModule = module {
     viewModel { MainActivityViewModel(get(), get()) }
     viewModel { UpcomingViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { ParserSettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
     viewModel { CalendarViewModel(get(), get(), get(), get()) }
