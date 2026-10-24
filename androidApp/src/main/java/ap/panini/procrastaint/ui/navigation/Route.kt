@@ -29,6 +29,9 @@ sealed interface Route {
 
     @Serializable
     data object Sync : Route
+
+    @Serializable
+    data object ParserSettings : Route
 }
 
 fun List<KClass<out Route>>.isEntryIn(navDestination: NavDestination?): Boolean {
