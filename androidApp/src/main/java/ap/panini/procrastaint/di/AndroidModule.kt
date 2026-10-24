@@ -9,6 +9,7 @@ import ap.panini.procrastaint.ui.calendar.CalendarViewModel
 import ap.panini.procrastaint.ui.library.LibraryViewModel
 import ap.panini.procrastaint.ui.settings.SettingsViewModel
 import ap.panini.procrastaint.ui.settings.auth.GoogleAuth
+import ap.panini.procrastaint.ui.settings.parser.ParserSettingsViewModel
 import ap.panini.procrastaint.ui.settings.sync.SyncViewModel
 import ap.panini.procrastaint.ui.tag.TagViewModel
 import ap.panini.procrastaint.ui.upcoming.UpcomingViewModel
@@ -22,6 +23,7 @@ val androidModule = module {
     viewModel { MainActivityViewModel(get(), get()) }
     viewModel { UpcomingViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { ParserSettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
     viewModel { CalendarViewModel(get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get()) }

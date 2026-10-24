@@ -16,6 +16,7 @@ import ap.panini.procrastaint.ui.library.LibraryScreen
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.settings.SettingsScreen
 import ap.panini.procrastaint.ui.settings.groups.AboutLibrariesScreen
+import ap.panini.procrastaint.ui.settings.parser.ParserSettingsScreen
 import ap.panini.procrastaint.ui.settings.sync.SyncScreen
 import ap.panini.procrastaint.ui.tag.TagScreen
 import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
@@ -69,7 +70,8 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
         composable<Route.Settings> {
             SettingsScreen(
                 onNavigateToAboutLibraries = { navController.navigate(Route.AboutLibraries) },
-                onNavigateToSync = { navController.navigate(Route.Sync) }
+                onNavigateToSync = { navController.navigate(Route.Sync) },
+                onNavigateToParserSettings = { navController.navigate(Route.ParserSettings) }
             )
         }
 
@@ -111,6 +113,27 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
             }
         ) {
             SyncScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.ParserSettings>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(AnimationSpeed, easing = EaseIn)
+                ) + fadeIn(tween(AnimationSpeed))
+            },
+            exitTransition = { fadeOut(tween(AnimationSpeed / 2)) },
+            popEnterTransition = { fadeIn(tween(AnimationSpeed)) },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(AnimationSpeed, easing = EaseOut)
+                ) + fadeOut(tween(AnimationSpeed))
+            }
+        ) {
+            ParserSettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
