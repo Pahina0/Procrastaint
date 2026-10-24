@@ -64,8 +64,8 @@ fun SettingsScreen(
             Section("General") {
                 SettingsItem(
                     icon = Icons.Outlined.Tune,
-                    text = "Date & Time Parsing",
-                    subtext = "Configure natural language keywords and date formats",
+                    text = "Date & Time",
+                    subtext = "Configure time and date formats, keywords, and display",
                     onClick = onNavigateToParserSettings,
                     trailingItem = {
                         Icon(

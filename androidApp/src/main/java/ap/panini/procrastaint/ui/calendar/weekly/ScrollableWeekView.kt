@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.hour
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -102,6 +103,20 @@ fun ScrollableWeekView(
             }
         }
 
+        val timeFormatter = if (Date.displayConfig.use24Hour) {
+            LocalTime.Format {
+                hour()
+                char(':')
+                minute()
+            }
+        } else {
+            LocalTime.Format {
+                amPmHour()
+                char(' ')
+                amPmMarker("AM", "PM")
+            }
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 80.dp),
@@ -113,13 +128,8 @@ fun ScrollableWeekView(
                         .fillMaxWidth()
                         .height(HourHeight)
                 ) {
-                    val amPmFormatter = LocalTime.Format {
-                        amPmHour()
-                        char(' ')
-                        amPmMarker("AM", "PM")
-                    }
                     val localTime = LocalTime(hour, 0, 0)
-                    val formattedTime = amPmFormatter.format(localTime)
+                    val formattedTime = timeFormatter.format(localTime)
                     Text(
                         text = formattedTime,
                         modifier = Modifier
