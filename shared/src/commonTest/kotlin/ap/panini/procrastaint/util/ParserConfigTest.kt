@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.util
 
+import ap.panini.procrastaint.data.models.DateFormatMode
+import ap.panini.procrastaint.data.models.TimeFormatMode
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.di.createDataStore
 import kotlinx.coroutines.delay
@@ -10,6 +12,7 @@ import kotlinx.datetime.toLocalDateTime
 import okio.FileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -98,5 +101,53 @@ class ParserConfigTest {
         val localTimeEU = Instant.fromEpochMilliseconds(startTimeEU).toLocalDateTime(TimeZone.currentSystemDefault())
         assertEquals(Month.APRIL, localTimeEU.month)
         assertEquals(3, localTimeEU.day)
+    }
+
+    @Test
+    fun testTriStateModePropagatesToParser() = runBlocking {
+        val repo = createTestRepository()
+        val parser = Parser(preferenceRepository = repo)
+
+        repo.setDateFormatMode(DateFormatMode.DMY)
+        waitForCondition { parser.cachedConfig.useEuropeanDate }
+        val parsedDMY = parser.parse("Doctor visit 03/04/2026")
+        val startTimeDMY = parsedDMY.times.first().startTimes.first()
+        val localTimeDMY = Instant.fromEpochMilliseconds(startTimeDMY).toLocalDateTime(TimeZone.currentSystemDefault())
+        assertEquals(Month.APRIL, localTimeDMY.month)
+        assertEquals(3, localTimeDMY.day)
+
+        repo.setDateFormatMode(DateFormatMode.MDY)
+        waitForCondition { !parser.cachedConfig.useEuropeanDate }
+        val parsedMDY = parser.parse("Doctor visit 03/04/2026")
+        val startTimeMDY = parsedMDY.times.first().startTimes.first()
+        val localTimeMDY = Instant.fromEpochMilliseconds(startTimeMDY).toLocalDateTime(TimeZone.currentSystemDefault())
+        assertEquals(Month.MARCH, localTimeMDY.month)
+        assertEquals(4, localTimeMDY.day)
+    }
+
+    @Test
+    fun testTriStateTimeFormatModePropagatesToParser() = runBlocking {
+        val repo = createTestRepository()
+        val parser = Parser(preferenceRepository = repo)
+
+        repo.setTimeFormatMode(TimeFormatMode.H24)
+        waitForCondition { parser.cachedConfig.use24 }
+        assertTrue(parser.cachedConfig.use24)
+
+        val parsed24 = parser.parse("meeting at 20:00")
+        assertTrue(parsed24.times.isNotEmpty(), "Expected parsed times for 20:00")
+        val startTime24 = parsed24.times.first().startTimes.first()
+        val localTime24 = Instant.fromEpochMilliseconds(startTime24).toLocalDateTime(TimeZone.currentSystemDefault())
+        assertEquals(20, localTime24.hour)
+
+        repo.setTimeFormatMode(TimeFormatMode.H12)
+        waitForCondition { !parser.cachedConfig.use24 }
+        assertFalse(parser.cachedConfig.use24)
+
+        val parsed12 = parser.parse("meeting at 8pm")
+        assertTrue(parsed12.times.isNotEmpty(), "Expected parsed times for 8pm")
+        val startTime12 = parsed12.times.first().startTimes.first()
+        val localTime12 = Instant.fromEpochMilliseconds(startTime12).toLocalDateTime(TimeZone.currentSystemDefault())
+        assertEquals(20, localTime12.hour)
     }
 }

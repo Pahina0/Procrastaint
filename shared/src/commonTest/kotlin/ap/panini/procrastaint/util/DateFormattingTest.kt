@@ -2,12 +2,18 @@ package ap.panini.procrastaint.util
 
 import ap.panini.procrastaint.data.models.ResolvedDateTimeFormat
 import kotlinx.datetime.LocalDate
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DateFormattingTest {
+    @AfterTest
+    fun tearDown() {
+        Date.displayConfig = ResolvedDateTimeFormat(use24Hour = false, useEuropeanDate = false)
+    }
+
     @Test
     fun test12HourVs24HourTimeFormatting() {
         // 2:30 PM (14:30) UTC
