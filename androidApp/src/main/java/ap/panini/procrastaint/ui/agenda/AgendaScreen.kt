@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
@@ -74,9 +75,33 @@ fun AgendaScreen(
     var showTagBottomSheet by remember { mutableStateOf(false) }
     val bottomSheetState = rememberBottomSheetTagState()
 
-    val todayFormatted = remember {
+    val todayMillis = remember { ap.panini.procrastaint.util.Date.getTodayStart() }
+    val todayFormatted = remember(todayMillis) {
         val formatter = SimpleDateFormat("EEEE, MMMM d", Locale.getDefault())
-        formatter.format(Date())
+        formatter.format(Date(todayMillis))
+    }
+
+    val todayTasksRemaining = remember(
+        state.scheduledTasksByDate,
+        state.overdueTasks,
+        todayMillis,
+        recentlyCompleted
+    ) {
+        val scheduledRemaining = state.scheduledTasksByDate[todayMillis].orEmpty().count { task ->
+            task.completed == null && Pair(task.taskId, task.currentEventTime) !in recentlyCompleted
+        }
+        val overdueRemaining = state.overdueTasks.count { task ->
+            task.completed == null && Pair(task.taskId, task.currentEventTime) !in recentlyCompleted
+        }
+        scheduledRemaining + overdueRemaining
+    }
+
+    val tasksRemainingText = remember(todayTasksRemaining) {
+        when (todayTasksRemaining) {
+            0 -> "All caught up today"
+            1 -> "1 task remaining"
+            else -> "$todayTasksRemaining tasks remaining"
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -114,14 +139,18 @@ fun AgendaScreen(
                                 )
                         ) {
                             Text(
-                                text = "Procrastaint",
+                                text = todayFormatted,
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = todayFormatted,
+                                text = tasksRemainingText,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     },
