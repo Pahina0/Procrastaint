@@ -36,7 +36,6 @@ private const val PillBorderAlpha = 0.25f
 private const val HairlineStartAlpha = 0.35f
 private const val LocationIconAlpha = 0.7f
 private const val SeparatorAlpha = 0.4f
-private const val CenterContentWeight = 4f
 private val PillCornerRadius = 16.dp
 private val PillBorderWidth = 1.dp
 private val HairlineHeight = 1.dp
@@ -74,7 +73,8 @@ fun AgendaScheduleDivider(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         // Left gradient hairline rule
         Box(
@@ -96,7 +96,6 @@ fun AgendaScheduleDivider(
             border = BorderStroke(PillBorderWidth, accentColor.copy(alpha = PillBorderAlpha)),
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .weight(CenterContentWeight, fill = false)
                 .clickable(
                     enabled = onEventClick != null,
                     onClickLabel = "Open in calendar"
@@ -107,7 +106,7 @@ fun AgendaScheduleDivider(
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally)
             ) {
                 Text(
                     text = timeString,
