@@ -7,6 +7,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -104,7 +105,14 @@ fun AgendaScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 TopAppBar(
                     title = {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .clickable(
+                                    interactionSource = null,
+                                    indication = null,
+                                    onClick = viewModel::scrollToToday
+                                )
+                        ) {
                             Text(
                                 text = "Procrastaint",
                                 style = MaterialTheme.typography.titleLarge,
@@ -233,6 +241,7 @@ fun AgendaScreen(
                 onEditTask = activityViewModel::editCreatedTask,
                 isFilterActive = state.selectedTagId != null || state.searchQuery.isNotBlank(),
                 onFocusedDateChange = viewModel::setFocusedDate,
+                scrollToTodayEvent = viewModel.scrollToTodayEvent,
                 modifier = Modifier.weight(1f)
             )
         }

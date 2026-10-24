@@ -35,6 +35,7 @@ import ap.panini.procrastaint.ui.calendar.components.ExternalEventView
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
@@ -69,7 +70,8 @@ fun AgendaFeed(
     onEditTask: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier,
     isFilterActive: Boolean = false,
-    onFocusedDateChange: ((Long) -> Unit)? = null
+    onFocusedDateChange: ((Long) -> Unit)? = null,
+    scrollToTodayEvent: SharedFlow<Long>? = null
 ) {
     val today = remember { Date.getTodayStart() }
     val distinctDates = remember(
@@ -142,6 +144,17 @@ fun AgendaFeed(
                     } else {
                         listState.animateScrollToItem(targetIndex)
                     }
+                }
+            }
+        }
+
+        LaunchedEffect(scrollToTodayEvent) {
+            scrollToTodayEvent?.collect { targetDate ->
+                val normalizedTarget = getStartOfDay(targetDate)
+                val targetIndex = dateToIndexMap[normalizedTarget]
+                    ?: distinctDates.firstOrNull { it >= normalizedTarget }?.let { dateToIndexMap[it] }
+                if (targetIndex != null) {
+                    listState.animateScrollToItem(targetIndex)
                 }
             }
         }

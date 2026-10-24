@@ -11,8 +11,11 @@ import ap.panini.procrastaint.data.repositories.calendars.GoogleCalendarReposito
 import ap.panini.procrastaint.ui.viewmodel.CheckableTaskViewModel
 import ap.panini.procrastaint.util.Date
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -61,6 +64,15 @@ class AgendaViewModel(
     val uiState: StateFlow<AgendaUiState> = _uiState.asStateFlow()
 
     val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = recentlyCompletedInternal
+
+    private val _scrollToTodayEvent = MutableSharedFlow<Long>(extraBufferCapacity = 1)
+    val scrollToTodayEvent: SharedFlow<Long> = _scrollToTodayEvent.asSharedFlow()
+
+    fun scrollToToday() {
+        val today = todayStartProvider()
+        setFocusedDate(today)
+        _scrollToTodayEvent.tryEmit(today)
+    }
 
     init {
         viewModelScope.launch {
