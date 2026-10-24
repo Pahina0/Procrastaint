@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +42,17 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
 
+private val TaskCardCornerRadius = 14.dp
+private const val TaskCompletedAlpha = 0.5f
+private const val DimmedContentAlpha = 0.6f
+private const val TagContainerAlpha = 0.08f
+private val AccentBarWidth = 4.dp
+private val AccentBarHeight = 36.dp
+private val AccentBarCornerRadius = 2.dp
+private val CheckboxSize = 36.dp
+private val TagDotSize = 6.dp
+private val RepeatIconSize = 12.dp
+
 @Composable
 fun TaskView(
     task: TaskSingle,
@@ -60,8 +72,10 @@ fun TaskView(
         Color(it.first, it.second, it.third)
     } ?: MaterialTheme.colorScheme.primary
 
+    val dimmedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = DimmedContentAlpha)
+
     val accentColor = if (isDone) {
-        MaterialTheme.colorScheme.outlineVariant
+        dimmedColor
     } else {
         primaryTagColor
     }
@@ -87,11 +101,11 @@ fun TaskView(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 3.dp)
             .combinedClickable(onClick = { onEdit(task) }),
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(TaskCardCornerRadius),
         colors = CardDefaults.cardColors(
             containerColor = when {
-                isDone -> MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f)
-                task.tags.isNotEmpty() -> primaryTagColor.copy(alpha = 0.08f)
+                isDone -> MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = TaskCompletedAlpha)
+                task.tags.isNotEmpty() -> primaryTagColor.copy(alpha = TagContainerAlpha)
                 else -> MaterialTheme.colorScheme.surfaceContainerLow
             }
         )
@@ -105,9 +119,9 @@ fun TaskView(
             // Left color bar indicator matching artistic event style
             Box(
                 modifier = Modifier
-                    .width(4.dp)
-                    .height(36.dp)
-                    .clip(RoundedCornerShape(2.dp))
+                    .width(AccentBarWidth)
+                    .height(AccentBarHeight)
+                    .clip(RoundedCornerShape(AccentBarCornerRadius))
                     .background(accentColor)
             )
 
@@ -116,7 +130,11 @@ fun TaskView(
             Checkbox(
                 checked = isDone,
                 onCheckedChange = { onCheck(task) },
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(CheckboxSize),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = dimmedColor,
+                    checkmarkColor = MaterialTheme.colorScheme.surface
+                )
             )
 
             Spacer(modifier = Modifier.width(6.dp))
@@ -143,7 +161,7 @@ fun TaskView(
                             }
                         ),
                         color = if (isDone) {
-                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            dimmedColor
                         } else {
                             MaterialTheme.colorScheme.onSurface
                         },
@@ -165,21 +183,13 @@ fun TaskView(
                             Icon(
                                 imageVector = Icons.Outlined.Repeat,
                                 contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                                tint = if (isDone) {
-                                    MaterialTheme.colorScheme.outline
-                                } else {
-                                    MaterialTheme.colorScheme.primary
-                                }
+                                modifier = Modifier.size(RepeatIconSize),
+                                tint = if (isDone) dimmedColor else MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 text = repeatText,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = if (isDone) {
-                                    MaterialTheme.colorScheme.outline
-                                } else {
-                                    MaterialTheme.colorScheme.primary
-                                }
+                                color = if (isDone) dimmedColor else MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -196,7 +206,7 @@ fun TaskView(
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Medium,
                             color = if (isDone) {
-                                MaterialTheme.colorScheme.outline
+                                dimmedColor
                             } else {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             }
@@ -208,21 +218,21 @@ fun TaskView(
                             Text(
                                 text = "•",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = if (isDone) dimmedColor else MaterialTheme.colorScheme.outline
                             )
                         }
 
                         Box(
                             modifier = Modifier
-                                .size(6.dp)
+                                .size(TagDotSize)
                                 .clip(CircleShape)
-                                .background(if (isDone) Color.Gray else primaryTagColor)
+                                .background(if (isDone) dimmedColor else primaryTagColor)
                         )
 
                         Text(
                             text = groupName,
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (isDone) Color.Gray else primaryTagColor,
+                            color = if (isDone) dimmedColor else primaryTagColor,
                             maxLines = 1
                         )
                     }
@@ -232,7 +242,7 @@ fun TaskView(
                             Text(
                                 text = "•",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.outline
+                                color = if (isDone) dimmedColor else MaterialTheme.colorScheme.outline
                             )
                         }
 
@@ -244,7 +254,7 @@ fun TaskView(
                             overflow = TextOverflow.Ellipsis,
                             maxLines = if (expanded) Int.MAX_VALUE else 1,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = if (isDone) dimmedColor else MaterialTheme.colorScheme.outline
                         )
                     }
                 }
