@@ -177,7 +177,7 @@ fun AgendaFeed(
         val isDragged by listState.interactionSource.collectIsDraggedAsState()
         var hasScrolledInitial by remember { mutableStateOf(false) }
 
-        LaunchedEffect(focusedDate) {
+        LaunchedEffect(focusedDate, hasOverdue, overdueItemCount) {
             if (!isDragged) {
                 val normalizedFocused = getStartOfDay(focusedDate)
                 val targetIndex = if (normalizedFocused == today && hasOverdue) {
@@ -188,7 +188,11 @@ fun AgendaFeed(
                         ?: distinctDates.lastOrNull()?.let { dateToIndexMap[it] }
                 }
                 if (targetIndex != null) {
-                    if (!hasScrolledInitial) {
+                    val isInitialOverdueSync = normalizedFocused == today &&
+                        hasOverdue &&
+                        listState.firstVisibleItemIndex <= overdueItemCount
+                    val shouldSnapToTop = !hasScrolledInitial || isInitialOverdueSync
+                    if (shouldSnapToTop) {
                         hasScrolledInitial = true
                         listState.scrollToItem(targetIndex)
                     } else {
