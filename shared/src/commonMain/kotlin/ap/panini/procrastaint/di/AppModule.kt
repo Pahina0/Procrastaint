@@ -65,7 +65,7 @@ val appModule = module {
     single { GoogleCalendarRepository(get(), get()) }
     single { NetworkCalendarRepository(get(), get(), get()) }
 
-    factory { Parser(get()) }
+    single { Parser(get(), get()) }
 }
 
 private fun getKtor(
