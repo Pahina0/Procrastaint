@@ -40,6 +40,7 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.AddTaskActivity
 import ap.panini.procrastaint.ui.widget.components.HorizontalDivider
 import ap.panini.procrastaint.util.Date.formatMilliseconds
+import ap.panini.procrastaint.util.Emoticons
 import ap.panini.procrastaint.util.Time
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
@@ -110,7 +111,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun MissedTasksHeader(count: Int) {
         Text(
-            text = "🚨 Missed Tasks ($count)",
+            text = "${Emoticons.random()} Missed Tasks ($count)",
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
@@ -217,7 +218,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "✨",
+                text = Emoticons.random(),
                 style = TextStyle(
                     fontSize = 32.sp,
                     color = GlanceTheme.colors.onSurface
