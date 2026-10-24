@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.agenda.components.AgendaFeed
 import ap.panini.procrastaint.ui.agenda.components.CollapsibleCalendarHeader
-import ap.panini.procrastaint.ui.agenda.components.NeedsAttentionCard
 import ap.panini.procrastaint.ui.agenda.components.TagChipRow
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TagBottomSheet
@@ -53,8 +52,6 @@ import java.util.Locale
 private val SearchTextFieldCornerRadius = 16.dp
 private val SearchHorizontalPadding = 16.dp
 private val SearchVerticalPadding = 8.dp
-private val NeedsAttentionHorizontalPadding = 16.dp
-private val NeedsAttentionVerticalPadding = 4.dp
 
 @Suppress("UnusedParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -250,17 +247,6 @@ fun AgendaScreen(
                 }
             )
 
-            NeedsAttentionCard(
-                overdueTasks = state.overdueTasks,
-                onMoveAllToToday = viewModel::moveAllOverdueToToday,
-                onCheckTask = viewModel::checkTask,
-                onEditTask = activityViewModel::editCreatedTask,
-                modifier = Modifier.padding(
-                    horizontal = NeedsAttentionHorizontalPadding,
-                    vertical = NeedsAttentionVerticalPadding
-                )
-            )
-
             AgendaFeed(
                 scheduledTasksByDate = state.scheduledTasksByDate,
                 externalEventsByDate = state.externalEventsByDate,
@@ -268,6 +254,8 @@ fun AgendaScreen(
                 focusedDate = state.focusedDate,
                 onCheckTask = viewModel::checkTask,
                 onEditTask = activityViewModel::editCreatedTask,
+                overdueTasks = state.overdueTasks,
+                onMoveAllOverdueToToday = viewModel::moveAllOverdueToToday,
                 isFilterActive = state.selectedTagId != null || state.searchQuery.isNotBlank(),
                 onFocusedDateChange = viewModel::setFocusedDate,
                 scrollToTodayEvent = viewModel.scrollToTodayEvent,

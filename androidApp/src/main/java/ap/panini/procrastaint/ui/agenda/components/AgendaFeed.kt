@@ -1,19 +1,30 @@
 package ap.panini.procrastaint.ui.agenda.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Badge
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,8 +67,27 @@ private val HeaderVerticalPadding = 10.dp
 private val HeaderBadgeHorizontalPadding = 4.dp
 private const val EmptyTextAlpha = 0.5f
 private val EmptyTextVerticalPadding = 12.dp
+private const val OverdueContainerAlpha = 0.4f
 private const val DefaultAgendaWindowWeeks = 8
 private const val DaysInWeek = 7
+
+sealed interface AgendaDayItem {
+    val sortKey: Long
+    val isAllDayOrUntimed: Boolean
+    val itemKey: String
+
+    data class Event(val event: ExternalCalendarEvent) : AgendaDayItem {
+        override val isAllDayOrUntimed: Boolean get() = event.isAllDay
+        override val sortKey: Long get() = event.startTime
+        override val itemKey: String get() = "event_${event.id}_${event.startTime}"
+    }
+
+    data class Task(val task: TaskSingle) : AgendaDayItem {
+        override val isAllDayOrUntimed: Boolean get() = task.startTime == null
+        override val sortKey: Long get() = task.currentEventTime
+        override val itemKey: String get() = "task_${task.taskId}_${task.currentEventTime}"
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -69,6 +99,8 @@ fun AgendaFeed(
     onCheckTask: (TaskSingle) -> Unit,
     onEditTask: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier,
+    overdueTasks: List<TaskSingle> = emptyList(),
+    onMoveAllOverdueToToday: (() -> Unit)? = null,
     isFilterActive: Boolean = false,
     onFocusedDateChange: ((Long) -> Unit)? = null,
     scrollToTodayEvent: SharedFlow<Long>? = null
@@ -90,7 +122,7 @@ fun AgendaFeed(
         )
     }
 
-    if (distinctDates.isEmpty()) {
+    if (distinctDates.isEmpty() && overdueTasks.isEmpty()) {
         EmptyPage(
             icon = Icons.Outlined.CheckCircleOutline,
             text = if (isFilterActive) "No matching tasks found" else "No upcoming tasks!\nTap + to add one.",
@@ -98,10 +130,20 @@ fun AgendaFeed(
         )
     } else {
         val listState = rememberLazyListState()
+        var isOverdueExpanded by remember { mutableStateOf(false) }
 
-        val dateToIndexMap = remember(distinctDates, scheduledTasksByDate, externalEventsByDate) {
+        val hasOverdue = overdueTasks.isNotEmpty() && !isFilterActive
+        val overdueTasksCount = if (isOverdueExpanded) overdueTasks.size else 0
+        val overdueItemCount = if (hasOverdue) 1 + overdueTasksCount else 0
+
+        val dateToIndexMap = remember(
+            distinctDates,
+            scheduledTasksByDate,
+            externalEventsByDate,
+            overdueItemCount
+        ) {
             val map = mutableMapOf<Long, Int>()
-            var currentIndex = 0
+            var currentIndex = overdueItemCount
             for (date in distinctDates) {
                 map[date] = currentIndex
                 val eventCount = externalEventsByDate[date]?.size ?: 0
@@ -112,9 +154,18 @@ fun AgendaFeed(
             map
         }
 
-        val indexToDateMap = remember(distinctDates, scheduledTasksByDate, externalEventsByDate) {
+        val indexToDateMap = remember(
+            distinctDates,
+            scheduledTasksByDate,
+            externalEventsByDate,
+            overdueItemCount,
+            today
+        ) {
             val map = mutableMapOf<Int, Long>()
-            var currentIndex = 0
+            for (i in 0 until overdueItemCount) {
+                map[i] = today
+            }
+            var currentIndex = overdueItemCount
             for (date in distinctDates) {
                 val eventCount = externalEventsByDate[date]?.size ?: 0
                 val taskCount = scheduledTasksByDate[date]?.size ?: 0
@@ -134,9 +185,13 @@ fun AgendaFeed(
         LaunchedEffect(focusedDate) {
             if (!isDragged) {
                 val normalizedFocused = getStartOfDay(focusedDate)
-                val targetIndex = dateToIndexMap[normalizedFocused]
-                    ?: distinctDates.firstOrNull { it >= normalizedFocused }?.let { dateToIndexMap[it] }
-                    ?: distinctDates.lastOrNull()?.let { dateToIndexMap[it] }
+                val targetIndex = if (normalizedFocused == today && hasOverdue) {
+                    0
+                } else {
+                    dateToIndexMap[normalizedFocused]
+                        ?: distinctDates.firstOrNull { it >= normalizedFocused }?.let { dateToIndexMap[it] }
+                        ?: distinctDates.lastOrNull()?.let { dateToIndexMap[it] }
+                }
                 if (targetIndex != null) {
                     if (!hasScrolledInitial) {
                         hasScrolledInitial = true
@@ -151,8 +206,12 @@ fun AgendaFeed(
         LaunchedEffect(scrollToTodayEvent) {
             scrollToTodayEvent?.collect { targetDate ->
                 val normalizedTarget = getStartOfDay(targetDate)
-                val targetIndex = dateToIndexMap[normalizedTarget]
-                    ?: distinctDates.firstOrNull { it >= normalizedTarget }?.let { dateToIndexMap[it] }
+                val targetIndex = if (normalizedTarget == today && hasOverdue) {
+                    0
+                } else {
+                    dateToIndexMap[normalizedTarget]
+                        ?: distinctDates.firstOrNull { it >= normalizedTarget }?.let { dateToIndexMap[it] }
+                }
                 if (targetIndex != null) {
                     listState.animateScrollToItem(targetIndex)
                 }
@@ -186,6 +245,31 @@ fun AgendaFeed(
             state = listState,
             contentPadding = PaddingValues(bottom = FeedContentBottomPadding)
         ) {
+            if (hasOverdue) {
+                stickyHeader(key = "header_overdue") {
+                    OverdueBanner(
+                        overdueCount = overdueTasks.size,
+                        isExpanded = isOverdueExpanded,
+                        onToggleExpand = { isOverdueExpanded = !isOverdueExpanded },
+                        onMoveAllToToday = { onMoveAllOverdueToToday?.invoke() }
+                    )
+                }
+
+                if (isOverdueExpanded) {
+                    items(
+                        items = overdueTasks,
+                        key = { "overdue_${it.taskId}_${it.currentEventTime}" }
+                    ) { task ->
+                        TaskView(
+                            task = task,
+                            onCheck = onCheckTask,
+                            onEdit = onEditTask,
+                            recentlyCompleted = recentlyCompleted
+                        )
+                    }
+                }
+            }
+
             for (date in distinctDates) {
                 val tasksForDate = scheduledTasksByDate[date].orEmpty()
                 val eventsForDate = externalEventsByDate[date].orEmpty()
@@ -202,30 +286,30 @@ fun AgendaFeed(
                     )
                 }
 
-                if (eventsForDate.isNotEmpty()) {
-                    items(
-                        items = eventsForDate,
-                        key = { "event_${it.id}_${it.startTime}" }
-                    ) { event ->
-                        ExternalEventView(event = event)
-                    }
-                }
+                val dayItems = buildList {
+                    eventsForDate.forEach { add(AgendaDayItem.Event(it)) }
+                    tasksForDate.forEach { add(AgendaDayItem.Task(it)) }
+                }.sortedWith(
+                    compareBy<AgendaDayItem> { !it.isAllDayOrUntimed }
+                        .thenBy { it.sortKey }
+                )
 
-                if (tasksForDate.isNotEmpty()) {
+                if (dayItems.isNotEmpty()) {
                     items(
-                        items = tasksForDate,
-                        key = { "task_${it.taskId}_${it.currentEventTime}" }
-                    ) { task ->
-                        TaskView(
-                            task = task,
-                            onCheck = onCheckTask,
-                            onEdit = onEditTask,
-                            recentlyCompleted = recentlyCompleted
-                        )
+                        items = dayItems,
+                        key = { it.itemKey }
+                    ) { item ->
+                        when (item) {
+                            is AgendaDayItem.Event -> ExternalEventView(event = item.event)
+                            is AgendaDayItem.Task -> TaskView(
+                                task = item.task,
+                                onCheck = onCheckTask,
+                                onEdit = onEditTask,
+                                recentlyCompleted = recentlyCompleted
+                            )
+                        }
                     }
-                }
-
-                if (eventsForDate.isEmpty() && tasksForDate.isEmpty()) {
+                } else {
                     item(key = "empty_$date") {
                         Text(
                             text = "No tasks or events",
@@ -239,6 +323,81 @@ fun AgendaFeed(
                                 )
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun OverdueBanner(
+    overdueCount: Int,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onMoveAllToToday: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = HeaderSurfaceAlpha),
+        tonalElevation = HeaderTonalElevation
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = OverdueContainerAlpha),
+            tonalElevation = 1.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onToggleExpand)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f, fill = false)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.WarningAmber,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "$overdueCount missed ${if (overdueCount == 1) "task" else "tasks"}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        tint = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                FilledTonalButton(
+                    onClick = onMoveAllToToday,
+                    shape = CircleShape,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    modifier = Modifier.height(30.dp)
+                ) {
+                    Text(
+                        text = "Move to Today",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
