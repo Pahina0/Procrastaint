@@ -37,7 +37,13 @@ object Date {
     private const val ROUND_NUMBER = 100000
 
     @Volatile
-    var displayConfig: ResolvedDateTimeFormat = ResolvedDateTimeFormat(use24Hour = false, useEuropeanDate = false)
+    var displayConfig: ResolvedDateTimeFormat = runCatching {
+        val provider = SystemDateTimeProvider()
+        ResolvedDateTimeFormat(
+            use24Hour = provider.is24HourFormat(),
+            useEuropeanDate = provider.isEuropeanDateFormat()
+        )
+    }.getOrDefault(ResolvedDateTimeFormat())
 
     @OptIn(ExperimentalTime::class)
     private fun now() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())

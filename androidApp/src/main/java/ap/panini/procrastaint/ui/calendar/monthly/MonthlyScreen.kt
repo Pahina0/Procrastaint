@@ -17,7 +17,7 @@ import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import ap.panini.procrastaint.util.formatToMMDDYYYY
+import ap.panini.procrastaint.util.formatCustom
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -136,7 +136,7 @@ fun MonthlyScreen(
                     )
                 },
                 onDateClick = { date ->
-                    val dayString = date.formatToMMDDYYYY()
+                    val dayString = date.formatCustom()
                     activityViewModel.updateTask("on $dayString")
                     activityViewModel.onShow()
                 },

@@ -15,9 +15,10 @@ import androidx.compose.ui.Modifier
 import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.MainActivityViewModel
+import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import ap.panini.procrastaint.util.formatToMMDDYYYY
+import ap.panini.procrastaint.util.formatCustom
 import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -38,6 +39,7 @@ private const val WindowWeeksBefore = 8
 private const val WindowWeeksAfter = 8
 private const val TotalWindowWeeks = WindowWeeksBefore + WindowWeeksAfter + 1
 private const val DaysInWeek = 7
+private const val PadLength = 2
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -127,8 +129,13 @@ fun WeeklyScreen(
                 today = today,
                 currentHour = now.hour,
                 onCellClick = { date, hour ->
-                    val dayString = date.formatToMMDDYYYY()
-                    activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
+                    val dayString = date.formatCustom()
+                    val hourString = if (Date.displayConfig.use24Hour) {
+                        "${hour.toString().padStart(PadLength, '0')}:00"
+                    } else {
+                        hour.toAmPmHour()
+                    }
+                    activityViewModel.updateTask("on $dayString at $hourString")
                     activityViewModel.onShow()
                 },
                 onCellFocus = { date ->

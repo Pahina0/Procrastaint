@@ -13,6 +13,6 @@ enum class DateFormatMode {
 }
 
 data class ResolvedDateTimeFormat(
-    val use24Hour: Boolean,
-    val useEuropeanDate: Boolean
+    val use24Hour: Boolean = false,
+    val useEuropeanDate: Boolean = false
 )

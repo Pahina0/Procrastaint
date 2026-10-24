@@ -27,8 +27,6 @@ class Parser(
     internal var cachedConfig: ENConfig = ENConfig()
         private set
 
-    private var textParser = TimeParser()
-
     init {
         preferenceRepository?.let { repo ->
             coroutineScope.launch {
@@ -40,17 +38,13 @@ class Parser(
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun reset() {
-        textParser = TimeParser(
+    fun parse(input: String): Parsed {
+        val textParser = TimeParser(
             cachedConfig.copy(
                 relativeTo = Clock.System.now().toEpochMilliseconds(),
                 timeZone = TimeZone.currentSystemDefault()
             )
         )
-    }
-
-    fun parse(input: String): Parsed {
-        reset()
 
         val tagRegex = Regex("(\\s*)#(\\S+)")
         val tagMatches = tagRegex.findAll(input)

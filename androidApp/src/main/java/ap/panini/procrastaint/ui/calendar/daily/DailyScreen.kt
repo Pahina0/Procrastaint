@@ -23,7 +23,7 @@ import ap.panini.procrastaint.ui.calendar.components.SingleDayView
 import ap.panini.procrastaint.util.Date
 import ap.panini.procrastaint.util.Date.formatMilliseconds
 import ap.panini.procrastaint.util.Time
-import ap.panini.procrastaint.util.formatToMMDDYYYY
+import ap.panini.procrastaint.util.formatCustom
 import ap.panini.procrastaint.util.hour
 import ap.panini.procrastaint.util.toAmPmHour
 import kotlinx.coroutines.launch
@@ -39,6 +39,7 @@ import kotlin.time.Instant
 private const val WindowDaysBefore = 30
 private const val WindowDaysAfter = 30
 private const val TotalWindowDays = WindowDaysBefore + WindowDaysAfter + 1
+private const val PadLength = 2
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -142,8 +143,13 @@ fun DailyScreen(
                     isToday = dayTimestamp == today,
                     modifier = Modifier.fillMaxSize(),
                     onHourClick = { hour ->
-                        val dayString = date.formatToMMDDYYYY()
-                        activityViewModel.updateTask("on $dayString at ${hour.toAmPmHour()}")
+                        val dayString = date.formatCustom()
+                        val hourString = if (Date.displayConfig.use24Hour) {
+                            "${hour.toString().padStart(PadLength, '0')}:00"
+                        } else {
+                            hour.toAmPmHour()
+                        }
+                        activityViewModel.updateTask("on $dayString at $hourString")
                         activityViewModel.onShow()
                     }
                 )
