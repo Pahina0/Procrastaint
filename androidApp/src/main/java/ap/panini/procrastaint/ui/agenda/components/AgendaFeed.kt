@@ -33,11 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.agenda.getStartOfDay
+import ap.panini.procrastaint.ui.agenda.util.CalendarIntentUtils
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date
@@ -93,12 +95,18 @@ fun AgendaFeed(
     onCheckTask: (TaskSingle) -> Unit,
     onEditTask: (TaskSingle) -> Unit,
     modifier: Modifier = Modifier,
+    onEventClick: ((ExternalCalendarEvent) -> Unit)? = null,
     overdueTasks: List<TaskSingle> = emptyList(),
     onMoveAllOverdueToToday: (() -> Unit)? = null,
     isFilterActive: Boolean = false,
     onFocusedDateChange: ((Long) -> Unit)? = null,
     scrollToTodayEvent: SharedFlow<Long>? = null
 ) {
+    val context = LocalContext.current
+    val handleEventClick: (ExternalCalendarEvent) -> Unit = onEventClick ?: { event ->
+        CalendarIntentUtils.launchCalendarEvent(context, event)
+    }
+
     val today = remember { Date.getTodayStart() }
     val distinctDates = remember(
         scheduledTasksByDate,
@@ -142,7 +150,7 @@ fun AgendaFeed(
                 map[date] = currentIndex
                 val eventCount = externalEventsByDate[date]?.size ?: 0
                 val taskCount = scheduledTasksByDate[date]?.size ?: 0
-                val emptyCount = if (eventCount == 0 && taskCount == 0) 1 else 0
+                val emptyCount = if (taskCount == 0) 1 else 0
                 currentIndex += 1 + eventCount + taskCount + emptyCount
             }
             map
@@ -163,7 +171,7 @@ fun AgendaFeed(
             for (date in distinctDates) {
                 val eventCount = externalEventsByDate[date]?.size ?: 0
                 val taskCount = scheduledTasksByDate[date]?.size ?: 0
-                val emptyCount = if (eventCount == 0 && taskCount == 0) 1 else 0
+                val emptyCount = if (taskCount == 0) 1 else 0
                 val totalForDate = 1 + eventCount + taskCount + emptyCount
                 for (i in 0 until totalForDate) {
                     map[currentIndex + i] = date
@@ -271,6 +279,8 @@ fun AgendaFeed(
             for (date in distinctDates) {
                 val tasksForDate = scheduledTasksByDate[date].orEmpty()
                 val eventsForDate = externalEventsByDate[date].orEmpty()
+                val allDayEvents = eventsForDate.filter { it.isAllDay }
+                val timedEvents = eventsForDate.filter { !it.isAllDay }
                 val remainingCount = tasksForDate.count { task ->
                     task.completed == null && Pair(task.taskId, task.currentEventTime) !in recentlyCompleted
                 }
@@ -284,8 +294,20 @@ fun AgendaFeed(
                     )
                 }
 
+                if (allDayEvents.isNotEmpty()) {
+                    items(
+                        items = allDayEvents,
+                        key = { "allday_${it.id}_${it.startTime}" }
+                    ) { event ->
+                        AgendaAllDayBanner(
+                            event = event,
+                            onEventClick = handleEventClick
+                        )
+                    }
+                }
+
                 val dayItems = buildList {
-                    eventsForDate.forEach { add(AgendaDayItem.Event(it)) }
+                    timedEvents.forEach { add(AgendaDayItem.Event(it)) }
                     tasksForDate.forEach { add(AgendaDayItem.Task(it)) }
                 }.sortedWith(
                     compareBy<AgendaDayItem> { !it.isAllDayOrUntimed }
@@ -298,7 +320,10 @@ fun AgendaFeed(
                         key = { it.itemKey }
                     ) { item ->
                         when (item) {
-                            is AgendaDayItem.Event -> ExternalEventView(event = item.event)
+                            is AgendaDayItem.Event -> AgendaScheduleDivider(
+                                event = item.event,
+                                onEventClick = handleEventClick
+                            )
                             is AgendaDayItem.Task -> TaskView(
                                 task = item.task,
                                 onCheck = onCheckTask,
@@ -307,10 +332,25 @@ fun AgendaFeed(
                             )
                         }
                     }
+                    if (tasksForDate.isEmpty()) {
+                        item(key = "empty_tasks_$date") {
+                            Text(
+                                text = "No tasks scheduled",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyTextAlpha),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        horizontal = HeaderHorizontalPadding,
+                                        vertical = EmptyTextVerticalPadding
+                                    )
+                            )
+                        }
+                    }
                 } else {
                     item(key = "empty_$date") {
                         Text(
-                            text = "No tasks or events",
+                            text = if (allDayEvents.isNotEmpty()) "No tasks scheduled" else "No tasks or events",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyTextAlpha),
                             modifier = Modifier
