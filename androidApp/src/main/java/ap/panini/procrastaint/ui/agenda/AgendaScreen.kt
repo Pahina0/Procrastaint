@@ -231,6 +231,8 @@ fun AgendaScreen(
                 focusedDate = state.focusedDate,
                 onCheckTask = viewModel::checkTask,
                 onEditTask = activityViewModel::editCreatedTask,
+                isFilterActive = state.selectedTagId != null || state.searchQuery.isNotBlank(),
+                onFocusedDateChange = viewModel::setFocusedDate,
                 modifier = Modifier.weight(1f)
             )
         }

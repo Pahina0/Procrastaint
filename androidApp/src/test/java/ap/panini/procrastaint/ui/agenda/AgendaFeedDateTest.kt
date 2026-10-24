@@ -1,12 +1,15 @@
 package ap.panini.procrastaint.ui.agenda
 
+import ap.panini.procrastaint.ui.agenda.components.computeAgendaDates
 import ap.panini.procrastaint.ui.agenda.components.formatAgendaHeaderDate
 import ap.panini.procrastaint.ui.agenda.components.isTodayDate
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -134,5 +137,78 @@ class AgendaFeedDateTest {
             clock = fixedClock
         )
         assertEquals("Wednesday, May 12, 2027", formatted)
+    }
+
+    @Test
+    fun testComputeAgendaDatesWhenFilterActiveReturnsOnlyTaskAndEventDates() {
+        val todayDate = LocalDate(2026, 10, 24)
+        val todayInstant = todayDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+        val taskDate1 = LocalDate(2026, 10, 26).atStartOfDayIn(timeZone).toEpochMilliseconds()
+        val eventDate1 = LocalDate(2026, 10, 28).atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+        val result = computeAgendaDates(
+            todayStart = todayInstant,
+            focusedDate = todayInstant,
+            taskDates = setOf(taskDate1),
+            eventDates = setOf(eventDate1),
+            isFilterActive = true,
+            timeZone = timeZone
+        )
+
+        assertEquals(listOf(taskDate1, eventDate1), result)
+    }
+
+    @Test
+    fun testComputeAgendaDatesContinuousSpanBeyondOneWeek() {
+        val todayDate = LocalDate(2026, 10, 24) // Saturday
+        val todayInstant = todayDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+        // 8 weeks = 56 days + week offset
+        val result = computeAgendaDates(
+            todayStart = todayInstant,
+            focusedDate = todayInstant,
+            taskDates = emptySet(),
+            eventDates = emptySet(),
+            isFilterActive = false,
+            windowWeeks = 8,
+            timeZone = timeZone
+        )
+
+        // Feed starts at today
+        assertEquals(todayInstant, result.first())
+
+        // Confirms it spans multiple weeks continuously
+        assertTrue(result.size >= 56, "Expected at least 56 continuous days, got ${result.size}")
+
+        // Confirms consecutive days (86400000 ms roughly, or day increments)
+        for (i in 0 until result.size - 1) {
+            val d1 = Instant.fromEpochMilliseconds(result[i]).toLocalDateTime(timeZone).date
+            val d2 = Instant.fromEpochMilliseconds(result[i + 1]).toLocalDateTime(timeZone).date
+            assertEquals(1, d1.daysUntil(d2))
+        }
+    }
+
+    @Test
+    fun testComputeAgendaDatesExpandsWhenFocusedDateFarInFuture() {
+        val todayDate = LocalDate(2026, 10, 24)
+        val todayInstant = todayDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+        val futureDate = LocalDate(2026, 12, 15) // ~7 weeks out
+        val futureInstant = futureDate.atStartOfDayIn(timeZone).toEpochMilliseconds()
+
+        val result = computeAgendaDates(
+            todayStart = todayInstant,
+            focusedDate = futureInstant,
+            taskDates = emptySet(),
+            eventDates = emptySet(),
+            isFilterActive = false,
+            windowWeeks = 8,
+            timeZone = timeZone
+        )
+
+        assertTrue(result.contains(futureInstant), "Expected future date $futureDate to be in feed")
+        val lastDate = Instant.fromEpochMilliseconds(result.last()).toLocalDateTime(timeZone).date
+        assertTrue(lastDate > futureDate, "Expected feed to extend beyond focused future date")
     }
 }

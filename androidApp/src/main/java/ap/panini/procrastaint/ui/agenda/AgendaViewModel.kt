@@ -33,7 +33,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-private const val RollingWindowDays = 30L
+private const val ExtendedWindowDays = 60L
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class AgendaViewModel(
@@ -77,16 +77,20 @@ class AgendaViewModel(
         }
 
         viewModelScope.launch {
-            todayStartFlow.flatMapLatest { todayStart ->
-                val rollingEnd = todayStart + (RollingWindowDays + 1).days.inWholeMilliseconds - 1
-                taskRepository.getTasks(
-                    from = todayStart,
-                    to = rollingEnd,
-                    includeNoTimeTasks = true
-                )
-            }.collect { tasks ->
-                rawScheduledTasks.value = tasks
-            }
+            combine(todayStartFlow, focusedDateFlow) { todayStart, focusedDate ->
+                val from = todayStart
+                val to = maxOf(todayStart, focusedDate) + ExtendedWindowDays.days.inWholeMilliseconds - 1
+                Pair(from, to)
+            }.distinctUntilChanged()
+                .flatMapLatest { (from, to) ->
+                    taskRepository.getTasks(
+                        from = from,
+                        to = to,
+                        includeNoTimeTasks = true
+                    )
+                }.collect { tasks ->
+                    rawScheduledTasks.value = tasks
+                }
         }
 
         viewModelScope.launch {
@@ -139,6 +143,15 @@ class AgendaViewModel(
                     _uiState.update { it.copy(isGoogleLoggedIn = loggedIn) }
                 }
             }
+        }
+
+        viewModelScope.launch {
+            focusedDateFlow
+                .map { it / (7.days.inWholeMilliseconds) }
+                .distinctUntilChanged()
+                .collect {
+                    loadExternalEvents()
+                }
         }
 
         loadExternalEvents()
@@ -201,12 +214,14 @@ class AgendaViewModel(
         viewModelScope.launch {
             val hasPermission = deviceRepo.hasPermission()
             val today = todayStartProvider()
-            val rollingEnd = today + (RollingWindowDays + 1).days.inWholeMilliseconds - 1
+            val focused = focusedDateFlow.value
+            val from = today
+            val to = maxOf(today, focused) + ExtendedWindowDays.days.inWholeMilliseconds - 1
 
             val deviceEvents = if (hasPermission) {
                 val showDevice = preferenceRepository.getShowDeviceCalendar().first()
                 if (showDevice) {
-                    deviceRepo.getEvents(today, rollingEnd)
+                    deviceRepo.getEvents(from, to)
                 } else {
                     emptyList()
                 }

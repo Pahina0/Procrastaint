@@ -1,6 +1,7 @@
 package ap.panini.procrastaint.ui.agenda.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,7 +19,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -29,8 +34,11 @@ import ap.panini.procrastaint.ui.agenda.getStartOfDay
 import ap.panini.procrastaint.ui.calendar.components.ExternalEventView
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.TaskView
+import ap.panini.procrastaint.util.Date
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import java.text.SimpleDateFormat
@@ -45,6 +53,10 @@ private val HeaderTonalElevation = 2.dp
 private val HeaderHorizontalPadding = 16.dp
 private val HeaderVerticalPadding = 10.dp
 private val HeaderBadgeHorizontalPadding = 4.dp
+private const val EmptyTextAlpha = 0.5f
+private val EmptyTextVerticalPadding = 12.dp
+private const val DefaultAgendaWindowWeeks = 8
+private const val DaysInWeek = 7
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,22 +67,31 @@ fun AgendaFeed(
     focusedDate: Long,
     onCheckTask: (TaskSingle) -> Unit,
     onEditTask: (TaskSingle) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isFilterActive: Boolean = false,
+    onFocusedDateChange: ((Long) -> Unit)? = null
 ) {
-    val distinctDates = remember(scheduledTasksByDate, externalEventsByDate) {
-        (scheduledTasksByDate.keys + externalEventsByDate.keys)
-            .filter { date ->
-                (scheduledTasksByDate[date]?.isNotEmpty() == true) ||
-                    (externalEventsByDate[date]?.isNotEmpty() == true)
-            }
-            .distinct()
-            .sorted()
+    val today = remember { Date.getTodayStart() }
+    val distinctDates = remember(
+        scheduledTasksByDate,
+        externalEventsByDate,
+        today,
+        focusedDate,
+        isFilterActive
+    ) {
+        computeAgendaDates(
+            todayStart = today,
+            focusedDate = focusedDate,
+            taskDates = scheduledTasksByDate.keys,
+            eventDates = externalEventsByDate.keys,
+            isFilterActive = isFilterActive
+        )
     }
 
     if (distinctDates.isEmpty()) {
         EmptyPage(
             icon = Icons.Outlined.CheckCircleOutline,
-            text = "No upcoming tasks!\nTap + to add one.",
+            text = if (isFilterActive) "No matching tasks found" else "No upcoming tasks!\nTap + to add one.",
             modifier = modifier.fillMaxSize()
         )
     } else {
@@ -83,18 +104,67 @@ fun AgendaFeed(
                 map[date] = currentIndex
                 val eventCount = externalEventsByDate[date]?.size ?: 0
                 val taskCount = scheduledTasksByDate[date]?.size ?: 0
-                currentIndex += 1 + eventCount + taskCount
+                val emptyCount = if (eventCount == 0 && taskCount == 0) 1 else 0
+                currentIndex += 1 + eventCount + taskCount + emptyCount
             }
             map
         }
 
+        val indexToDateMap = remember(distinctDates, scheduledTasksByDate, externalEventsByDate) {
+            val map = mutableMapOf<Int, Long>()
+            var currentIndex = 0
+            for (date in distinctDates) {
+                val eventCount = externalEventsByDate[date]?.size ?: 0
+                val taskCount = scheduledTasksByDate[date]?.size ?: 0
+                val emptyCount = if (eventCount == 0 && taskCount == 0) 1 else 0
+                val totalForDate = 1 + eventCount + taskCount + emptyCount
+                for (i in 0 until totalForDate) {
+                    map[currentIndex + i] = date
+                }
+                currentIndex += totalForDate
+            }
+            map
+        }
+
+        val isDragged by listState.interactionSource.collectIsDraggedAsState()
+        var hasScrolledInitial by remember { mutableStateOf(false) }
+
         LaunchedEffect(focusedDate) {
-            val normalizedFocused = getStartOfDay(focusedDate)
-            val targetIndex = dateToIndexMap[normalizedFocused]
-                ?: distinctDates.firstOrNull { it >= normalizedFocused }?.let { dateToIndexMap[it] }
-                ?: distinctDates.lastOrNull()?.let { dateToIndexMap[it] }
-            if (targetIndex != null) {
-                listState.animateScrollToItem(targetIndex)
+            if (!isDragged) {
+                val normalizedFocused = getStartOfDay(focusedDate)
+                val targetIndex = dateToIndexMap[normalizedFocused]
+                    ?: distinctDates.firstOrNull { it >= normalizedFocused }?.let { dateToIndexMap[it] }
+                    ?: distinctDates.lastOrNull()?.let { dateToIndexMap[it] }
+                if (targetIndex != null) {
+                    if (!hasScrolledInitial) {
+                        hasScrolledInitial = true
+                        listState.scrollToItem(targetIndex)
+                    } else {
+                        listState.animateScrollToItem(targetIndex)
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(isDragged) {
+            if (isDragged) {
+                snapshotFlow { listState.firstVisibleItemIndex }
+                    .distinctUntilChanged()
+                    .collect { index ->
+                        val date = indexToDateMap[index]
+                        if (date != null && date != getStartOfDay(focusedDate)) {
+                            onFocusedDateChange?.invoke(date)
+                        }
+                    }
+            }
+        }
+
+        LaunchedEffect(listState.isScrollInProgress) {
+            if (!listState.isScrollInProgress && !isDragged && hasScrolledInitial) {
+                val date = indexToDateMap[listState.firstVisibleItemIndex]
+                if (date != null && date != getStartOfDay(focusedDate)) {
+                    onFocusedDateChange?.invoke(date)
+                }
             }
         }
 
@@ -141,9 +211,61 @@ fun AgendaFeed(
                         )
                     }
                 }
+
+                if (eventsForDate.isEmpty() && tasksForDate.isEmpty()) {
+                    item(key = "empty_$date") {
+                        Text(
+                            text = "No tasks or events",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyTextAlpha),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = HeaderHorizontalPadding,
+                                    vertical = EmptyTextVerticalPadding
+                                )
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@OptIn(ExperimentalTime::class)
+internal fun computeAgendaDates(
+    todayStart: Long,
+    focusedDate: Long,
+    taskDates: Set<Long>,
+    eventDates: Set<Long>,
+    isFilterActive: Boolean,
+    windowWeeks: Int = DefaultAgendaWindowWeeks,
+    timeZone: TimeZone = TimeZone.currentSystemDefault()
+): List<Long> {
+    if (isFilterActive) {
+        return (taskDates + eventDates)
+            .filter { it > 0L }
+            .distinct()
+            .sorted()
+    }
+
+    val normalizedFocused = getStartOfDay(focusedDate)
+    val todayLocalDate = Instant.fromEpochMilliseconds(todayStart).toLocalDateTime(timeZone).date
+    val maxTime = maxOf(todayStart, normalizedFocused)
+    val maxLocalDate = Instant.fromEpochMilliseconds(maxTime).toLocalDateTime(timeZone).date
+    val endLocalDate = maxLocalDate.plus((windowWeeks * DaysInWeek).toLong(), DateTimeUnit.DAY)
+
+    val dates = mutableSetOf<Long>()
+    var cur = todayLocalDate
+    while (cur <= endLocalDate) {
+        dates.add(cur.atStartOfDayIn(timeZone).toEpochMilliseconds())
+        cur = cur.plus(1, DateTimeUnit.DAY)
+    }
+
+    dates.addAll(taskDates.filter { it >= todayStart })
+    dates.addAll(eventDates.filter { it >= todayStart })
+
+    return dates.sorted()
 }
 
 @Composable
