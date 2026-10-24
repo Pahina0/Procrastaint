@@ -9,8 +9,6 @@ import ap.panini.procrastaint.data.models.DateFormatMode
 import ap.panini.procrastaint.data.models.ResolvedDateTimeFormat
 import ap.panini.procrastaint.data.models.TimeFormatMode
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
-import ap.panini.procrastaint.util.Parsed
-import ap.panini.procrastaint.util.Parser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +48,7 @@ private data class CombinedSettings(
 )
 
 class ParserSettingsViewModel(
-    private val preferenceRepository: PreferenceRepository,
-    private val parser: Parser
+    private val preferenceRepository: PreferenceRepository
 ) : ViewModel() {
 
     private var baselineConfig: ENConfig? = null
@@ -84,8 +81,7 @@ class ParserSettingsViewModel(
                         dateFormatMode = settings.dateFormatMode,
                         is24HourResolved = settings.resolvedFormat.use24Hour,
                         isEuropeanDateResolved = settings.resolvedFormat.useEuropeanDate,
-                        comparisonDiffs = diffs,
-                        sandboxParsed = parser.parse(state.sandboxInput)
+                        comparisonDiffs = diffs
                     )
                 }
             }
@@ -143,15 +139,6 @@ class ParserSettingsViewModel(
     fun resetToDefaults() {
         viewModelScope.launch {
             preferenceRepository.resetKwhenConfigToDefaults()
-        }
-    }
-
-    fun updateSandboxInput(input: String) {
-        _uiState.update { state ->
-            state.copy(
-                sandboxInput = input,
-                sandboxParsed = parser.parse(input)
-            )
         }
     }
 
@@ -245,8 +232,6 @@ class ParserSettingsViewModel(
         val dateFormatMode: DateFormatMode = DateFormatMode.SYSTEM,
         val is24HourResolved: Boolean = false,
         val isEuropeanDateResolved: Boolean = false,
-        val comparisonDiffs: List<ComparisonDiffItem> = emptyList(),
-        val sandboxInput: String = "Doctor appointment tomorrow evening #health",
-        val sandboxParsed: Parsed? = null
+        val comparisonDiffs: List<ComparisonDiffItem> = emptyList()
     )
 }

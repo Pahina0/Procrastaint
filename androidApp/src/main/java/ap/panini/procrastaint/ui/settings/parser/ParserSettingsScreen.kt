@@ -40,7 +40,6 @@ import ap.panini.procrastaint.ui.settings.components.Section
 import ap.panini.procrastaint.ui.settings.components.SettingsItem
 import ap.panini.procrastaint.ui.settings.parser.components.ComparisonDiffCard
 import ap.panini.procrastaint.ui.settings.parser.components.HourPickerDialog
-import ap.panini.procrastaint.ui.settings.parser.components.LiveSandboxCard
 import ap.panini.procrastaint.ui.settings.parser.components.formatHour
 import org.koin.androidx.compose.koinViewModel
 
@@ -281,18 +280,9 @@ fun ParserSettingsScreen(
                 )
             )
 
-            Section("Interactive Preview") {
+            Section("Changes Comparison") {
                 ComparisonDiffCard(
                     diffs = state.comparisonDiffs,
-                    modifier = Modifier.padding(
-                        horizontal = HorizontalSectionPadding,
-                        vertical = CardVerticalPadding
-                    )
-                )
-                LiveSandboxCard(
-                    input = state.sandboxInput,
-                    parsed = state.sandboxParsed,
-                    onInputChange = viewModel::updateSandboxInput,
                     modifier = Modifier.padding(
                         horizontal = HorizontalSectionPadding,
                         vertical = CardVerticalPadding

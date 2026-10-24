@@ -23,7 +23,7 @@ val androidModule = module {
     viewModel { MainActivityViewModel(get(), get()) }
     viewModel { UpcomingViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
-    viewModel { ParserSettingsViewModel(get(), get()) }
+    viewModel { ParserSettingsViewModel(get()) }
     viewModel { SyncViewModel(get()) }
     viewModel { CalendarViewModel(get(), get(), get(), get()) }
     viewModel { LibraryViewModel(get()) }
