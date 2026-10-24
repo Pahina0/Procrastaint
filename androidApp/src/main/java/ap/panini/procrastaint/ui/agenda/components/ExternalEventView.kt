@@ -1,4 +1,4 @@
-package ap.panini.procrastaint.ui.calendar.components
+package ap.panini.procrastaint.ui.agenda.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

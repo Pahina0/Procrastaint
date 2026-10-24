@@ -1,5 +1,7 @@
 package ap.panini.procrastaint.ui.calendar.components
 
+import ap.panini.procrastaint.ui.agenda.components.ExternalEventView
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
