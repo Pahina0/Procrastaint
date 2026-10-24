@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+private const val SubscriptionStopTimeoutMillis = 5000L
+private const val UpcomingDaysLimit = 7L
+private const val MillisecondsInDay = 24 * 60 * 60 * 1000L
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpcomingWidgetViewModel(
     taskRepository: TaskRepository
@@ -23,11 +27,26 @@ class UpcomingWidgetViewModel(
 
     private val todayStartFlow = MutableStateFlow(Date.getTodayStart())
 
+    val overdueTasks: StateFlow<List<TaskSingle>> =
+        todayStartFlow.flatMapLatest { todayStart ->
+            taskRepository.getOverdueTasks(todayStart)
+        }
+            .combine(recentlyCompletedInternal) { tasks, completed ->
+                tasks.filter { task ->
+                    task.completed == null || Pair(task.taskId, task.currentEventTime) in completed
+                }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(SubscriptionStopTimeoutMillis),
+                initialValue = emptyList()
+            )
+
     val upcomingTasks: StateFlow<List<TaskSingle>> =
         todayStartFlow.flatMapLatest { todayStart ->
             taskRepository.getTasks(
                 from = todayStart,
-                to = todayStart + 7 * 24 * 60 * 60 * 1000L
+                to = todayStart + UpcomingDaysLimit * MillisecondsInDay
             )
         }
             .combine(recentlyCompletedInternal) { tasks, completed ->
@@ -37,7 +56,7 @@ class UpcomingWidgetViewModel(
             }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
+                started = SharingStarted.WhileSubscribed(SubscriptionStopTimeoutMillis),
                 initialValue = emptyList()
             )
 
@@ -48,13 +67,19 @@ class UpcomingWidgetViewModel(
     fun toggleTaskCompletion(taskId: Long, eventTime: Long? = null) {
         viewModelScope.launch {
             refresh()
-            val task = if (eventTime != null) {
-                upcomingTasks.value.find { it.taskId == taskId && it.currentEventTime == eventTime }
-                    ?: upcomingTasks.value.find { it.taskId == taskId }
-            } else {
-                upcomingTasks.value.find { it.taskId == taskId }
-            } ?: return@launch
+            val task = findTask(overdueTasks.value, taskId, eventTime)
+                ?: findTask(upcomingTasks.value, taskId, eventTime)
+                ?: return@launch
             checkTask(task)
+        }
+    }
+
+    private fun findTask(tasks: List<TaskSingle>, taskId: Long, eventTime: Long?): TaskSingle? {
+        return if (eventTime != null) {
+            tasks.find { it.taskId == taskId && it.currentEventTime == eventTime }
+                ?: tasks.find { it.taskId == taskId }
+        } else {
+            tasks.find { it.taskId == taskId }
         }
     }
 }

@@ -64,8 +64,30 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     }
 
     @Composable
-    private fun TaskList(groupedTasks: Map<Int, List<TaskSingle>>, recentlyCompleted: Set<Pair<Long, Long>>) {
+    private fun TaskList(
+        overdueTasks: List<TaskSingle>,
+        groupedTasks: Map<Int, List<TaskSingle>>,
+        recentlyCompleted: Set<Pair<Long, Long>>
+    ) {
         LazyColumn(modifier = GlanceModifier.fillMaxWidth()) {
+            if (overdueTasks.isNotEmpty()) {
+                item {
+                    MissedTasksHeader(count = overdueTasks.size)
+                }
+
+                item {
+                    HorizontalDivider(height = 1.dp)
+                }
+
+                items(overdueTasks) { task ->
+                    TaskItem(task, recentlyCompleted)
+                }
+
+                item {
+                    HorizontalDivider(height = 1.dp)
+                }
+            }
+
             groupedTasks.forEach { (_, tasks) ->
                 item {
                     DateHeader(date = Date(tasks.first().currentEventTime))
@@ -83,6 +105,19 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 }
             }
         }
+    }
+
+    @Composable
+    private fun MissedTasksHeader(count: Int) {
+        Text(
+            text = "🚨 Missed Tasks ($count)",
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = GlanceTheme.colors.error
+            ),
+            modifier = GlanceModifier.padding(top = 10.dp, bottom = 4.dp)
+        )
     }
 
     @Composable
@@ -203,6 +238,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun GlanceContent() {
         val tasks by viewModel.upcomingTasks.collectAsState()
+        val overdueTasks by viewModel.overdueTasks.collectAsState()
         val recentlyCompleted by viewModel.recentlyCompleted.collectAsState()
         val groupedTasks = tasks.groupBy {
             val cal = Calendar.getInstance()
@@ -224,10 +260,10 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
                 modifier = GlanceModifier.fillMaxWidth()
             )
 
-            if (tasks.isEmpty()) {
+            if (tasks.isEmpty() && overdueTasks.isEmpty()) {
                 NoTasksView()
             } else {
-                TaskList(groupedTasks, recentlyCompleted)
+                TaskList(overdueTasks, groupedTasks, recentlyCompleted)
             }
         }
     }
