@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import ap.panini.procrastaint.ui.agenda.AgendaScreen
 import ap.panini.procrastaint.ui.calendar.CalendarScreen
 import ap.panini.procrastaint.ui.library.LibraryScreen
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
@@ -34,6 +35,13 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
         popExitTransition = { fadeOut(animationSpec = tween(AnimationSpeed)) }
     ) {
         composable<Route.OnBoarding> { OnBoardingScreen() }
+
+        composable<Route.Agenda> {
+            AgendaScreen(
+                onNavigateToSettings = { navController.navigate(Route.Settings) },
+                onNavigateToTag = { navController.navigate(it) }
+            )
+        }
 
         composable<Route.Calendar> { CalendarScreen() }
 

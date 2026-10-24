@@ -7,6 +7,9 @@ import kotlin.reflect.KClass
 
 sealed interface Route {
     @Serializable
+    data object Agenda : Route
+
+    @Serializable
     data object OnBoarding : Route
 
     @Serializable

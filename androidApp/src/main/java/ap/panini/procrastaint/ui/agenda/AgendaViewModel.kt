@@ -2,6 +2,7 @@ package ap.panini.procrastaint.ui.agenda
 
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.entities.TaskSingle
+import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.repositories.DeviceCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -163,6 +165,20 @@ class AgendaViewModel(
             it.copy(hasDeviceCalendarPermission = deviceCalendarRepository?.hasPermission() ?: false)
         }
         loadExternalEvents()
+    }
+
+    fun isValidTag(tag: TaskTag): Boolean {
+        return runBlocking {
+            val found = taskRepository.getTagOrNull(tag.title)
+            if (found == null) return@runBlocking true
+            found.tagId == tag.tagId
+        }
+    }
+
+    fun saveTag(tag: TaskTag) {
+        viewModelScope.launch {
+            taskRepository.upsertTaskTag(tag)
+        }
     }
 
     fun loadExternalEvents() {

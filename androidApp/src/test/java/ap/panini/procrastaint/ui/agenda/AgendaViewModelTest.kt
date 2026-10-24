@@ -40,6 +40,7 @@ class AgendaViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    private lateinit var fakeTaskDao: FakeTaskDaoStub
     private lateinit var fakeTaskRepository: FakeTaskRepository
     private lateinit var fakePreferenceRepository: PreferenceRepository
     private val createdViewModels = mutableListOf<AgendaViewModel>()
@@ -48,7 +49,8 @@ class AgendaViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        fakeTaskRepository = FakeTaskRepository()
+        fakeTaskDao = FakeTaskDaoStub()
+        fakeTaskRepository = FakeTaskRepository(fakeTaskDao)
         val tempPath = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "test_${Uuid.random().toHexString()}.preferences_pb"
         val dataStore = createDataStore { tempPath.toString() }
         fakePreferenceRepository = PreferenceRepository(dataStore)
@@ -177,6 +179,33 @@ class AgendaViewModelTest {
         assertEquals(2, viewModel.uiState.value.scheduledTasksByDate[todayStart]?.size)
     }
 
+    @Test
+    fun testIsValidTag() = runTest {
+        val viewModel = createViewModel()
+        val tag = TaskTag(displayTitle = "Work", title = "work", info = "", color = "#FF0000", tagId = 1L)
+
+        fakeTaskDao.existingTag = null
+        assertTrue(viewModel.isValidTag(tag))
+
+        fakeTaskDao.existingTag = tag
+        assertTrue(viewModel.isValidTag(tag))
+
+        fakeTaskDao.existingTag = tag.copy(tagId = 2L)
+        assertFalse(viewModel.isValidTag(tag))
+    }
+
+    @Test
+    fun testSaveTag() = runTest {
+        val viewModel = createViewModel()
+        val newTag = TaskTag(displayTitle = "Work", title = "work", info = "", color = "#FF0000", tagId = 0L)
+        viewModel.saveTag(newTag)
+        assertEquals(newTag, fakeTaskDao.insertedTag)
+
+        val existingTag = TaskTag(displayTitle = "Work", title = "work", info = "", color = "#FF0000", tagId = 5L)
+        viewModel.saveTag(existingTag)
+        assertEquals(existingTag, fakeTaskDao.updatedTag)
+    }
+
     private fun createTask(
         id: Long,
         title: String,
@@ -197,7 +226,7 @@ class AgendaViewModelTest {
         tags = tags
     )
 
-    private class FakeTaskRepository : TaskRepository(FakeTaskDaoStub()) {
+    private class FakeTaskRepository(taskDao: TaskDao) : TaskRepository(taskDao) {
         val overdueTasksFlow = MutableStateFlow<List<TaskSingle>>(emptyList())
         val scheduledTasksFlow = MutableStateFlow<List<TaskSingle>>(emptyList())
         val tagsFlow = MutableStateFlow<List<TaskTag>>(emptyList())
@@ -226,8 +255,20 @@ class AgendaViewModelTest {
 
     @Suppress("EmptyFunctionBlock")
     private class FakeTaskDaoStub : TaskDao {
-        override suspend fun insertTag(taskTag: TaskTag): Long = 0L
-        override suspend fun updateTag(taskTag: TaskTag) {}
+        var existingTag: TaskTag? = null
+        var insertedTag: TaskTag? = null
+        var updatedTag: TaskTag? = null
+
+        override suspend fun insertTag(taskTag: TaskTag): Long {
+            insertedTag = taskTag
+            return taskTag.tagId
+        }
+
+        override suspend fun updateTag(taskTag: TaskTag) {
+            updatedTag = taskTag
+        }
+
+        override suspend fun getTagOrNull(title: String): TaskTag? = existingTag
         override suspend fun updateTaskInfo(taskInfo: TaskInfo) {}
         override suspend fun insertTagCrossRef(taskTagCrossRef: TaskTagCrossRef): Long = 0L
         override suspend fun insertTaskInfo(taskInfo: TaskInfo): Long = 0L
@@ -242,7 +283,6 @@ class AgendaViewModelTest {
         override fun getTagCrossRefs(): Flow<List<TaskTagCrossRef>> = MutableStateFlow(emptyList())
         override fun getTags(): Flow<List<TaskTag>> = MutableStateFlow(emptyList())
         override suspend fun getTagsStarting(title: String): List<TaskTag> = emptyList()
-        override suspend fun getTagOrNull(title: String): TaskTag? = null
         override suspend fun getTag(id: Long): TaskTag = error("stub")
         override suspend fun getTask(id: Long): Task = error("stub")
         override suspend fun getTaskOrNull(id: Long): Task? = null

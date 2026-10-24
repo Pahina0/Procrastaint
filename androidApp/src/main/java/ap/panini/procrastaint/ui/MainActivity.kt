@@ -96,14 +96,15 @@ class MainActivity : ComponentActivity() {
         val currentDestination = navBackStackEntry?.destination
 
         val showBottomBar = remember(currentDestination) {
-            BottomBarDestination.entries.map { it.direction::class }
-                .isEntryIn(currentDestination)
+            !listOf(Route.Agenda::class).isEntryIn(currentDestination) &&
+                BottomBarDestination.entries.map { it.direction::class }
+                    .isEntryIn(currentDestination)
         }
 
         val showFab = remember(currentDestination) {
             (
                 BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                    Route.Tag::class
+                    Route.Tag::class + Route.Agenda::class
                 )
                 .isEntryIn(currentDestination)
         }
@@ -148,7 +149,7 @@ class MainActivity : ComponentActivity() {
             }
 
             Box(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
-                NavGraph(navController, Route.Calendar)
+                NavGraph(navController, Route.Agenda)
             }
         }
     }
