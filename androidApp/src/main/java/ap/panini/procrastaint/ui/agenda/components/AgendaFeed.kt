@@ -14,20 +14,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Badge
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -67,7 +63,6 @@ private val HeaderVerticalPadding = 10.dp
 private val HeaderBadgeHorizontalPadding = 4.dp
 private const val EmptyTextAlpha = 0.5f
 private val EmptyTextVerticalPadding = 12.dp
-private const val OverdueContainerAlpha = 0.4f
 private const val DefaultAgendaWindowWeeks = 8
 private const val DaysInWeek = 7
 
@@ -247,7 +242,7 @@ fun AgendaFeed(
         ) {
             if (hasOverdue) {
                 stickyHeader(key = "header_overdue") {
-                    OverdueBanner(
+                    AgendaOverdueHeader(
                         overdueCount = overdueTasks.size,
                         isExpanded = isOverdueExpanded,
                         onToggleExpand = { isOverdueExpanded = !isOverdueExpanded },
@@ -330,7 +325,7 @@ fun AgendaFeed(
 }
 
 @Composable
-private fun OverdueBanner(
+private fun AgendaOverdueHeader(
     overdueCount: Int,
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
@@ -342,63 +337,56 @@ private fun OverdueBanner(
         color = MaterialTheme.colorScheme.surface.copy(alpha = HeaderSurfaceAlpha),
         tonalElevation = HeaderTonalElevation
     ) {
-        Surface(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = OverdueContainerAlpha),
-            tonalElevation = 1.dp
+                .clickable(onClick = onToggleExpand)
+                .padding(horizontal = HeaderHorizontalPadding, vertical = HeaderVerticalPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onToggleExpand)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f, fill = false)
+                Text(
+                    text = "Overdue",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.error
+                )
+
+                Badge(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.WarningAmber,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(20.dp)
-                    )
                     Text(
-                        text = "$overdueCount missed ${if (overdueCount == 1) "task" else "tasks"}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                        contentDescription = if (isExpanded) "Collapse" else "Expand",
-                        tint = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f),
-                        modifier = Modifier.size(18.dp)
+                        text = overdueCount.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = HeaderBadgeHorizontalPadding)
                     )
                 }
 
-                FilledTonalButton(
-                    onClick = onMoveAllToToday,
-                    shape = CircleShape,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    modifier = Modifier.height(30.dp)
-                ) {
-                    Text(
-                        text = "Move to Today",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                Icon(
+                    imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                    contentDescription = if (isExpanded) "Collapse overdue tasks" else "Expand overdue tasks",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            TextButton(
+                onClick = onMoveAllToToday,
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                modifier = Modifier.height(30.dp)
+            ) {
+                Text(
+                    text = "Move to Today",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
