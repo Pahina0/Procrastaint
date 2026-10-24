@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import ap.panini.procrastaint.ui.MainActivityViewModel
 import ap.panini.procrastaint.ui.agenda.components.AgendaFeed
 import ap.panini.procrastaint.ui.agenda.components.CollapsibleCalendarHeader
 import ap.panini.procrastaint.ui.agenda.components.TagChipRow
+import ap.panini.procrastaint.ui.agenda.util.CalendarIntentUtils
 import ap.panini.procrastaint.ui.components.ScreenScaffold
 import ap.panini.procrastaint.ui.components.TagBottomSheet
 import ap.panini.procrastaint.ui.components.rememberBottomSheetTagState
@@ -247,6 +249,8 @@ fun AgendaScreen(
                 }
             )
 
+            val context = LocalContext.current
+
             AgendaFeed(
                 scheduledTasksByDate = state.scheduledTasksByDate,
                 externalEventsByDate = state.externalEventsByDate,
@@ -254,6 +258,9 @@ fun AgendaScreen(
                 focusedDate = state.focusedDate,
                 onCheckTask = viewModel::checkTask,
                 onEditTask = activityViewModel::editCreatedTask,
+                onEventClick = { event ->
+                    CalendarIntentUtils.launchCalendarEvent(context, event)
+                },
                 overdueTasks = state.overdueTasks,
                 onMoveAllOverdueToToday = viewModel::moveAllOverdueToToday,
                 isFilterActive = state.selectedTagId != null || state.searchQuery.isNotBlank(),

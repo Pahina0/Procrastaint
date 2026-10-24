@@ -244,3 +244,5 @@ flowchart TD
    * Always run `./gradlew detektall` before committing changes to ensure adherence to formatting rules.
 5. **Preserve Existing Documentation:**
    * Do not delete or clobber unrelated comments, docstrings, or license headers.
+6. **Strict No-Emoji Policy:**
+   * ABSOLUTELY DO NOT USE EMOJIS anywhere in the app UI, components, vector fallbacks, notifications, logs, or documentation. Use official Material Icons (`Icons.Outlined.*`, `Icons.Filled.*`) or clear text descriptions instead.
