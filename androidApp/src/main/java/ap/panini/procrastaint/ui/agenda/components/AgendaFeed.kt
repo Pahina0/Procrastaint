@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
@@ -337,7 +336,6 @@ fun AgendaFeed(
                         item(key = "empty_tasks_$date") {
                             Text(
                                 text = "No tasks scheduled",
-                                textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyTextAlpha),
                                 modifier = Modifier
@@ -353,7 +351,6 @@ fun AgendaFeed(
                     item(key = "empty_$date") {
                         Text(
                             text = if (allDayEvents.isNotEmpty()) "No tasks scheduled" else "No tasks or events",
-                            textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = EmptyTextAlpha),
                             modifier = Modifier
