@@ -4,40 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.LibraryAddCheck
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Upcoming
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.LibraryAddCheck
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Upcoming
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ShortNavigationBar
-import androidx.compose.material3.ShortNavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import ap.panini.procrastaint.R
 import ap.panini.procrastaint.crash.GlobalExceptionHandler
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.ui.navigation.NavGraph
@@ -95,28 +78,18 @@ class MainActivity : ComponentActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
-        val showBottomBar = remember(currentDestination) {
-            !listOf(Route.Agenda::class).isEntryIn(currentDestination) &&
-                BottomBarDestination.entries.map { it.direction::class }
-                    .isEntryIn(currentDestination)
-        }
-
         val showFab = remember(currentDestination) {
-            (
-                BottomBarDestination.entries.map { it.direction::class } - Route.Settings::class +
-                    Route.Tag::class + Route.Agenda::class
-                )
-                .isEntryIn(currentDestination)
+            listOf(
+                Route.Agenda::class,
+                Route.Upcoming::class,
+                Route.Calendar::class,
+                Route.Library::class,
+                Route.Tag::class
+            ).isEntryIn(currentDestination)
         }
 
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         Scaffold(
-            bottomBar = {
-                if (showBottomBar) {
-                    BottomBar(navController)
-                }
-            },
-
             floatingActionButton = {
                 AnimatedVisibility(showFab) {
                     MediumFloatingActionButton(
@@ -151,77 +124,6 @@ class MainActivity : ComponentActivity() {
             Box(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
                 NavGraph(navController, Route.Agenda)
             }
-        }
-    }
-}
-
-private enum class BottomBarDestination(
-    val direction: Route,
-    val iconSelected: ImageVector,
-    val iconDeselected: ImageVector,
-    @StringRes val label: Int
-) {
-    Calendar(
-        Route.Calendar,
-        Icons.Default.CalendarMonth,
-        Icons.Outlined.CalendarMonth,
-        R.string.calendar
-    ),
-    Tasks(
-        Route.Upcoming,
-        Icons.Default.Upcoming,
-        Icons.Outlined.Upcoming,
-        R.string.upcoming
-    ),
-
-    Library(
-        Route.Library,
-        Icons.Default.LibraryAddCheck,
-        Icons.Outlined.LibraryAddCheck,
-        R.string.library
-    ),
-
-    Settings(
-        Route.Settings,
-        Icons.Default.Settings,
-        Icons.Outlined.Settings,
-        R.string.settings
-    ),
-}
-
-@Composable
-private fun BottomBar(navController: NavController) {
-    ShortNavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-        BottomBarDestination.entries.forEach { topLevelRoute ->
-            val isSelected = remember(currentDestination) {
-                listOf(topLevelRoute.direction::class).isEntryIn(currentDestination)
-            }
-
-            ShortNavigationBarItem(
-                icon = {
-                    Icon(
-                        if (isSelected) {
-                            topLevelRoute.iconSelected
-                        } else {
-                            topLevelRoute.iconDeselected
-                        },
-                        contentDescription = stringResource(topLevelRoute.label)
-                    )
-                },
-                label = { Text(stringResource(topLevelRoute.label)) },
-                selected = isSelected,
-                onClick = {
-                    navController.navigate(topLevelRoute.direction) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-            )
         }
     }
 }

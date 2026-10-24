@@ -1,6 +1,7 @@
 package ap.panini.procrastaint.ui.agenda
 
 import androidx.lifecycle.viewModelScope
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.repositories.DeviceCalendarRepository
@@ -39,17 +40,20 @@ class AgendaViewModel(
     taskRepository: TaskRepository,
     private val preferenceRepository: PreferenceRepository,
     private val deviceCalendarRepository: DeviceCalendarRepository? = null,
-    private val googleCalendarRepository: GoogleCalendarRepository? = null
+    private val googleCalendarRepository: GoogleCalendarRepository? = null,
+    private val todayStartProvider: () -> Long = { Date.getTodayStart() }
 ) : CheckableTaskViewModel(taskRepository) {
 
-    private val focusedDateFlow = MutableStateFlow(Date.getTodayStart())
+    private val todayStartFlow = MutableStateFlow(todayStartProvider())
+    private val focusedDateFlow = MutableStateFlow(todayStartProvider())
     private val selectedTagIdFlow = MutableStateFlow<Long?>(null)
     private val searchQueryFlow = MutableStateFlow("")
     private val rawScheduledTasks = MutableStateFlow<List<TaskSingle>>(emptyList())
+    private val rawExternalEventsByDate = MutableStateFlow<Map<Long, List<ExternalCalendarEvent>>>(emptyMap())
 
     private val _uiState = MutableStateFlow(
         AgendaUiState(
-            focusedDate = Date.getTodayStart(),
+            focusedDate = todayStartProvider(),
             hasDeviceCalendarPermission = deviceCalendarRepository?.hasPermission() ?: false,
             isGoogleLoggedIn = false
         )
@@ -59,26 +63,28 @@ class AgendaViewModel(
     val recentlyCompleted: StateFlow<Set<Pair<Long, Long>>> = recentlyCompletedInternal
 
     init {
-        val today = Date.getTodayStart()
-        val rollingEnd = today + (RollingWindowDays + 1).days.inWholeMilliseconds - 1
-
         viewModelScope.launch {
-            taskRepository.getOverdueTasks(Date.getTodayStart())
-                .combine(recentlyCompletedInternal) { tasks, recentlyCompleted ->
-                    tasks.filter { task ->
-                        Pair(task.taskId, task.currentEventTime) !in recentlyCompleted
+            todayStartFlow.flatMapLatest { todayStart ->
+                taskRepository.getOverdueTasks(todayStart)
+                    .combine(recentlyCompletedInternal) { tasks, recentlyCompleted ->
+                        tasks.filter { task ->
+                            Pair(task.taskId, task.currentEventTime) !in recentlyCompleted
+                        }
                     }
-                }.collect { overdue ->
-                    _uiState.update { it.copy(overdueTasks = overdue) }
-                }
+            }.collect { overdue ->
+                _uiState.update { it.copy(overdueTasks = overdue) }
+            }
         }
 
         viewModelScope.launch {
-            taskRepository.getTasks(
-                from = today,
-                to = rollingEnd,
-                includeNoTimeTasks = true
-            ).collect { tasks ->
+            todayStartFlow.flatMapLatest { todayStart ->
+                val rollingEnd = todayStart + (RollingWindowDays + 1).days.inWholeMilliseconds - 1
+                taskRepository.getTasks(
+                    from = todayStart,
+                    to = rollingEnd,
+                    includeNoTimeTasks = true
+                )
+            }.collect { tasks ->
                 rawScheduledTasks.value = tasks
             }
         }
@@ -111,6 +117,14 @@ class AgendaViewModel(
                     val grouped = monthTasks.groupBy { getStartOfDay(it.currentEventTime) }
                     _uiState.update { it.copy(monthTasksByDate = grouped) }
                 }
+        }
+
+        viewModelScope.launch {
+            combine(rawExternalEventsByDate, selectedTagIdFlow) { events, tagId ->
+                if (tagId != null) emptyMap() else events
+            }.collect { filteredEvents ->
+                _uiState.update { it.copy(externalEventsByDate = filteredEvents) }
+            }
         }
 
         viewModelScope.launch {
@@ -152,7 +166,7 @@ class AgendaViewModel(
 
     fun moveAllOverdueToToday() {
         viewModelScope.launch {
-            taskRepository.moveOverdueTasksToDate(_uiState.value.overdueTasks, Date.getTodayStart())
+            taskRepository.moveOverdueTasksToDate(_uiState.value.overdueTasks, todayStartFlow.value)
         }
     }
 
@@ -161,6 +175,7 @@ class AgendaViewModel(
     }
 
     fun refresh() {
+        todayStartFlow.value = todayStartProvider()
         _uiState.update {
             it.copy(hasDeviceCalendarPermission = deviceCalendarRepository?.hasPermission() ?: false)
         }
@@ -185,7 +200,7 @@ class AgendaViewModel(
         val deviceRepo = deviceCalendarRepository ?: return
         viewModelScope.launch {
             val hasPermission = deviceRepo.hasPermission()
-            val today = Date.getTodayStart()
+            val today = todayStartProvider()
             val rollingEnd = today + (RollingWindowDays + 1).days.inWholeMilliseconds - 1
 
             val deviceEvents = if (hasPermission) {
@@ -204,10 +219,10 @@ class AgendaViewModel(
             }
 
             val grouped = uniqueEvents.groupBy { getStartOfDay(it.startTime) }
+            rawExternalEventsByDate.value = grouped
             _uiState.update {
                 it.copy(
-                    hasDeviceCalendarPermission = hasPermission,
-                    externalEventsByDate = grouped
+                    hasDeviceCalendarPermission = hasPermission
                 )
             }
         }
@@ -236,7 +251,7 @@ class AgendaViewModel(
             if (task.currentEventTime > 0) {
                 getStartOfDay(task.currentEventTime)
             } else {
-                Date.getTodayStart()
+                todayStartFlow.value
             }
         }
     }

@@ -77,6 +77,7 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
 
         composable<Route.Settings> {
             SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToAboutLibraries = { navController.navigate(Route.AboutLibraries) },
                 onNavigateToSync = { navController.navigate(Route.Sync) },
                 onNavigateToParserSettings = { navController.navigate(Route.ParserSettings) }

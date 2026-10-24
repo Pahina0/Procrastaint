@@ -1,7 +1,10 @@
 package ap.panini.procrastaint.ui.agenda
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import ap.panini.procrastaint.data.database.dao.TaskDao
+import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
 import ap.panini.procrastaint.data.entities.TaskInfo
@@ -9,6 +12,7 @@ import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.entities.TaskTagCrossRef
+import ap.panini.procrastaint.data.repositories.DeviceCalendarRepository
 import ap.panini.procrastaint.data.repositories.PreferenceRepository
 import ap.panini.procrastaint.data.repositories.TaskRepository
 import ap.panini.procrastaint.di.createDataStore
@@ -42,7 +46,7 @@ class AgendaViewModelTest {
 
     private lateinit var fakeTaskDao: FakeTaskDaoStub
     private lateinit var fakeTaskRepository: FakeTaskRepository
-    private lateinit var fakePreferenceRepository: PreferenceRepository
+    private lateinit var fakePreferenceRepository: FakePreferenceRepository
     private val createdViewModels = mutableListOf<AgendaViewModel>()
 
     @BeforeTest
@@ -53,7 +57,7 @@ class AgendaViewModelTest {
         fakeTaskRepository = FakeTaskRepository(fakeTaskDao)
         val tempPath = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "test_${Uuid.random().toHexString()}.preferences_pb"
         val dataStore = createDataStore { tempPath.toString() }
-        fakePreferenceRepository = PreferenceRepository(dataStore)
+        fakePreferenceRepository = FakePreferenceRepository(dataStore)
     }
 
     @AfterTest
@@ -206,6 +210,90 @@ class AgendaViewModelTest {
         assertEquals(existingTag, fakeTaskDao.updatedTag)
     }
 
+    @Test
+    fun testRefreshUpdatesTodayStartAndRecalculatesTasks() = runTest {
+        val day1Start = 1_700_000_000_000L
+        val day2Start = day1Start + 86400000L
+
+        var simulatedToday = day1Start
+
+        val task1 = createTask(id = 1L, title = "Task on Day 1", eventTime = day1Start + 3600000L)
+        val task2 = createTask(id = 2L, title = "Task on Day 2", eventTime = day2Start + 3600000L)
+
+        val allTasks = listOf(task1, task2)
+
+        fakeTaskRepository.overdueTasksProvider = { before ->
+            allTasks.filter { it.currentEventTime < before }
+        }
+        fakeTaskRepository.scheduledTasksProvider = { from, to ->
+            allTasks.filter { it.currentEventTime in from..(to ?: Long.MAX_VALUE) }
+        }
+
+        val viewModel = AgendaViewModel(
+            taskRepository = fakeTaskRepository,
+            preferenceRepository = fakePreferenceRepository,
+            todayStartProvider = { simulatedToday }
+        )
+        createdViewModels.add(viewModel)
+
+        // Day 1: Task 1 and 2 are scheduled, none are overdue (< day1Start)
+        assertEquals(0, viewModel.uiState.value.overdueTasks.size)
+        assertEquals(day1Start, fakeTaskRepository.lastOverdueBefore)
+        assertTrue(fakeTaskRepository.getTasksCalls.any { it.first == day1Start })
+
+        // Midnight rollover: simulatedToday becomes day2Start
+        simulatedToday = day2Start
+        viewModel.refresh()
+
+        // After refresh, Task on Day 1 is now overdue (< day2Start)
+        assertEquals(1, viewModel.uiState.value.overdueTasks.size)
+        assertEquals("Task on Day 1", viewModel.uiState.value.overdueTasks.first().title)
+        assertEquals(day2Start, fakeTaskRepository.lastOverdueBefore)
+        assertTrue(fakeTaskRepository.getTasksCalls.any { it.first == day2Start })
+    }
+
+    @Test
+    fun testExternalCalendarEventsSuppressedWhenTagSelected() = runTest {
+        val todayStart = Date.getTodayStart()
+        val externalEvent = ExternalCalendarEvent(
+            id = "ext-1",
+            title = "Doctor Appointment",
+            startTime = todayStart + 3600000L,
+            endTime = todayStart + 7200000L
+        )
+        val eventDay = getStartOfDay(externalEvent.startTime)
+        val fakeDeviceCalendar = FakeDeviceCalendarRepository(
+            hasPermission = true,
+            events = listOf(externalEvent)
+        )
+        fakePreferenceRepository.showDeviceCalendarFlow.value = true
+
+        val tag = TaskTag(displayTitle = "Work", title = "Work", info = "", color = "#FF0000", tagId = 10L)
+        fakeTaskRepository.tagsFlow.value = listOf(tag)
+
+        val viewModel = AgendaViewModel(
+            taskRepository = fakeTaskRepository,
+            preferenceRepository = fakePreferenceRepository,
+            deviceCalendarRepository = fakeDeviceCalendar
+        )
+        createdViewModels.add(viewModel)
+
+        // Initially no tag is selected, so external events should be present
+        val initialEvents = viewModel.uiState.value.externalEventsByDate[eventDay]
+        assertNotNull(initialEvents)
+        assertEquals(1, initialEvents.size)
+        assertEquals("Doctor Appointment", initialEvents.first().title)
+
+        // Select a tag: external events must be suppressed (emptyMap())
+        viewModel.selectTag(tag.tagId)
+        assertTrue(viewModel.uiState.value.externalEventsByDate.isEmpty())
+
+        // Deselect the tag: external events are restored
+        viewModel.selectTag(tag.tagId)
+        assertFalse(viewModel.uiState.value.externalEventsByDate.isEmpty())
+        assertEquals(1, viewModel.uiState.value.externalEventsByDate[eventDay]?.size)
+    }
+
     private fun createTask(
         id: Long,
         title: String,
@@ -226,15 +314,44 @@ class AgendaViewModelTest {
         tags = tags
     )
 
+    private class FakePreferenceRepository(dataStore: DataStore<Preferences>) : PreferenceRepository(dataStore) {
+        val showDeviceCalendarFlow = MutableStateFlow(false)
+        override fun getShowDeviceCalendar(): Flow<Boolean> = showDeviceCalendarFlow
+    }
+
+    private class FakeDeviceCalendarRepository(
+        private var hasPermission: Boolean = true,
+        private var events: List<ExternalCalendarEvent> = emptyList()
+    ) : DeviceCalendarRepository(null) {
+        override fun hasPermission(): Boolean = hasPermission
+        override suspend fun getEvents(fromTime: Long, toTime: Long): List<ExternalCalendarEvent> = events
+    }
+
     private class FakeTaskRepository(taskDao: TaskDao) : TaskRepository(taskDao) {
         val overdueTasksFlow = MutableStateFlow<List<TaskSingle>>(emptyList())
         val scheduledTasksFlow = MutableStateFlow<List<TaskSingle>>(emptyList())
         val tagsFlow = MutableStateFlow<List<TaskTag>>(emptyList())
+        val getTasksCalls = mutableListOf<Pair<Long, Long?>>()
 
         var movedTasks: List<TaskSingle>? = null
         var movedTargetDate: Long? = null
 
-        override fun getOverdueTasks(before: Long): Flow<List<TaskSingle>> = overdueTasksFlow
+        var lastOverdueBefore: Long? = null
+        var lastGetTasksFrom: Long? = null
+        var lastGetTasksTo: Long? = null
+
+        var overdueTasksProvider: ((Long) -> List<TaskSingle>)? = null
+        var scheduledTasksProvider: ((Long, Long?) -> List<TaskSingle>)? = null
+
+        override fun getOverdueTasks(before: Long): Flow<List<TaskSingle>> {
+            lastOverdueBefore = before
+            val provider = overdueTasksProvider
+            return if (provider != null) {
+                MutableStateFlow(provider(before))
+            } else {
+                overdueTasksFlow
+            }
+        }
 
         override fun getTasks(
             from: Long,
@@ -243,7 +360,17 @@ class AgendaViewModelTest {
             tagId: Long?,
             maxRepetition: Long,
             includeNoTimeTasks: Boolean
-        ): Flow<List<TaskSingle>> = scheduledTasksFlow
+        ): Flow<List<TaskSingle>> {
+            getTasksCalls.add(Pair(from, to))
+            lastGetTasksFrom = from
+            lastGetTasksTo = to
+            val provider = scheduledTasksProvider
+            return if (provider != null) {
+                MutableStateFlow(provider(from, to))
+            } else {
+                scheduledTasksFlow
+            }
+        }
 
         override fun getTags(): Flow<List<TaskTag>> = tagsFlow
 
