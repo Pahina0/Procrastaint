@@ -4,7 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import ap.panini.kwhen.configs.ENConfig
 import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -13,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@Suppress("TooManyFunctions")
 class PreferenceRepository(
     private val dataStore: DataStore<Preferences>
 ) {
@@ -29,11 +32,25 @@ class PreferenceRepository(
         const val SHOW_DEVICE_CALENDAR = "show_device_calendar"
         const val SHOW_GOOGLE_CALENDAR = "show_google_calendar"
 
+        const val KWHEN_MORNING_HOUR = "kwhen_morning_hour"
+        const val KWHEN_AFTERNOON_HOUR = "kwhen_afternoon_hour"
+        const val KWHEN_EVENING_HOUR = "kwhen_evening_hour"
+        const val KWHEN_NIGHT_HOUR = "kwhen_night_hour"
+        const val KWHEN_USE_24 = "kwhen_use_24"
+        const val KWHEN_USE_EUROPEAN_DATE = "kwhen_use_european_date"
+
         val stringPreference = mapOf(
             GOOGLE_REFRESH_TOKEN to "",
             GOOGLE_ACCESS_TOKEN to "",
             GOOGLE_CALENDAR_ID to "",
             CALENDAR_DISPLAY_MODE to CalendarDisplayMode.DAILY.name
+        )
+
+        val intPreference = mapOf(
+            KWHEN_MORNING_HOUR to 9,
+            KWHEN_AFTERNOON_HOUR to 15,
+            KWHEN_EVENING_HOUR to 18,
+            KWHEN_NIGHT_HOUR to 20,
         )
 
         val boolPreference = mapOf(
@@ -42,7 +59,9 @@ class PreferenceRepository(
             SHOW_INCOMPLETE_TASKS to true,
             SHOW_PROCRASTAINT_TASKS to true,
             SHOW_DEVICE_CALENDAR to true,
-            SHOW_GOOGLE_CALENDAR to true
+            SHOW_GOOGLE_CALENDAR to true,
+            KWHEN_USE_24 to false,
+            KWHEN_USE_EUROPEAN_DATE to false,
         )
     }
 
@@ -141,6 +160,77 @@ class PreferenceRepository(
     suspend fun setShowGoogleCalendar(show: Boolean) {
         dataStore.edit { settings ->
             settings[booleanPreferencesKey(SHOW_GOOGLE_CALENDAR)] = show
+        }
+    }
+
+    fun getKwhenConfig(): Flow<ENConfig> = dataStore.data.map { preferences ->
+        val morning = preferences[intPreferencesKey(KWHEN_MORNING_HOUR)]
+            ?: intPreference[KWHEN_MORNING_HOUR]!!
+        val afternoon = preferences[intPreferencesKey(KWHEN_AFTERNOON_HOUR)]
+            ?: intPreference[KWHEN_AFTERNOON_HOUR]!!
+        val evening = preferences[intPreferencesKey(KWHEN_EVENING_HOUR)]
+            ?: intPreference[KWHEN_EVENING_HOUR]!!
+        val night = preferences[intPreferencesKey(KWHEN_NIGHT_HOUR)]
+            ?: intPreference[KWHEN_NIGHT_HOUR]!!
+        val use24 = preferences[booleanPreferencesKey(KWHEN_USE_24)]
+            ?: boolPreference[KWHEN_USE_24]!!
+        val useEuropeanDate = preferences[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)]
+            ?: boolPreference[KWHEN_USE_EUROPEAN_DATE]!!
+
+        ENConfig(
+            morning = morning,
+            afternoon = afternoon,
+            evening = evening,
+            night = night,
+            use24 = use24,
+            useEuropeanDate = useEuropeanDate
+        )
+    }
+
+    suspend fun setMorningHour(hour: Int) {
+        dataStore.edit { settings ->
+            settings[intPreferencesKey(KWHEN_MORNING_HOUR)] = hour
+        }
+    }
+
+    suspend fun setAfternoonHour(hour: Int) {
+        dataStore.edit { settings ->
+            settings[intPreferencesKey(KWHEN_AFTERNOON_HOUR)] = hour
+        }
+    }
+
+    suspend fun setEveningHour(hour: Int) {
+        dataStore.edit { settings ->
+            settings[intPreferencesKey(KWHEN_EVENING_HOUR)] = hour
+        }
+    }
+
+    suspend fun setNightHour(hour: Int) {
+        dataStore.edit { settings ->
+            settings[intPreferencesKey(KWHEN_NIGHT_HOUR)] = hour
+        }
+    }
+
+    suspend fun setUse24Hour(use24: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(KWHEN_USE_24)] = use24
+        }
+    }
+
+    suspend fun setUseEuropeanDate(useEuropeanDate: Boolean) {
+        dataStore.edit { settings ->
+            settings[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)] = useEuropeanDate
+        }
+    }
+
+    suspend fun resetKwhenConfigToDefaults() {
+        dataStore.edit { preferences ->
+            preferences[intPreferencesKey(KWHEN_MORNING_HOUR)] = intPreference[KWHEN_MORNING_HOUR]!!
+            preferences[intPreferencesKey(KWHEN_AFTERNOON_HOUR)] = intPreference[KWHEN_AFTERNOON_HOUR]!!
+            preferences[intPreferencesKey(KWHEN_EVENING_HOUR)] = intPreference[KWHEN_EVENING_HOUR]!!
+            preferences[intPreferencesKey(KWHEN_NIGHT_HOUR)] = intPreference[KWHEN_NIGHT_HOUR]!!
+            preferences[booleanPreferencesKey(KWHEN_USE_24)] = boolPreference[KWHEN_USE_24]!!
+            preferences[booleanPreferencesKey(KWHEN_USE_EUROPEAN_DATE)] = boolPreference[KWHEN_USE_EUROPEAN_DATE]!!
         }
     }
 }
