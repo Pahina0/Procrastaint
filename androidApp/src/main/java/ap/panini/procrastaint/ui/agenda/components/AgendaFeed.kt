@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import ap.panini.procrastaint.data.entities.ExternalCalendarEvent
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.ui.agenda.getStartOfDay
-import ap.panini.procrastaint.ui.calendar.components.ExternalEventView
 import ap.panini.procrastaint.ui.components.EmptyPage
 import ap.panini.procrastaint.ui.components.TaskView
 import ap.panini.procrastaint.util.Date

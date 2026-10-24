@@ -10,7 +10,6 @@ import ap.panini.kwhen.configs.ENConfig
 import ap.panini.procrastaint.data.models.DateFormatMode
 import ap.panini.procrastaint.data.models.ResolvedDateTimeFormat
 import ap.panini.procrastaint.data.models.TimeFormatMode
-import ap.panini.procrastaint.ui.calendar.CalendarDisplayMode
 import ap.panini.procrastaint.util.SystemDateTimeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -30,7 +29,6 @@ open class PreferenceRepository(
         const val GOOGLE_CALENDAR_ID = "google_calendar_id"
 
         const val ON_BOARDING_COMPLETE = "landing_page_complete"
-        const val CALENDAR_DISPLAY_MODE = "calendar_display_mode"
         const val SHOW_COMPLETED_TASKS = "show_completed_tasks"
         const val SHOW_INCOMPLETE_TASKS = "show_incomplete_tasks"
         const val SHOW_PROCRASTAINT_TASKS = "show_procrastaint_tasks"
@@ -51,7 +49,6 @@ open class PreferenceRepository(
             GOOGLE_REFRESH_TOKEN to "",
             GOOGLE_ACCESS_TOKEN to "",
             GOOGLE_CALENDAR_ID to "",
-            CALENDAR_DISPLAY_MODE to CalendarDisplayMode.DAILY.name,
             TIME_FORMAT_MODE to TimeFormatMode.SYSTEM.name,
             DATE_FORMAT_MODE to DateFormatMode.SYSTEM.name,
         )
@@ -110,17 +107,6 @@ open class PreferenceRepository(
 
     suspend fun putBoolean(key: String, value: Boolean) {
         dataStore.edit { it[booleanPreferencesKey(key)] = value }
-    }
-
-    fun getCalendarDisplayMode(): Flow<CalendarDisplayMode> = dataStore.data.map { preferences ->
-        val modeName = preferences[stringPreferencesKey(CALENDAR_DISPLAY_MODE)] ?: CalendarDisplayMode.DAILY.name
-        CalendarDisplayMode.valueOf(modeName)
-    }
-
-    suspend fun setCalendarDisplayMode(displayMode: CalendarDisplayMode) {
-        dataStore.edit { settings ->
-            settings[stringPreferencesKey(CALENDAR_DISPLAY_MODE)] = displayMode.name
-        }
     }
 
     fun getShowCompletedTasks(): Flow<Boolean> = dataStore.data.map { preferences ->

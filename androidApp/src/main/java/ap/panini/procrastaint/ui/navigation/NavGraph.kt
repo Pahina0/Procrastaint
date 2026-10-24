@@ -12,15 +12,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import ap.panini.procrastaint.ui.agenda.AgendaScreen
-import ap.panini.procrastaint.ui.calendar.CalendarScreen
-import ap.panini.procrastaint.ui.library.LibraryScreen
 import ap.panini.procrastaint.ui.onboarding.OnBoardingScreen
 import ap.panini.procrastaint.ui.settings.SettingsScreen
 import ap.panini.procrastaint.ui.settings.groups.AboutLibrariesScreen
 import ap.panini.procrastaint.ui.settings.parser.ParserSettingsScreen
 import ap.panini.procrastaint.ui.settings.sync.SyncScreen
 import ap.panini.procrastaint.ui.tag.TagScreen
-import ap.panini.procrastaint.ui.upcoming.UpcomingScreen
 
 private const val AnimationSpeed = 250
 
@@ -39,16 +36,6 @@ fun NavGraph(navController: NavHostController, startDestination: Route) {
         composable<Route.Agenda> {
             AgendaScreen(
                 onNavigateToSettings = { navController.navigate(Route.Settings) },
-                onNavigateToTag = { navController.navigate(it) }
-            )
-        }
-
-        composable<Route.Calendar> { CalendarScreen() }
-
-        composable<Route.Upcoming> { UpcomingScreen() }
-
-        composable<Route.Library> {
-            LibraryScreen(
                 onNavigateToTag = { navController.navigate(it) }
             )
         }

@@ -13,15 +13,6 @@ sealed interface Route {
     data object OnBoarding : Route
 
     @Serializable
-    data object Calendar : Route
-
-    @Serializable
-    data object Upcoming : Route
-
-    @Serializable
-    data object Library : Route
-
-    @Serializable
     data object Settings : Route
 
     @Serializable

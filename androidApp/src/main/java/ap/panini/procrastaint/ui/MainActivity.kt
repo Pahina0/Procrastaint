@@ -81,9 +81,6 @@ class MainActivity : ComponentActivity() {
         val showFab = remember(currentDestination) {
             listOf(
                 Route.Agenda::class,
-                Route.Upcoming::class,
-                Route.Calendar::class,
-                Route.Library::class,
                 Route.Tag::class
             ).isEntryIn(currentDestination)
         }
