@@ -3,6 +3,8 @@ package ap.panini.procrastaint.data.repositories
 import ap.panini.procrastaint.data.database.dao.TaskDao
 import ap.panini.procrastaint.data.entities.Task
 import ap.panini.procrastaint.data.entities.TaskCompletion
+import ap.panini.procrastaint.data.entities.TaskInfo
+import ap.panini.procrastaint.data.entities.TaskMeta
 import ap.panini.procrastaint.data.entities.TaskSingle
 import ap.panini.procrastaint.data.entities.TaskTag
 import ap.panini.procrastaint.data.entities.TaskTagCrossRef
@@ -15,16 +17,18 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Suppress("TooManyFunctions")
 open class TaskRepository(
     private val taskDao: TaskDao,
-    private val calendar: NetworkCalendarRepository,
-    private val notificationManager: NotificationManager,
+    private val calendar: NetworkCalendarRepository? = null,
+    private val notificationManager: NotificationManager? = null,
     private val callbacks: List<RepositoryCallback> = emptyList()
 ) {
 
@@ -42,8 +46,8 @@ open class TaskRepository(
 
         CoroutineScope(Dispatchers.IO).launch {
             val updatedTask = getTask(id)
-            notificationManager.create(updatedTask)
-            calendar.createTask(updatedTask)
+            notificationManager?.create(updatedTask)
+            calendar?.createTask(updatedTask)
             callbacks.forEach { it.onDataChanged() }
         }
 
@@ -53,7 +57,7 @@ open class TaskRepository(
     suspend fun getTask(id: Long): Task = taskDao.getTask(id)
     suspend fun getTaskOrNull(id: Long): Task? = taskDao.getTaskOrNull(id)
 
-    fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
+    open fun getTags(): Flow<List<TaskTag>> = taskDao.getTags()
     suspend fun getTagOrNull(title: String): TaskTag? = taskDao.getTagOrNull(title)
     suspend fun getTag(id: Long): TaskTag = taskDao.getTag(id)
 
@@ -117,7 +121,7 @@ open class TaskRepository(
             }
         }
 
-        calendar.updateTask(newTask)
+        calendar?.updateTask(newTask)
 
         callbacks.forEach { it.onDataChanged() }
     }
@@ -136,8 +140,8 @@ open class TaskRepository(
         taskDao.deleteTagsCrossRef(task.taskInfo.taskId) // deletes tags
 
         CoroutineScope(Dispatchers.IO).launch {
-            notificationManager.delete(task)
-            calendar.deleteTask(task)
+            notificationManager?.delete(task)
+            calendar?.deleteTask(task)
             callbacks.forEach { it.onDataChanged() }
         }
     }
@@ -147,6 +151,17 @@ open class TaskRepository(
     open suspend fun deleteTask(taskId: Long) {
         deleteTask(getTask(taskId))
         callbacks.forEach { it.onDataChanged() }
+    }
+
+    open suspend fun completeTask(task: TaskSingle, completionTime: Long = Date.getTime()) {
+        addCompletion(
+            TaskCompletion(
+                completionTime = completionTime,
+                forTime = task.currentEventTime,
+                taskId = task.taskId,
+                metaId = task.metaId
+            )
+        )
     }
 
     open suspend fun addCompletion(taskCompletion: TaskCompletion) {
@@ -161,9 +176,9 @@ open class TaskRepository(
                 taskCompletion.forTime,
                 taskCompletion.taskId
             ).firstOrNull()?.firstOrNull()?.let {
-                notificationManager.delete(it)
+                notificationManager?.delete(it)
             }
-            calendar.addCompletion(task, taskCompletion.copy(completionId = id))
+            calendar?.addCompletion(task, taskCompletion.copy(completionId = id))
             callbacks.forEach { it.onDataChanged() }
         }
     }
@@ -180,9 +195,9 @@ open class TaskRepository(
                 taskCompletion.forTime,
                 taskCompletion.taskId
             ).firstOrNull()?.firstOrNull()?.let {
-                notificationManager.create(it)
+                notificationManager?.create(it)
             }
-            calendar.removeCompletion(task, taskCompletion)
+            calendar?.removeCompletion(task, taskCompletion)
             callbacks.forEach { it.onDataChanged() }
         }
     }
@@ -194,7 +209,7 @@ open class TaskRepository(
                 .mapValues { (_, tagList) -> tagList.filterNotNull() }
         }
 
-    fun getTasks(
+    open fun getTasks(
         from: Long = Date.getTodayStart(),
         to: Long? = null,
         taskId: Long? = null,
@@ -212,6 +227,65 @@ open class TaskRepository(
             to = to ?: Long.MAX_VALUE,
             maxRepetition = maxRepetition
         )
+
+    open fun getOverdueTasks(before: Long): Flow<List<TaskSingle>> =
+        getTasks(from = 0, to = before).map { tasks ->
+            tasks.filter { it.completed == null && it.currentEventTime < before }
+        }
+
+    private suspend fun rescheduleNonRecurringTask(taskSingle: TaskSingle, targetDate: Long) {
+        val originalTask = getTaskOrNull(taskSingle.taskId) ?: return
+        val updatedMeta = originalTask.meta.map { meta ->
+            if (meta.metaId == taskSingle.metaId) {
+                meta.copy(startTime = targetDate)
+            } else {
+                meta
+            }
+        }
+        updatedMeta.filter { it.metaId == taskSingle.metaId }.forEach { meta ->
+            taskDao.updateTaskMeta(meta)
+        }
+        val updatedTask = originalTask.copy(meta = updatedMeta)
+        calendar?.updateTask(updatedTask)
+        callbacks.forEach { it.onDataChanged() }
+    }
+
+    private suspend fun rescheduleRecurringTask(taskSingle: TaskSingle, targetDate: Long) {
+        completeTask(taskSingle)
+        val originalTask = getTaskOrNull(taskSingle.taskId)
+        val oneOffTask = Task(
+            taskInfo = TaskInfo(
+                title = originalTask?.taskInfo?.title ?: taskSingle.title,
+                description = originalTask?.taskInfo?.description ?: taskSingle.description,
+                extractedTimePhrase = originalTask?.taskInfo?.extractedTimePhrase ?: "",
+                taskId = 0
+            ),
+            meta = listOf(
+                TaskMeta(
+                    startTime = targetDate,
+                    endTime = null,
+                    repeatTag = null,
+                    repeatOften = null,
+                    taskId = 0,
+                    metaId = 0
+                )
+            ),
+            completions = emptyList(),
+            tags = originalTask?.tags ?: taskSingle.tags
+        )
+        insertTask(oneOffTask)
+    }
+
+    open suspend fun moveOverdueTasksToDate(tasks: List<TaskSingle>, targetDate: Long) {
+        for (taskSingle in tasks) {
+            val isRecurring = taskSingle.repeatOften != null && taskSingle.repeatTag != null
+            if (isRecurring) {
+                rescheduleRecurringTask(taskSingle, targetDate)
+            } else {
+                rescheduleNonRecurringTask(taskSingle, targetDate)
+            }
+        }
+    }
 
     /**
      * Get all repetitions in a tasks given a single task

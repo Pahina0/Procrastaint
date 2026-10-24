@@ -36,7 +36,7 @@ private data class EventColumnIndices(
     )
 }
 
-class DeviceCalendarRepository(private val context: Context) {
+open class DeviceCalendarRepository(private val context: Context? = null) {
 
     companion object {
         private const val DEFAULT_EVENT_DURATION_MS = 3600000L
@@ -53,15 +53,17 @@ class DeviceCalendarRepository(private val context: Context) {
         )
     }
 
-    fun hasPermission(): Boolean {
+    open fun hasPermission(): Boolean {
+        val ctx = context ?: return false
         return ContextCompat.checkSelfPermission(
-            context,
+            ctx,
             Manifest.permission.READ_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    suspend fun getEvents(fromTime: Long, toTime: Long): List<ExternalCalendarEvent> =
+    open suspend fun getEvents(fromTime: Long, toTime: Long): List<ExternalCalendarEvent> =
         withContext(Dispatchers.IO) {
+            val ctx = context ?: return@withContext emptyList()
             if (!hasPermission()) return@withContext emptyList()
 
             val events = mutableListOf<ExternalCalendarEvent>()
@@ -70,7 +72,7 @@ class DeviceCalendarRepository(private val context: Context) {
                 ContentUris.appendId(builder, fromTime)
                 ContentUris.appendId(builder, toTime)
 
-                context.contentResolver.query(
+                ctx.contentResolver.query(
                     builder.build(),
                     PROJECTION,
                     null,

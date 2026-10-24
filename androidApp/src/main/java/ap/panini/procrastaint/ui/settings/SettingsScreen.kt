@@ -1,16 +1,21 @@
 package ap.panini.procrastaint.ui.settings
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +39,7 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    onNavigateBack: () -> Unit,
     onNavigateToAboutLibraries: () -> Unit,
     onNavigateToSync: () -> Unit,
     onNavigateToParserSettings: () -> Unit,
@@ -45,12 +51,29 @@ fun SettingsScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val scrollState = rememberScrollState()
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.updateDeviceCalendarPermission()
+        if (isGranted) {
+            viewModel.setShowDeviceCalendar(true)
+        }
+    }
+
     ScreenScaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 scrollBehavior = scrollBehavior,
-                title = { Text("Settings") }
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
@@ -84,8 +107,16 @@ fun SettingsScreen(
             Sync(
                 onNavigateToSync = onNavigateToSync,
                 isLoggedInGoogle = state.googleLoggedIn,
+                showGoogleCalendar = state.showGoogleCalendar,
+                onToggleGoogleCalendar = viewModel::setShowGoogleCalendar,
                 logoutGoogle = viewModel::googleLogout,
-                loginGoogle = googleAuth::auth
+                loginGoogle = googleAuth::auth,
+                hasDeviceCalendarPermission = state.hasDeviceCalendarPermission,
+                showDeviceCalendar = state.showDeviceCalendar,
+                onToggleDeviceCalendar = viewModel::setShowDeviceCalendar,
+                onRequestDeviceCalendarPermission = {
+                    permissionLauncher.launch(Manifest.permission.READ_CALENDAR)
+                }
             )
 
             HorizontalDivider(
