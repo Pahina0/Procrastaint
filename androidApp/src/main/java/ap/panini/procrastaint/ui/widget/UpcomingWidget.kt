@@ -111,7 +111,7 @@ class UpcomingWidget(private val viewModel: UpcomingWidgetViewModel) : GlanceApp
     @Composable
     private fun MissedTasksHeader(count: Int) {
         Text(
-            text = "${Emoticons.random()} Missed Tasks ($count)",
+            text = "Missed Tasks ($count)",
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
